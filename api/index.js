@@ -14,18 +14,15 @@ const users = {
 };
 
 app.post('/login', (req, res) => {
-  console.log("????????????????????????");
 
   const { email, password } = req.body;
 
   if (users.admin.email === email && users.admin.password === password) {
-    console.log("xxxxxxxxxxxxxxxx");
+
     res.send({ role: 'admin' });
   } else if (users.funcionario.email === email && users.funcionario.password === password) {
-    console.log("''''''''''''''''''''''''");
     res.send({ role: 'funcionario' });
   } else {
-    console.log("AAAAAAAAAAA");
     res.status(401).send('Credenciais inválidas');
   }
 });
