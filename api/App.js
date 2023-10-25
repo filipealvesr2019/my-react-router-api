@@ -12,7 +12,9 @@ app.use(bodyParser.json());
 
 // Rotas
 const routes = require('./routes');
+const authRoutes = require('./controllers/AuthController'); // Importe o controlador de autenticação
 app.use('/', routes);
+app.post('/createUser', authRoutes.createUser); // Adicione a rota para criar usuário ao app
 
 // Conexão com o banco de dados
 mongoose.connect(process.env.MONGO_URI, {

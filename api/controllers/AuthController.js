@@ -23,4 +23,16 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { login };
+const createUser = async (req, res) => {
+  const { email, password, role } = req.body;
+
+  try {
+    const user = await User.create({ email, password, role });
+    res.status(201).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro interno do servidor ao criar usuário');
+  }
+};
+
+module.exports = { login, createUser };
