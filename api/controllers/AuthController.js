@@ -12,8 +12,8 @@ const login = async (req, res) => {
 
     if (user.role === 'admin') {
       return res.send({ role: 'admin' });
-    } else if (user.role === 'funcionario') {
-      return res.send({ role: 'funcionario' });
+    } else if (user.role === 'employee') {
+      return res.send({ role: 'employee' });
     } else {
       return res.status(403).send('Acesso negado. Apenas o admin e o funcionario podem entrar.');
     }
