@@ -12,9 +12,10 @@ app.use(bodyParser.json());
 
 // Rotas
 const routes = require('./routes');
-const admin = require('./routes/userAdminRoutes');
+const admin = require('./routes');
 app.use('/', routes);
 app.use('/user', routes);
+
 
 
 // Conexão com o banco de dados
