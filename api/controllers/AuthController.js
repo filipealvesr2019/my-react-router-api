@@ -83,4 +83,29 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { login, createUser, getUser, updateUser, deleteUser };
+const getUserByUsername = async (req, res) => {
+  try {
+    const username = req.query.username; // Obtendo o nome de usuário do query parameters
+    const user = await User.findOne({ username: username }).exec();
+    if (!user) {
+      return res.status(404).send('Usuário não encontrado');
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro interno do servidor ao buscar usuário');
+  }
+};
+
+
+const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro interno do servidor ao buscar usuários');
+  }
+};
+
+module.exports = { login, createUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers  };

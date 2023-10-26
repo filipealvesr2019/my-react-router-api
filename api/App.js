@@ -11,10 +11,11 @@ app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 
 // Rotas
-const routes = require('./routes');
-const authRoutes = require('./controllers/AuthController'); // Importe o controlador de autenticação
+const routes = require('./routes/index');
+
 app.use('/', routes);
-app.post('/createUser', authRoutes.createUser); // Adicione a rota para criar usuário ao app
+app.use('/user', routes);
+
 
 // Conexão com o banco de dados
 mongoose.connect(process.env.MONGO_URI, {
