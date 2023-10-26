@@ -35,4 +35,52 @@ const createUser = async (req, res) => {
   }
 };
 
-module.exports = { login, createUser };
+
+const getUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).exec();
+    if (!user) {
+      return res.status(404).send('Usuário não encontrado');
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro interno do servidor ao buscar usuário');
+  }
+};
+
+const updateUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { email, password, role } = req.body;
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      { email, password, role },
+      { new: true }
+    );
+    if (!updatedUser) {
+      return res.status(404).send('Usuário não encontrado para atualização');
+    }
+    res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro interno do servidor ao atualizar usuário');
+  }
+};
+
+const deleteUser = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const deletedUser = await User.findByIdAndDelete(userId);
+    if (!deletedUser) {
+      return res.status(404).send('Usuário não encontrado para exclusão');
+    }
+    res.status(200).json({ message: 'Usuário excluído com sucesso' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Erro interno do servidor ao excluir usuário');
+  }
+};
+
+module.exports = { login, createUser, getUser, updateUser, deleteUser };
