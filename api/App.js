@@ -11,8 +11,8 @@ app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 
 // Rotas
-const routes = require('./routes/index');
-
+const routes = require('./routes');
+const admin = require('./routes/userAdminRoutes');
 app.use('/', routes);
 app.use('/user', routes);
 
