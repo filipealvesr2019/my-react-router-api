@@ -1,4 +1,3 @@
-// app.js
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
@@ -13,14 +12,18 @@ app.use(bodyParser.json());
 // Rotas
 const routes = require('./routes');
 app.use('/', routes);
-app.use('/user', routes);
 
-
+// Acesso à variável de ambiente MONGODB_URI do arquivo .env
+const uri = process.env.MONGODB_URI;
 
 // Conexão com o banco de dados
-mongoose.connect(process.env.MONGO_URI, {
+mongoose.connect(uri, {
   useNewUrlParser: true,
   useUnifiedTopology: true
+}).then(() => {
+  console.log('Conectado ao banco de dados');
+}).catch((error) => {
+  console.error('Erro de conexão com o banco de dados:', error);
 });
 
 // Iniciar o servidor
