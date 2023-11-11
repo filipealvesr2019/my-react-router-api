@@ -1,5 +1,5 @@
 // controllers/AuthController.js
-const User = require('../models/User');
+const User = require('../models/AuthUser');
 
 const login = async (req, res) => {
   const { email, password } = req.body;

@@ -10,7 +10,7 @@ app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 
 // Rotas
-const routes = require('./routes');
+const routes = require('./routes/AuthRoutes');
 app.use('/', routes);
 
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
