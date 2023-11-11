@@ -10,10 +10,10 @@ const login = async (req, res) => {
       return res.status(401).send('Credenciais inválidas');
     }
 
-    if (user.role === 'admin') {
-      return res.send({ role: 'admin' });
-    } else if (user.role === 'employee') {
-      return res.send({ role: 'employee' });
+    if (user.role === 'adminstrador') {
+      return res.send({ role: 'adminstrador' });
+    } else if (user.role === 'funcionario') {
+      return res.send({ role: 'funcionario' });
     } else {
       return res.status(403).send('Acesso negado. Apenas o admin e o funcionario podem entrar.');
     }
