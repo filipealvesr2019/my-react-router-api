@@ -1,9 +1,14 @@
 const mongoose = require('mongoose');
 
-const subcategoriaSchema = new mongoose.Schema({
+const produtoSchema = new mongoose.Schema({
   nome: String,
+  fotos: [String],
+  tamanho: String,
+  cor: String,
+  categoria: { type: mongoose.Schema.Types.ObjectId, ref: 'Categoria' },
+  subcategoria: { type: mongoose.Schema.Types.ObjectId, ref: 'Subcategoria' },
 });
 
-const Subcategoria = mongoose.model('Subcategoria', subcategoriaSchema);
+const Produto = mongoose.model('Produto', produtoSchema);
 
-module.exports = Subcategoria;
+module.exports = Produto;

@@ -19,3 +19,31 @@ exports.getProdutoById = async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar produto por ID' });
   }
 };
+
+
+// Rota para criar um novo produto
+exports.createProduto = async (req, res) => {
+  // Extrair dados do corpo da requisição
+  const { nome, fotos, tamanho, cor, categoria, subcategoria } = req.body;
+
+  try {
+    // Criar uma nova instância do modelo Produto
+    const novoProduto = new Produto({
+      nome,
+      fotos,
+      tamanho,
+      cor,
+      categoria,
+      subcategoria,
+    });
+
+    // Salvar o novo produto no banco de dados
+    const produtoSalvo = await novoProduto.save();
+
+    // Retornar o produto recém-criado como resposta
+    res.status(201).json(produtoSalvo);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro ao criar produto' });
+  }
+};
