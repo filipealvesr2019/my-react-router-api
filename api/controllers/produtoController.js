@@ -22,13 +22,13 @@ exports.getProdutoById = async (req, res) => {
 
 
 // Rota para criar um novo produto
-exports.createProduto = async (req, res) => {
+exports.createProduct = async (req, res) => {
   // Extrair dados do corpo da requisição
   const { nome, fotos, tamanho, cor, categoria, subcategoria } = req.body;
 
   try {
     // Criar uma nova instância do modelo Produto
-    const novoProduto = new Produto({
+    const newProduct = new Produto({
       nome,
       fotos,
       tamanho,
@@ -38,10 +38,10 @@ exports.createProduto = async (req, res) => {
     });
 
     // Salvar o novo produto no banco de dados
-    const produtoSalvo = await novoProduto.save();
+    const productSave = await newProduct.save();
 
     // Retornar o produto recém-criado como resposta
-    res.status(201).json(produtoSalvo);
+    res.status(201).json(productSave);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erro ao criar produto' });

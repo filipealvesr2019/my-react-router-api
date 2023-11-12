@@ -32,3 +32,32 @@ exports.criarSubcategoria = async (req,  res) =>{
 
 
 }
+
+
+exports.editSubcategory = async (req, res) =>{
+  try{
+    const updatedSubcategory = await Subcategoria.findByIdAndUpdate(
+      req.params.id,
+      req.body,{
+        new:true
+      }
+    )
+    res.json(updatedSubcategory)
+  }catch(error){
+    console.error(error)
+    res.status(500).json({error:'Erro ao editar subcategoria'})
+  }
+} 
+
+exports.deleteSubcategory = async (req, res) =>{
+  try{
+    await Subcategoria.findByIdAndDelete(req.params.id);
+    res.json({message:"Subcategoria excluída com sucesso"})
+
+  }catch(error){
+    console.error(error);
+    res.status(500).json({error:"Erro ao excluir subcategoria"})
+    
+
+  }
+}

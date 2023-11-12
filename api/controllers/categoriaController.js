@@ -31,3 +31,31 @@ exports.createCategory = async (req, res) =>{
   }
 
 }
+
+exports.categoryProduct = async (req, res) =>{
+try{
+  const updateCategory = await Categoria.findByIdAndUpdate(
+    req.params.id,
+    req.body, {
+      new:true
+    }
+  );
+  res.json(updateCategory)
+} catch(error) {
+  console.error(error)
+  res.status(500).json({
+    error:"Erro ao excluir categoria"
+  })
+  }
+}
+
+exports.deleteCategory = async (req, res) =>{
+  try{
+    await Categoria.findByIdAndDelete(req.params.id);
+    res.json({message:"Categoria excluída com sucesso"}) 
+  }catch(error){
+    console.error(error);
+    res.status(500).json({error:"Erro ao excluir categoria"})
+
+  }
+}
