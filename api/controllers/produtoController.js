@@ -1,5 +1,6 @@
 const Produto = require('../models/produto');
-
+const Categoria = require('../models/Categoria');
+const Subcategoria = require('../models/Subcategoria');
 exports.getAllProdutos = async (req, res) => {
   try {
     const produtos = await Produto.find().populate('categoria').populate('subcategoria');
@@ -24,17 +25,27 @@ exports.getProdutoById = async (req, res) => {
 // Rota para criar um novo produto
 exports.createProduct = async (req, res) => {
   // Extrair dados do corpo da requisição
-  const { nome, fotos, tamanho, cor, categoria, subcategoria } = req.body;
+  const { nome, fotos,descricao, tamanho, cor, categoria, subcategoria } = req.body;
 
   try {
+    const categoriaObj = await Categoria.findOne({ nome: categoria });
+    const subcategoriaObj = await Subcategoria.findOne({ nome: subcategoria });
+
+    if (!categoriaObj || !subcategoriaObj) {
+      return res.status(404).json({ error: 'Categoria ou subcategoria não encontrada' });
+    }
+
+    // Converter a string de fotos para um array
+    const fotosArray = fotos.split(',');
     // Criar uma nova instância do modelo Produto
     const newProduct = new Produto({
       nome,
-      fotos,
+      fotos: fotosArray,
+      descricao,
       tamanho,
       cor,
-      categoria,
-      subcategoria,
+      categoria: categoriaObj._id, // Usar o ID da categoria encontrada
+      subcategoria: subcategoriaObj._id, // Usar o ID da subcategoria encontrada
     });
 
     // Salvar o novo produto no banco de dados
