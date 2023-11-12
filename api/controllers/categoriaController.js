@@ -19,3 +19,15 @@ exports.getCategoriaById = async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar categoria por ID' });
   }
 };
+
+exports.createCategory = async (req, res) =>{
+  try{
+    const newCategory = await Categoria.create(req.body);
+    res.json(newCategory)
+  }catch(error){
+    console.error(error);
+    res.status(500).json({error:"Erro so criar categoria"})
+
+  }
+
+}

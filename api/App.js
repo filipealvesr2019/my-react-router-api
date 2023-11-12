@@ -18,6 +18,7 @@ app.use('/', routes);
 app.use('/categorias', categoriaRoutes);
 app.use('/subcategorias', subcategoriaRoutes);
 app.use('/produtos', produtoRoutes);
+app.use("/", categoriaRoutes)
 
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
