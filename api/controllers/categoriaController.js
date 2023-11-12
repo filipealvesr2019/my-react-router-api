@@ -32,7 +32,7 @@ exports.createCategory = async (req, res) =>{
 
 }
 
-exports.categoryProduct = async (req, res) =>{
+exports.upadateCategory = async (req, res) =>{
 try{
   const updateCategory = await Categoria.findByIdAndUpdate(
     req.params.id,

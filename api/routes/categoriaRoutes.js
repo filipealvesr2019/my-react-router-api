@@ -6,9 +6,6 @@ router.get('/', categoriaController.getAllCategorias);
 router.get('/:id', categoriaController.getCategoriaById);
 router.post("/categorias", categoriaController.createCategory)
 // Rotas para categorias
-router.post('/', categoriaController.criarCategoria);
-router.get('/', categoriaController.listarCategorias);
-router.get('/:id', categoriaController.obterCategoriaPorId);
-router.put('/:id', categoriaController.editarCategoria);
-router.delete('/:id', categoriaController.excluirCategoria);
+router.put('/:id', categoriaController.upadateCategory);
+router.delete('/:id', categoriaController.deleteCategory);
 module.exports = router;
