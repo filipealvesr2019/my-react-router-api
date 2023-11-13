@@ -3,9 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const categoriaRoutes = require('./routes/categoriaRoutes');
-const subcategoriaRoutes = require('./routes/subcategoriaRoutes');
-const produtoRoutes = require('./routes/produtoRoutes');
+
 require('dotenv').config();
 
 // Configurações e middlewares
@@ -15,10 +13,7 @@ app.use(bodyParser.json());
 // Rotas
 const routes = require('./routes/AuthRoutes');
 app.use('/', routes);
-app.use('/categorias', categoriaRoutes);
-app.use('/subcategorias', subcategoriaRoutes);
-app.use('/produtos', produtoRoutes);
-app.use("/", categoriaRoutes)
+
 
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
