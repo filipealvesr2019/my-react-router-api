@@ -33,5 +33,5 @@ mongoose.connect(uri, {
 // Iniciar o servidor
 const port = 3001;
 app.listen(port, () => {
-  console.log(`Servidor em execução na porta ${port}`);
+  console.log(`Servidor em execução na porta http://localhost:${port}`);
 });
