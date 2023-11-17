@@ -18,6 +18,8 @@ app.use('/', routes);
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
 
+
+
 // Conexão com o banco de dados
 mongoose.connect(uri, {
   useNewUrlParser: true,
