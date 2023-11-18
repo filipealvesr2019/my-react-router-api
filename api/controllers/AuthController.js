@@ -10,8 +10,8 @@ const login = async (req, res) => {
       return res.status(401).send('Credenciais inválidas');
     }
 
-    if (user.role === 'adminstrador') {
-      return res.send({ role: 'adminstrador' });
+    if (user.role === 'administrador') {
+      return res.send({ role: 'administrador' });
     } else if (user.role === 'funcionario') {
       return res.send({ role: 'funcionario' });
     } else {
