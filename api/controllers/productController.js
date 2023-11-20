@@ -9,10 +9,13 @@ exports.newProduct = async(req, res, next) =>{
     })
 }
 
+// mostrar produtos => /api/v1/products
+exports.getProducts = async (req, res, next) => {
+    const products = await Product.find();
 
-exports.getProducts = (req, res, next) => {
     res.status(200).json({
         success:true,
-        message:"rota que mostra todas os produtos no banco de dados"
+        count: products.length,
+        products
     })
 }
