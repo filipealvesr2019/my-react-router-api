@@ -4,16 +4,106 @@ const mongoose = require("mongoose")
 const productSchema = new mongoose.Schema({
     name:{
         type: String,
-        required:[true, 'Enter the name of the Product'],
+        required:[true, 'Entre o nome do Produto'],
         trim:true,
-        maxLength:[100, 'Product name cannot exceed 100 words']
+        maxLength:[100, 'O Produto não pode exceder 100 palavras']
     },
     price:{
+        type: Number,
+        required:[true, 'Digite o preço'],
+        maxLength:[5, 'O preço não pode exceder 5 numeros'],
+        default:0.0
+    },
+    description:{
         type: String,
-        required:[true, 'Provide the Product Price '],
-        trim:true,
-        maxLength:[100, 'The price of the product cannot exceed 100 words']
+        required:[true, 'Digite a descrição']
+    },
+    ratings:{
+        type:Number,
+        default:0
+    },
+    images:[
+        {
+            public_id:{
+                type:String,
+                required:true
+            },
+            url:{
+                type:String,
+                required:true
+            },
+        }
+      
+    ],
+    color:{
+        type:String,
+        required:[true, "Digite a cor do Produto"]
+    },
+
+    size:{
+        type:String,
+        enum: ['PP', 'P', 'M', 'G', 'GG'],
+        required:[true, "Digite o tamanho do produto "]
+
+    },
+
+    category:{
+        type:String,
+        required:[true,"Selecione a categoria do Produto"],
+        enum:{
+            values:[
+                'Camisetas Femininas',
+                "Camisetas Masculinas",
+                'Camisas Masculinas',
+                "Camisas Femininas",
+                "Vestidos",
+                "Roupa Masculinas",
+                "Roupa Femininas",
+                "Roupas para Menina",
+                "Roupas para Menino"
+            ],
+            message:"Digite a categoria certa para o produto"
+        }
+    },
+    seller:{
+        type:String,
+        required:[true, "Digite o vendedor do Produto"]
+    },
+    stock:{
+        type:Number,
+        required:[true, "Digite a quantidade do Produto em estoque"],
+        maxLength:[
+            5, "O produto em estoque não pode exceder a 5 numeros"
+        ],
+        default:0
+
+    },
+    numOfReviews:{
+        type:Number,
+        default:0
+    },
+    reviews:[
+        {
+            name:{
+                type:String,
+                required:true
+            }, 
+            rating:{
+                type: Number,
+                required:true
+            },
+            Comment:{
+                type: String,
+                required:true
+            }
+        }
+    ],
+    createdAt:{
+        type:Date,
+        default:Date.now
     }
+
+        
 })
 
 
