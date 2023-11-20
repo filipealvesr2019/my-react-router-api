@@ -1,3 +1,4 @@
+const product = require('../models/product');
 const Product =  require('../models/product')
 
 // criar produto => /api/v1/product/new
@@ -17,5 +18,25 @@ exports.getProducts = async (req, res, next) => {
         success:true,
         count: products.length,
         products
+    })
+}
+
+
+// mostrar produto especifico por id => /api/v1/product/:id
+
+exports.getSingleProduct = async (req, res, next) => {
+
+    const product = await Product.findById(req.params.id);
+
+    if(!product){
+        return res.status(404).json({
+            success:false,
+            message:"Produto não encontrado"
+        })
+    }
+
+    res.status(200).json({
+        success:true,
+        product
     })
 }
