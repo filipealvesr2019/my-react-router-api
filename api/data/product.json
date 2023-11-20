@@ -1,0 +1,111 @@
+[
+    {
+        "name": "Camiseta Legal",
+        "price": 25.99,
+        "description": "Uma camiseta incrível",
+        "ratings": 0,
+        "images": [
+          {
+            "public_id": "imagem1",
+            "url": "https://i.ibb.co/Vq1nsqv/ian-dooley-TT-ROx-Wj9n-A-unsplash-1.jpg"
+          }
+        ],
+        "color": "Azul",
+        "size": "M",
+        "category": "Camisetas Femininas",
+        "seller": "Loja Legal",
+        "stock": 100,
+        "numOfReviews": 0,
+        "reviews": [],
+        "createdAt": "2023-11-20T12:00:00Z"
+      },
+      {
+        "name": "Vestido Floral",
+        "price": 49.99,
+        "description": "Vestido elegante com estampa floral",
+        "ratings": 0,
+        "images": [
+          {
+            "public_id": "imagem2",
+            "url": "https://i.ibb.co/107x4rT/hannah-busing-ff5-K3-k-YPHA-unsplash.jpg"
+          },
+          {
+            "public_id": "imagem3",
+            "url": "https://exemplo.com/imagem3.jpg"
+          }
+        ],
+        "color": "Rosa",
+        "size": "G",
+        "category": "Vestidos",
+        "seller": "Moda Chic",
+        "stock": 50,
+        "numOfReviews": 0,
+        "reviews": [],
+        "createdAt": "2023-11-21T14:30:00Z"
+      },
+      {
+        "name": "Camisa Listrada",
+        "price": 34.99,
+        "description": "Camisa casual com listras elegantes",
+        "ratings": 0,
+        "images": [
+          {
+            "public_id": "imagem4",
+            "url": "https://i.ibb.co/4PdDv9k/henri-pham-F4-HFTm3-Y8g-E-unsplash.jpg"
+          }
+        ],
+        "color": "Branco e Azul",
+        "size": "P",
+        "category": "Camisas Masculinas",
+        "seller": "Estilo Urbano",
+        "stock": 75,
+        "numOfReviews": 0,
+        "reviews": [],
+        "createdAt": "2023-11-22T10:45:00Z"
+      },
+      {
+        "name": "Calça Jeans Skinny",
+        "price": 59.99,
+        "description": "Calça jeans moderna com corte skinny",
+        "ratings": 0,
+        "images": [
+          {
+            "public_id": "imagem5",
+            "url": "https://i.ibb.co/fHL05yD/chalo-garcia-Sv586r5-A99w-unsplash.jpg"
+          }
+        ],
+        "color": "Azul Escuro",
+        "size": "GG",
+        "category": "Calças",
+        "seller": "Tendência Jeans",
+        "stock": 30,
+        "numOfReviews": 0,
+        "reviews": [],
+        "createdAt": "2023-11-23T16:15:00Z"
+      },
+      {
+        "name": "Calça Jeans Skinny",
+        "price": 59.99,
+        "description": "Calça jeans moderna com corte skinny",
+        "ratings": 0,
+        "images": [
+          {
+            "public_id": "imagem5",
+            "url": "https://i.ibb.co/7VSDnkK/joshua-rondeau-SWNKUe13wqk-unsplash.jpg"
+          }
+        ],
+        "color": "Azul Escuro",
+        "size": "GG",
+        "category": "Calças",
+        "seller": "Tendência Jeans",
+        "stock": 30,
+        "numOfReviews": 0,
+        "reviews": [],
+        "createdAt": "2023-11-23T16:15:00Z"
+      }
+      
+      
+      
+      
+      
+]
