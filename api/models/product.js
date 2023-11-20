@@ -65,10 +65,6 @@ const productSchema = new mongoose.Schema({
             message:"Digite a categoria certa para o produto"
         }
     },
-    seller:{
-        type:String,
-        required:[true, "Digite o vendedor do Produto"]
-    },
     stock:{
         type:Number,
         required:[true, "Digite a quantidade do Produto em estoque"],
