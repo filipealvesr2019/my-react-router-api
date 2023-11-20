@@ -42,7 +42,7 @@ exports.getSingleProduct = async (req, res, next) => {
 }
 
 
-// atualisar produto => /api/v1/product/:id
+// atualisar produto => /api/v1/admin/product/:id
 
 exports.updateProduct = async (req, res, next) => {
 
