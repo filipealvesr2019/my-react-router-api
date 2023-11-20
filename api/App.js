@@ -15,6 +15,12 @@ const routes = require('./routes/AuthRoutes');
 app.use('/', routes);
 
 
+const products = require('./routes/product')
+app.use('/api/v1', products)
+app.use(express.json());
+
+
+
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
 
@@ -31,5 +37,5 @@ mongoose.connect(uri, {
 // Iniciar o servidor
 const port = 3000;
 app.listen(port, () => {
-  console.log(`Servidor em execução na porta ${port}`);
+  console.log(`Servidor em execução na porta http://localhost:${port}`);
 });
