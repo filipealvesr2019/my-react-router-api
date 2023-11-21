@@ -1,5 +1,6 @@
 // controllers/AuthController.js
 const User = require('../models/AuthUser');
+const jwt = require('jsonwebtoken')
 const hendleErrors = (err) =>{
   console.log(err.message, err.code)
   let errors = {
@@ -16,6 +17,17 @@ const hendleErrors = (err) =>{
 
   return errors;
 }
+
+const maxDuration = 3 * 24 * 60 *60
+
+const createToken = (id) => {
+  const secretKey = process.env.JWT_SECRET; // Obtenha a chave secreta da variável de ambiente
+  return jwt.sign({ id }, secretKey,
+     {expiresIn:maxDuration}
+    );
+}
+
+
 const login = async (req, res) => {
   const { email, password } = req.body;
 
@@ -42,7 +54,9 @@ const createUser = async (req, res) => {
   const { email, password, role } = req.body;
   try {
     const user = await User.create({ email, password, role });
-    res.status(201).json(user);
+    const token = createToken(user._id)
+    res.cookie('jwt', token, {httpOnly: true, maxDuration:maxDuration * 1000});
+    res.status(201).json({user:user._id});
   } catch (err) {
     const errors = hendleErrors(err); 
     res.status(400).json({errors});

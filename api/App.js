@@ -3,12 +3,13 @@ const app = express();
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
-
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 // Configurações e middlewares
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
+app.use(cookieParser());
 
 // Rotas
 const routes = require('./routes/AuthRoutes');
