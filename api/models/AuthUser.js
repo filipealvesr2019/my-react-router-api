@@ -46,6 +46,8 @@ userSchema.pre("save", async function (next) {
   this.password = await bycript.hash(this.password, salt);
   next();
 });
+
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
