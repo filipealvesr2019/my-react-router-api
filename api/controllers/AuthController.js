@@ -3,9 +3,9 @@ const User = require('../models/AuthUser');
 const hendleErrors = (err) =>{
   console.log(err.message, err.code)
   let errors = {
-    email:"",
-    password:"", 
-    role:""
+    email:"Digite um email válido! => meuEmail@gmail.com",
+    password:"Digite uma senha com o mínimo de 10 caracteres", 
+    role:"Digite uma credencial válida! => adminstrador ou funcionario"
 
   }
   if(err.message.includes("Erro, ao criar usuario")){
