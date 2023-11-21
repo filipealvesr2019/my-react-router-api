@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "mongoose": "^8.0.1"
+  },
+  "scripts":{
+    "seeder":"node api/utils/seeder.js"
+  }
+}
