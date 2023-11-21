@@ -40,15 +40,12 @@ const login = async (req, res) => {
 
 const createUser = async (req, res) => {
   const { email, password, role } = req.body;
-   if (role != "administrador" || "funcionario") {
-    console.log('ERRRRRR')
-    }
   try {
     const user = await User.create({ email, password, role });
     res.status(201).json(user);
   } catch (err) {
     const errors = hendleErrors(err); 
-    res.status(400).send('Erro ao criar usuário!');
+    res.status(400).json({errors});
   }
 };
 
