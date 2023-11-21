@@ -1,4 +1,3 @@
-const product = require('../models/product');
 const Product =  require('../models/product')
 
 // criar produto => /api/v1/product/new

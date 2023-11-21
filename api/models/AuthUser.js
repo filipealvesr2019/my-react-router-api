@@ -29,6 +29,19 @@ function validateRole(value) {
   return allowedRoles.includes(value);
 }
 
+
+// enviar uma função depois do documento no banco de dados ser salvo
+userSchema.post('save', function (doc, next) {
+  console.log('Usuario criado com sucesso e salvo no banco de dados!', doc);
+  next();
+})
+
+// enviar uma função antes do documento no banco de dados ser salvo
+userSchema.pre('save', function (next){
+  console.log("usuario prestes a ser criado e salvo", this)
+  next();
+
+});
 const User = mongoose.model('User', userSchema);
 
 module.exports = User;
