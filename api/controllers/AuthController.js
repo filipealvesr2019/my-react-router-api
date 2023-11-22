@@ -24,6 +24,8 @@ const login = async (req, res) => {
 
   try {
     const user = await User.findOne({ email: email, password: password }).exec();
+    const res = await axios.post('http://localhost:3001/login', { email, password });
+
     if (!user) {
       return res.status(401).send('Credenciais inválidas!');
     }
