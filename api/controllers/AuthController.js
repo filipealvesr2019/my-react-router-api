@@ -1,6 +1,5 @@
 // controllers/AuthController.js
 const User = require('../models/AuthUser');
-const jwt = require('jsonwebtoken')
 const hendleErrors = (err) =>{
   console.log(err.message, err.code)
   let errors = {
@@ -17,6 +16,7 @@ const hendleErrors = (err) =>{
 
   return errors;
 }
+
 
 
 const login = async (req, res) => {
@@ -45,6 +45,7 @@ const createUser = async (req, res) => {
   const { email, password, role } = req.body;
   try {
     const user = await User.create({ email, password, role });
+  
     res.status(201).json({user:user._id});
   } catch (err) {
     const errors = hendleErrors(err); 
