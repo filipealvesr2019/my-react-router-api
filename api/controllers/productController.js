@@ -66,3 +66,33 @@ exports.updateProduct = async (req, res, next) => {
     })
 
 }
+
+
+// deletar produtos => /api/v1/admin/product/:id
+exports.deleteProduct = async (req, res, next) =>{
+   try{
+    const productId = req.params.id;
+    const deletedProduct = await Product.findByIdAndRemove(productId)
+
+    if(!deletedProduct){
+        return res.status(400).json({
+            success:false,
+            message:"Produto não encontrado"
+        });
+    }
+
+    res.status(200).json({
+        success:true,
+        message:"Produto deletado com sucesso",
+        data:deletedProduct
+    })
+   } catch(error){
+    console.error(error);
+    res.status(500).json({
+        success:false,
+        message:"Erro ao deletar Produto",
+        error:error.message
+    })
+
+   }
+}
