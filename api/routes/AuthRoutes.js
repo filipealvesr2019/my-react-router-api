@@ -9,5 +9,4 @@ router.get('/user/:id', getUser); // Rota para buscar usuário por ID
 router.put('/user/:id', updateUser); // Rota para atualizar usuário por ID
 router.delete('/user/:id', deleteUser); // Rota para excluir usuário por ID
 router.get('/user', getUserByUsername); // Rota para buscar usuário por nome de usuário
-
 module.exports = router;
