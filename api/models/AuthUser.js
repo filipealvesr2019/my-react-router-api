@@ -14,12 +14,10 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Digite uma senha válida!"],
-    validate: {
-      validator: (value) => isStrongPassword(value),
-      message: "Digite uma senha forte.",
-    },
+    
 
     maxLength: [
+      isPassword,
       10,
       "Digite uma senha com o mínimo de 10 caracteres",
     ],
