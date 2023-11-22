@@ -22,6 +22,7 @@ app.use(express.json());
 
 
 
+
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
 

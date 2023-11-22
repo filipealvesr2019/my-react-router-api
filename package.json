@@ -1,8 +1,9 @@
 {
   "dependencies": {
+    "cookie-parser": "^1.4.6",
     "mongoose": "^8.0.1"
   },
-  "scripts":{
-    "seeder":"node api/utils/seeder.js"
+  "scripts": {
+    "seeder": "node api/utils/seeder.js"
   }
 }

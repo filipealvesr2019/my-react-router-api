@@ -54,8 +54,6 @@ const createUser = async (req, res) => {
   const { email, password, role } = req.body;
   try {
     const user = await User.create({ email, password, role });
-    const token = createToken(user._id)
-    res.cookie('jwt', token, {httpOnly: true, maxDuration:maxDuration * 1000});
     res.status(201).json({user:user._id});
   } catch (err) {
     const errors = hendleErrors(err); 
