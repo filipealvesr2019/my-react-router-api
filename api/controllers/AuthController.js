@@ -18,15 +18,6 @@ const hendleErrors = (err) =>{
   return errors;
 }
 
-const maxDuration = 3 * 24 * 60 *60
-
-const createToken = (id) => {
-  const secretKey = process.env.JWT_SECRET; // Obtenha a chave secreta da variável de ambiente
-  return jwt.sign({ id }, secretKey,
-     {expiresIn:maxDuration}
-    );
-}
-
 
 const login = async (req, res) => {
   const { email, password } = req.body;
