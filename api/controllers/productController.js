@@ -1,4 +1,5 @@
 const Product =  require('../models/product')
+const errorHandler = require('../errorhandler/errorHandler');
 
 // criar produto => /api/v1/product/new
 exports.newProduct = async(req, res, next) =>{
@@ -28,12 +29,8 @@ exports.getSingleProduct = async (req, res, next) => {
     const product = await Product.findById(req.params.id);
 
     if(!product){
-        return res.status(404).json({
-            success:false,
-            message:"Produto não encontrado"
-        })
+        return next(new errorHandler("Produto não encontrado", 404))
     }
-
     res.status(200).json({
         success:true,
         product
