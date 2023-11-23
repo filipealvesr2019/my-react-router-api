@@ -4,15 +4,12 @@ const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const errorMiddleware = require("./middlewares/errors")
 require('dotenv').config();
 
 // Configurações e middlewares
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-// Middleware to handle errors
-app.use(errorMiddleware);
 // Rotas
 const routes = require('./routes/AuthRoutes');
 app.use('/', routes);
