@@ -1,104 +1,100 @@
-const Product =  require('../models/product')
-const APIFeatures = require('../utils/APIFeatures')
-
-
+const Product = require("../models/product");
+const APIFeatures = require("../utils/APIFeatures");
 
 // criar produto => /api/v1/product/new
-exports.newProduct = async(req, res, next) =>{
-    const product =  await Product.create(req.body);
-    res.status(201).json({
-        success:true,
-        product
-    })
-}
+exports.newProduct = async (req, res, next) => {
+  const product = await Product.create(req.body);
+  res.status(201).json({
+    success: true,
+    product,
+  });
+};
 
 // mostrar produtos => /api/v1/products
 exports.getProducts = async (req, res, next) => {
-    const apiFeatures = new APIFeatures(Product.find(), req.query)
-                          .search()
-                          .filter()         
+    try {
+        const apiFeatures = new APIFeatures(Product.find(), req.query)
+            .search()
+            .filter();
 
-    const products = await apiFeatures.query;
+        // Execute a consulta utilizando o método execute assíncrono
+        const products = await apiFeatures.execute();
 
-    res.status(200).json({
-        success:true,
-        count: products.length,
-        products
-    })
-}
-
+        res.status(200).json({
+            success: true,
+            count: products.length,
+            products,
+        });
+    } catch (error) {
+        console.error("Erro ao buscar produto", error);
+        res.status(500).json({ erro: "Erro interno do servidor" });
+    }
+};
 
 // mostrar produto especifico por id => /api/v1/product/:id
 
 exports.getSingleProduct = async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
 
-    const product = await Product.findById(req.params.id);
-
-    if(!product){
-        return res.status(404).json({
-            success:false,
-            message:"Produto não encontrado"
-        })
-    }
-    res.status(200).json({
-        success:true,
-        product
-    })
-}
-
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      message: "Produto não encontrado",
+    });
+  }
+  res.status(200).json({
+    success: true,
+    product,
+  });
+};
 
 // atualisar produto => /api/v1/admin/product/:id
 
 exports.updateProduct = async (req, res, next) => {
+  let product = await Product.findById(req.params.id);
 
-    let product = await Product.findById(req.params.id);
-    
-    if(!product){
-        return res.status(404).json({
-            success:false,
-            message:"Produto não encontrado"
-        })
-    }
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      message: "Produto não encontrado",
+    });
+  }
 
-    product = await Product.findByIdAndUpdate(req.params.id, req.body,{
-        new:true,
-        runValidators:true,
-        useFindAndModify:false
-
-    })
-    res.status(200).json({
-        success:true,
-        product
-    })
-
-}
-
+  product = await Product.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+  res.status(200).json({
+    success: true,
+    product,
+  });
+};
 
 // deletar produtos => /api/v1/admin/product/:id
-exports.deleteProduct = async (req, res, next) =>{
-   try{
+exports.deleteProduct = async (req, res, next) => {
+  try {
     const productId = req.params.id;
-    const deletedProduct = await Product.findByIdAndRemove(productId)
+    const deletedProduct = await Product.findByIdAndRemove(productId);
 
-    if(!deletedProduct){
-        return res.status(400).json({
-            success:false,
-            message:"Produto não encontrado"
-        });
+    if (!deletedProduct) {
+      return res.status(400).json({
+        success: false,
+        message: "Produto não encontrado",
+      });
     }
 
     res.status(200).json({
-        success:true,
-        message:"Produto deletado com sucesso",
-        data:deletedProduct
-    })
-   } catch(error){
+      success: true,
+      message: "Produto deletado com sucesso",
+      data: deletedProduct,
+    });
+  } catch (error) {
     console.error(error);
     res.status(500).json({
-        success:false,
-        message:"Erro ao deletar Produto",
-        error:error.message
-    })
-
-   }
-}
+      success: false,
+      message: "Erro ao deletar Produto",
+      error: error.message,
+    });
+  }
+};
