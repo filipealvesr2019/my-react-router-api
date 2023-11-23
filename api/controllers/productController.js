@@ -1,4 +1,7 @@
 const Product =  require('../models/product')
+const APIFeatures = require('../utils/APIFeatures')
+
+
 
 // criar produto => /api/v1/product/new
 exports.newProduct = async(req, res, next) =>{
@@ -11,7 +14,10 @@ exports.newProduct = async(req, res, next) =>{
 
 // mostrar produtos => /api/v1/products
 exports.getProducts = async (req, res, next) => {
-    const products = await Product.find();
+    const apiFeatures = new APIFeatures(Product.find(), req.query)
+                          .search()         
+
+    const products = await apiFeatures.query;
 
     res.status(200).json({
         success:true,
