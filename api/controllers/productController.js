@@ -15,7 +15,8 @@ exports.newProduct = async(req, res, next) =>{
 // mostrar produtos => /api/v1/products
 exports.getProducts = async (req, res, next) => {
     const apiFeatures = new APIFeatures(Product.find(), req.query)
-                          .search()         
+                          .search()
+                          .filter()         
 
     const products = await apiFeatures.query;
 
