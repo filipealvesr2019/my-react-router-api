@@ -12,23 +12,21 @@ exports.newProduct = async (req, res, next) => {
 
 // mostrar produtos => /api/v1/products
 exports.getProducts = async (req, res, next) => {
-    try {
-        const apiFeatures = new APIFeatures(Product.find(), req.query)
-            .search()
-            .filter();
 
-        // Execute a consulta utilizando o método execute assíncrono
-        const products = await apiFeatures.execute();
+    const apiFeatures = new APIFeatures(Product.find(), req.query)
+        .search()
+  
+    const products = await apiFeatures.query; // Chame query como uma função assíncrona
 
-        res.status(200).json({
-            success: true,
-            count: products.length,
-            products,
-        });
-    } catch (error) {
-        console.error("Erro ao buscar produto", error);
-        res.status(500).json({ erro: "Erro interno do servidor" });
-    }
+    res.status(200).json({
+        success: true,
+        count: products.length,
+        products,
+    })
+
+  
+
+
 };
 
 // mostrar produto especifico por id => /api/v1/product/:id
