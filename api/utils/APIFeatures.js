@@ -28,7 +28,10 @@ class APIFeatures {
 
         // filtrar por preço
         let queryString = JSON.stringify(queryCopy)
-        queryString = queryString.replace(/\b(gt|gte|lt|lte)\b/g, match => `R$${match}`)
+        queryString = queryString.replace(/\b(gt|gte|lt|lte)\b/g, match => {
+            return '$' + match;
+          }
+        )
         
         console.log(queryCopy);
         this.query = this.query.find(JSON.parse(queryString));
