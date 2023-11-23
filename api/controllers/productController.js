@@ -15,6 +15,7 @@ exports.getProducts = async (req, res, next) => {
 
     const apiFeatures = new APIFeatures(Product.find(), req.query)
         .search()
+        .filter()
   
     const products = await apiFeatures.query; // Chame query como uma função assíncrona
 
@@ -23,10 +24,6 @@ exports.getProducts = async (req, res, next) => {
         count: products.length,
         products,
     })
-
-  
-
-
 };
 
 // mostrar produto especifico por id => /api/v1/product/:id
