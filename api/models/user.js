@@ -46,6 +46,12 @@ const UserRole = new mongoose.Schema({
     resetPasswordExpire: Date,
 });
 
+// comparar senhas de usuario
+UserRole.methods.comparePassword = async function (gotPassword){
+    return await bcrypt.compare(gotPassword, this.password)
+}
+
+
 // criptografando a senha antes de salva o email e senha do usuario
 UserRole.pre('save', async function(next){
     if(!this.isModified("password")){

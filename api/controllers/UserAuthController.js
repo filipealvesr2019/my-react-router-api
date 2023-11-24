@@ -52,3 +52,40 @@ exports.registerUser = async (req, res, next) => {
 
  
 }
+
+// logar usuario com JWT token
+exports.loginUser = async(req, res, next) => {
+    const {email, password} =  req.body;
+
+    // verifica se o usuario esta logado com email e senha
+    if(!email || !password){
+        return res.status(400).json({
+            success:false,
+            error:"Email e senha são obrigatórios."
+        })
+    }
+
+    // procurando usuario no banco de dados
+    const user =  await  User.findOne({email}).select("+ password")
+    if(!user){
+        return res.status(401).json({
+            success:false,
+            error:"Email ou senha invalida."
+        })
+    }
+
+    // verifica se a senha esta correta ou não
+    const isPasswordMatch = user.comparePassword(password)
+    if(!isPasswordMatch){
+        return res.status(401).json({
+            success:false,
+            error:"Email ou senha invalida."
+        })
+    }
+
+    const token = user.getJwtToken();
+    res.status(200).json({
+        success:true,
+        token
+    })
+} 
