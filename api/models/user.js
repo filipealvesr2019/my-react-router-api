@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
+const validator = require("validator")
 
 
 const userSchema = new mongoose.Schema({
@@ -18,7 +18,7 @@ const userSchema = new mongoose.Schema({
     password: {
         type: String,
         required: [true, "Digite uma senha"],
-        minlength: [10, "Digite uma senha de no mínimo 10 caracteres"],
+        minLength: [10, "Digite uma senha de no mínimo 10 caracteres"],
         select: false
     },
     
