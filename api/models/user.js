@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
 
-const userSchema = new mongoose.Schema({
+const UserRole = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "Digite o seu nome."],
@@ -20,14 +20,17 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     avatar: {
-        type: String, // or any other type for your array elements
-        required: true,
+        publica_id:{
+            type: String, // or any other type for your array elements
+            required: true,
+        },
+    
+        url: {
+            type: String,
+            required: [true, "URL is required"],
+        },
       }
       ,
-    url: {
-        type: String,
-        required: [true, "URL is required"],
-    },
     role: {
         type: String,
         default: "UserRole",
@@ -40,4 +43,4 @@ const userSchema = new mongoose.Schema({
     resetPasswordExpire: Date,
 });
 
-module.exports = mongoose.model("UserRole", userSchema);
+module.exports = mongoose.model("UserRole", UserRole);
