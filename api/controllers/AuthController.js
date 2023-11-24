@@ -1,68 +1,82 @@
 // controllers/AuthController.js
 const User = require('../models/AuthUser');
-const hendleErrors = (err) =>{
-  console.log(err.message, err.code)
-  let errors = {
-    email:"Digite um email válido! => meuEmail@gmail.com",
-    password:"Digite uma senha com o mínimo de 10 caracteres", 
-    role:"Digite uma credencial válida! => adminstrador ou funcionario"
+const jwt = require('jsonwebtoken');
+const validator = require("validator");
+const sendToken = require("../utils/jwtToken");
 
-  }
-  if(err.message.includes("Erro, ao criar usuario")){
-    Object.values(err.errors).forEach( ({properties}) =>{
-      errors[properties.path] = properties.message;
-    })
+// cadastro de usuarios => /api/v1/register
+const registerUser = async (req, res, next) => {
+  const { email, password, role} = req.body;
+  
+  if(password.length < 10){
+      return res.status(400).json({
+          success:false,
+          error:"A senha deve ter pelo menos 10 caracteres."
+      })
   }
 
-  return errors;
+
+
+  if (!email || !validator.isEmail(email)) {
+      return res.status(400).json({
+          success: false,
+          error: "Digite um endereço de email válido.",
+      });
+  }
+
+  try{
+      const user = await User.create({
+          email, password,role,  avatar:{
+              publica_id: "/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih",
+              url:"https://res.cloudinary.com/dcodt2el6/image/upload/v1700826137/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih.jpg"
+          }
+      })
+      
+      
+  sendToken(user, 200, res)
+  }catch(error){
+      console.error("Erro, ao cadastrar usuario" ,error);
+      res.status(500).json({
+          success:false,
+          error:"Erro interno do servidor."
+      })
+  }
+
+
 }
 
-const maxDuration = 3 * 24 * 60 *60
+// logar usuario com JWT token
+const loginUser = async(req, res, next) => {
+  const {email, password, role} =  req.body;
 
-const createToken = (id) => {
-  const secretKey = process.env.JWT_SECRET; // Obtenha a chave secreta da variável de ambiente
-  return jwt.sign({ id }, secretKey,
-     {expiresIn:maxDuration}
-    );
-}
-
-
-const login = async (req, res) => {
-  const { email, password } = req.body;
-
-  try {
-    const user = await User.findOne({ email: email, password: password }).exec();
-    const res = await axios.post('http://localhost:3001/login', { email, password });
-
-    if (!user) {
-      return res.status(401).send('Credenciais inválidas!');
-    }
-
-    if (user.role === 'administrador') {
-      return res.send({ role: 'administrador' });
-    } else if (user.role === 'funcionario') {
-      return res.send({ role: 'funcionario' });
-    } else {
-      return res.status(403).send('Acesso negado. Apenas o admin e o funcionario podem entrar.');
-    }
-  } catch (err) {
-    console.error(err)
-    res.status(500).send('Erro interno do servidor');
+  // verifica se o usuario esta logado com email e senha
+  if(!email || !password){
+      return res.status(400).json({
+          success:false,
+          error:"Email e senha são obrigatórios."
+      })
   }
-};
 
-const createUser = async (req, res) => {
-  const { email, password, role } = req.body;
-  try {
-    const user = await User.create({ email, password, role });
-    const token = createToken(user._id)
-    res.cookie('jwt', token, {httpOnly: true, maxDuration:maxDuration * 1000});
-    res.status(201).json({user:user._id});
-  } catch (err) {
-    const errors = hendleErrors(err); 
-    res.status(400).json({errors});
+  // procurando usuario no banco de dados
+  const user =  await  User.findOne({email}).select("+ password")
+  if(!user){
+      return res.status(401).json({
+          success:false,
+          error:"Email ou senha invalida."
+      })
   }
-};
+
+  // verifica se a senha esta correta ou não
+  const isPasswordMatch = user.comparePassword(password)
+  if(!isPasswordMatch){
+      return res.status(401).json({
+          success:false,
+          error:"Email ou senha invalida."
+      })
+  }
+
+  sendToken(user, 200, res)
+} 
 
 
 const getUser = async (req, res) => {
@@ -137,4 +151,5 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { login, createUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers  };
+module.exports = {  loginUser,
+  registerUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers  };

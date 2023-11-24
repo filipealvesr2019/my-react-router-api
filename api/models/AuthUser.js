@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
-const bycript = require("bcrypt");
+const bcrypt = require("bcrypt");
+const jwt = require('jsonwebtoken');
 
-const { isEmail, isPassword } = require("validator");
+const { isEmail } = require("validator");
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -13,18 +14,10 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, "Digite uma senha válida!"],
-    validate: {
-      validator: (value) => isStrongPassword(value),
-      message: "Digite uma senha forte.",
-    },
-
-    maxLength: [
-      isPassword,
-      10,
-      "Digite uma senha com o mínimo de 10 caracteres",
-    ],
-  },
+    required: [true, "Digite uma senha"],
+    minLength: [10, "Digite uma senha de no mínimo 10 caracteres"],
+    select: false,
+},
   role: {
     type: String,
     required: [true, "Digite uma credencial válida!"],
@@ -33,26 +26,43 @@ const userSchema = new mongoose.Schema({
       message: "Digite uma credencial válida!",
     },
   },
+  avatar: {
+    publica_id:{
+        type: String, // or any other type for your array elements
+        required: true,
+    },
+
+    url: {
+        type: String,
+        required: [true, "URL is required"],
+    },
+  }
 });
 
 function validateRole(value) {
   const allowedRoles = ["administrador", "funcionario"];
   return allowedRoles.includes(value);
 }
-
-// enviar uma função depois do documento no banco de dados ser salvo
-userSchema.post("save", function (doc, next) {
-  next();
-});
-
-// enviar uma função antes do documento no banco de dados ser salvo
-userSchema.pre("save", async function (next) {
-  const salt = await bycript.genSalt();
-  this.password = await bycript.hash(this.password, salt);
-  next();
-});
+userSchema.methods.comparePassword = async function (gotPassword){
+  return await bcrypt.compare(gotPassword, this.password)
+}
 
 
+// criptografando a senha antes de salva o email e senha do usuario
+userSchema.pre('save', async function(next){
+  if(!this.isModified("password")){
+      next()
+  }
+
+  this.password = await bcrypt.hash(this.password, 10)
+})
+
+// JWT token
+userSchema.methods.getJwtToken = function () {
+  return jwt.sign({id:this._id}, process.env.JWT_SECRET, {
+      expiresIn:process.env.JWT_DURATION
+  });
+}
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;
