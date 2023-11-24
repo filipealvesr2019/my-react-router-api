@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
-
+const bcrypt = require("bcryptjs")
 const UserRole = new mongoose.Schema({
     name: {
         type: String,
@@ -42,5 +42,14 @@ const UserRole = new mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpire: Date,
 });
+
+// criptografando a senha antes de salva o email e senha do usuario
+UserRole.pre('save', async function(next){
+    if(!this.isModified("password")){
+        next()
+    }
+
+    this.password = await bcrypt.hash(this.password, 10)
+})
 
 module.exports = mongoose.model("UserRole", UserRole);
