@@ -27,7 +27,7 @@ const userSchema = new mongoose.Schema({
         required: true
     },
     url:{
-        type:String,
+        typeStr:String,
         required:true
     },
     role:{
