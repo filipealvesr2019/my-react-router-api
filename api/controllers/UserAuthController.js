@@ -34,10 +34,12 @@ exports.registerUser = async (req, res, next) => {
                 url:"https://res.cloudinary.com/dcodt2el6/image/upload/v1700826137/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih.jpg"
             }
         })
-    
+        
+        const token = user.getJwtToken();
+        
         res.status(201).json({
              success:true,
-             user
+             token
              
         })
     }catch(error){
