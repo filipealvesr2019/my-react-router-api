@@ -2,7 +2,7 @@ const User = require("../models/user")
 
 
 // cadastro de usuarios => /api/v1/register
-exports.resgister = async (res, req, next) => {
+exports.registerUser = async (res, req, next) => {
     const { name, email, password } = req.body;
 
     const user = await User.create({

@@ -20,12 +20,10 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     avatar: {
-        public_id: {
-            type: String,
-            required: true,
-        },
-        required: [true, "Avatar is required"],
-    },
+        type: [String], // or any other type for your array elements
+        required: true,
+      }
+      ,
     url: {
         type: String,
         required: [true, "URL is required"],
