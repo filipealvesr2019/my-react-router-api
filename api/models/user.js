@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
         select: false,
     },
     avatar: {
-        type: [String], // or any other type for your array elements
+        type: String, // or any other type for your array elements
         required: true,
       }
       ,
