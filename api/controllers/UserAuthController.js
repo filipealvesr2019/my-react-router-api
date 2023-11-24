@@ -1,5 +1,6 @@
 const User = require("../models/user")
 const validator = require("validator");
+const sendToken = require("../utils/jwtToken");
 
 
 // cadastro de usuarios => /api/v1/register
@@ -35,13 +36,8 @@ exports.registerUser = async (req, res, next) => {
             }
         })
         
-        const token = user.getJwtToken();
         
-        res.status(201).json({
-             success:true,
-             token
-             
-        })
+    sendToken(user, 200, res)
     }catch(error){
         console.error("Erro, ao cadastrar usuario" ,error);
         res.status(500).json({
@@ -83,9 +79,5 @@ exports.loginUser = async(req, res, next) => {
         })
     }
 
-    const token = user.getJwtToken();
-    res.status(200).json({
-        success:true,
-        token
-    })
+    sendToken(user, 200, res)
 } 
