@@ -17,8 +17,8 @@ const userSchema = new mongoose.Schema({
     }, 
     password:{
         type:String,
-        required: [true, "Digite uma senha"],
-        minLegth:[10, "Digite uma senha de minimo 10 caracteres"],
+        required:[true, "Digite uma senha"],
+        minLength:[10, "Digite uma senha de minimo 10 caracteres"],
         selected:false
     },
     avatar:{

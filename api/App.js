@@ -16,7 +16,10 @@ app.use('/', routes);
 
 
 const products = require('./routes/products')
+const auth = require('./routes/AuthUser')
+
 app.use('/api/v1', products)
+app.use('/api/v1', auth)
 app.use(express.json());
 
 
