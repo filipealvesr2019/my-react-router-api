@@ -1,4 +1,5 @@
 const User = require("../models/user")
+const validator = require("validator");
 
 
 // cadastro de usuarios => /api/v1/register
@@ -19,11 +20,11 @@ exports.registerUser = async (req, res, next) => {
         })
     }
 
-    if(!email || validator.isEmail(email)){
+    if (!email || !validator.isEmail(email)) {
         return res.status(400).json({
-            success:false,
-            error:"Digite um endereço de email válido."
-        })
+            success: false,
+            error: "Digite um endereço de email válido.",
+        });
     }
 
     try{
