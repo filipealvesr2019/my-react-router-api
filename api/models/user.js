@@ -15,12 +15,13 @@ const userSchema = new mongoose.Schema({
         validate:[validator.isEmail, "Digite um endereço de email valido"]
 
     }, 
-    password:{
-        type:String,
-        required:[true, "Digite uma senha"],
-        minLength:[10, "Digite uma senha de minimo 10 caracteres"],
-        selected:false
+    password: {
+        type: String,
+        required: [true, "Digite uma senha"],
+        minlength: [10, "Digite uma senha de no mínimo 10 caracteres"],
+        select: false
     },
+    
     avatar:{
         public_id:String,
         required: true
