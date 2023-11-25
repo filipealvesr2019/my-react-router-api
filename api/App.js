@@ -10,14 +10,16 @@ require('dotenv').config();
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
 // Rotas
 const routes = require('./routes/AuthRoutes');
 app.use('/', routes);
 
 
 const products = require('./routes/products')
+const auth = require('./routes/AuthUser')
+
 app.use('/api/v1', products)
+app.use('/api/v1', auth)
 app.use(express.json());
 
 

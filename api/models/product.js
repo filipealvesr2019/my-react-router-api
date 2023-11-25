@@ -60,7 +60,8 @@ const productSchema = new mongoose.Schema({
                 "Roupa Masculinas",
                 "Roupa Femininas",
                 "Roupas para Menina",
-                "Roupas para Menino"
+                "Roupas para Menino",
+                "Calças"
             ],
             message:"Digite a categoria certa para o produto"
         }
