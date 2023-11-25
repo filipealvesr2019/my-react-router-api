@@ -6,7 +6,7 @@ const sendToken = require("../utils/jwtToken");
 
 // cadastro de usuarios => /api/v1/register
 const registerUser = async (req, res, next) => {
-  const { email, password, role} = req.body;
+  const { email, password} = req.body;
   
   if(password.length < 10){
       return res.status(400).json({
@@ -26,7 +26,7 @@ const registerUser = async (req, res, next) => {
 
   try{
       const user = await User.create({
-          email, password,role,  avatar:{
+          email, password, role ,  avatar:{
               publica_id: "/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih",
               url:"https://res.cloudinary.com/dcodt2el6/image/upload/v1700826137/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih.jpg"
           }
