@@ -46,13 +46,14 @@ const registerUser = async (req, res, next) => {
 }
 
 // logar usuario com JWT token
-
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
-  
-  
+
+  console.log('Tentativa de login com:', email, password);
+
   // verifica se o usuario esta logado com email e senha
   if (!email || !password) {
+    console.log('Email ou senha ausentes');
     return res.status(400).json({
       success: false,
       error: "Email e senha são obrigatórios.",
@@ -63,6 +64,7 @@ const loginUser = async (req, res, next) => {
   const user = await User.findOne({ email }).select("+password +role");
 
   if (!user) {
+    console.log('Usuário não encontrado');
     return res.status(401).json({
       success: false,
       error: "Email ou senha inválidos.",
@@ -73,6 +75,7 @@ const loginUser = async (req, res, next) => {
   const isPasswordMatch = user.comparePassword(password);
 
   if (!isPasswordMatch) {
+    console.log('Senha incorreta');
     return res.status(401).json({
       success: false,
       error: "Email ou senha inválidos.",
@@ -91,6 +94,7 @@ const loginUser = async (req, res, next) => {
   }
 
   // Envie o token para o usuário
+  console.log('Enviando token para o usuário');
   sendToken(user, 200, res);
 };
 
