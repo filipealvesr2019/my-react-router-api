@@ -6,7 +6,7 @@ const sendToken = require("../utils/jwtToken");
 
 // cadastro de usuarios => /api/v1/register
 const registerUser = async (req, res, next) => {
-  const { email, password, role} = req.body;
+  const { email, password} = req.body;
   
   if(password.length < 10){
       return res.status(400).json({
