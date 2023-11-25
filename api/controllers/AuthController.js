@@ -6,7 +6,7 @@ const sendToken = require("../utils/jwtToken");
 
 // cadastro de usuarios => /api/v1/register
 const registerUser = async (req, res, next) => {
-  const { email, password} = req.body;
+  const { email, password, role} = req.body;
   
   if(password.length < 10){
       return res.status(400).json({
@@ -46,37 +46,53 @@ const registerUser = async (req, res, next) => {
 }
 
 // logar usuario com JWT token
-const loginUser = async(req, res, next) => {
-  const {email, password, role} =  req.body;
+// logar usuario com JWT token
+// logar usuario com JWT token
+const loginUser = async (req, res, next) => {
+  const { email, password } = req.body;
 
   // verifica se o usuario esta logado com email e senha
-  if(!email || !password){
-      return res.status(400).json({
-          success:false,
-          error:"Email e senha são obrigatórios."
-      })
+  if (!email || !password) {
+    return res.status(400).json({
+      success: false,
+      error: "Email e senha são obrigatórios.",
+    });
   }
 
   // procurando usuario no banco de dados
-  const user =  await  User.findOne({email}).select("+ password")
-  if(!user){
-      return res.status(401).json({
-          success:false,
-          error:"Email ou senha invalida."
-      })
+  const user = await User.findOne({ email }).select("+password +role");
+
+  if (!user) {
+    return res.status(401).json({
+      success: false,
+      error: "Email ou senha inválidos.",
+    });
   }
 
-  // verifica se a senha esta correta ou não
-  const isPasswordMatch = user.comparePassword(password)
-  if(!isPasswordMatch){
-      return res.status(401).json({
-          success:false,
-          error:"Email ou senha invalida."
-      })
+  // verifica se a senha está correta ou não
+  const isPasswordMatch = user.comparePassword(password);
+
+  if (!isPasswordMatch) {
+    return res.status(401).json({
+      success: false,
+      error: "Email ou senha inválidos.",
+    });
   }
 
-  sendToken(user, 200, res)
-} 
+  // Agora, dependendo do papel (role) do usuário, você pode realizar ações específicas
+  if (user.role === "administrador") {
+    // Lógica para administrador
+    console.log("Usuário é um administrador");
+    // Adicione aqui as ações específicas para o administrador
+  } else if (user.role === "funcionario") {
+    // Lógica para funcionário
+    console.log("Usuário é um funcionário");
+    // Adicione aqui as ações específicas para o funcionário
+  }
+
+  // Envie o token para o usuário
+  sendToken(user, 200, res);
+};
 
 
 const getUser = async (req, res) => {
