@@ -46,8 +46,7 @@ const registerUser = async (req, res, next) => {
 }
 
 // logar usuario com JWT token
-// logar usuario com JWT token
-// logar usuario com JWT token
+
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
 
