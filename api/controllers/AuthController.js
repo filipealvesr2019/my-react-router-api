@@ -49,7 +49,8 @@ const registerUser = async (req, res, next) => {
 
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
-
+  
+  
   // verifica se o usuario esta logado com email e senha
   if (!email || !password) {
     return res.status(400).json({
