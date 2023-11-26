@@ -105,7 +105,7 @@ exports.forgotPassword = async (req, res, next) => {
     // url de recuperação de senha
     const resetUrl = `${req.protocal}://${req.get("host")}/api/v1/password/reset/${resetToken }`
     const message = `Este o seu codigo de recuperaçao de senha:\n\n${resetUrl}\n\nif voçe não tiver solicitado esse codigo de recuperação de senha ignore ele.`
-    try{
+    try {
         await sendEmail({
             email: user.email,
             subject: 'joice ecommerce recuperação de senha',
@@ -114,9 +114,9 @@ exports.forgotPassword = async (req, res, next) => {
 
         res.status(200).json({
             success:true,
-            Error:`Email de recuperação de senha enviado com sucesso para: ${user.email}`
+            message:`Email de recuperação de senha enviado com sucesso para: ${user.email}`
         })
-    }catch(error){
+    } catch (error){
         user.resetPasswordToken = undefined;
         user.resetPasswordExpire = undefined;
 
@@ -124,7 +124,7 @@ exports.forgotPassword = async (req, res, next) => {
 
         return res.status(500).json({
             success:false,
-            Error:`ERRO no envio do email de recuperação e email: ${user.email}`
+            error:"Erro na solicitação de envio de recuperção de email"
         })
 
 
