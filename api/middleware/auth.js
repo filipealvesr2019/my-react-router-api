@@ -20,4 +20,5 @@ exports.isAuthenticatedUser = async (req, res, next) =>{
 }
 
 
-// autenticação do admin
+// autenticação do usuario 
+
