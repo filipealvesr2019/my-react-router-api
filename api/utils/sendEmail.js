@@ -3,7 +3,7 @@ const nodemailer = require("nodemailer");
 
 const sendEmail = async options => {
     const transporter = nodemailer.createTransport({
-        host: sandbox.smtp.mailtrap.io,
+        host: smtp.ethereal.email,
         port: 2525,
         auth: {
           user: process.env.SMTP_EMAIL,
