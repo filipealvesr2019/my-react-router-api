@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken")
 const User = require("../models/AuthUser")
-
+const user =  require("../models/user")
 // verifica se o usuario esta autenticado
 exports.isAuthenticatedUser = async (req, res, next) =>{
 
@@ -21,15 +21,3 @@ exports.isAuthenticatedUser = async (req, res, next) =>{
 
 
 // autenticação do admin
-exports.authorizeRoles = (...roles) => {
-    return (req, res, next) => {
-        if(!roles.includes(req.user.roles)){
-            return res.status(403).json({
-                success:false,
-                error:`O Usuario ${req.user.roles} não esta autoridado para acessar essa pagina`
-            })
-        }
-
-        next()
-    }
-}

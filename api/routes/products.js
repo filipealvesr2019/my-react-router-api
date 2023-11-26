@@ -10,9 +10,9 @@ const {
 } = require("../controllers/productController");
 
 
-const { isAuthenticatedUser,  authorizeRoles } = require("../middleware/auth")
+const { isAuthenticatedUser,   authorizeAdmin } = require("../middleware/auth")
 
-router.route("/products").get(isAuthenticatedUser, authorizeRoles("admin"), getProducts);
+router.route("/products").get(isAuthenticatedUser, getProducts);
 router.route("/product/:id").get(getSingleProduct);
 
 router.route("/admin/product/new").post(isAuthenticatedUser, newProduct);

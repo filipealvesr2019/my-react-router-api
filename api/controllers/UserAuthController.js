@@ -95,3 +95,4 @@ exports.logout = async (req, res, next) =>{
         message:"Deslogado"
     })
 }
+
