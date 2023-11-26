@@ -18,3 +18,18 @@ exports.isAuthenticatedUser = async (req, res, next) =>{
 
     next()
 }
+
+
+// autenticação do admin
+exports.authorizeRoles = (...roles) => {
+    return (req, res, next) => {
+        if(!roles.includes(req.user.roles)){
+            return res.status(403).json({
+                success:false,
+                error:`O Usuario ${req.user.roles} não esta autoridado para acessar essa pagina`
+            })
+        }
+
+        next()
+    }
+}
