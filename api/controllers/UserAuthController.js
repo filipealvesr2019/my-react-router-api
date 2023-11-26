@@ -103,7 +103,7 @@ exports.forgotPassword = async (req, res, next) => {
     await user.save({validateBeforeSave:false})
 
     // url de recuperação de senha
-    const resetUrl = `${req.protocal}://${req.get("host")}/api/v1/password/reset/${resetToken }`
+    const resetUrl = `${req.protocol}://${req.get("host")}/api/v1/password/reset/${resetToken }`
     const message = `Este o seu codigo de recuperaçao de senha:\n\n${resetUrl}\n\nif voçe não tiver solicitado esse codigo de recuperação de senha ignore ele.`
     try {
         await sendEmail({
