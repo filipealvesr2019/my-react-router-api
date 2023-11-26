@@ -8,6 +8,15 @@ const sendEmail = require("../utils/sendEmail");
 exports.registerUser = async (req, res, next) => {
     const { name, email, password} = req.body;
     
+
+    const existingUser = await User.findOne({email})
+    if(existingUser){
+        return res.status(400).json({
+            success:false,
+            error:"Usuário com este email já existe."
+        })
+    }
+    
     if(password.length < 10){
         return res.status(400).json({
             success:false,
@@ -37,7 +46,7 @@ exports.registerUser = async (req, res, next) => {
             }
         })
         
-        
+     
     sendToken(user, 200, res)
     }catch(error){
         console.error("Erro, ao cadastrar usuario" ,error);
