@@ -107,7 +107,7 @@ exports.logout = async (req, res, next) => {
 
 // get all users => /api/v1/admin/users
 exports.allUsers = async (req, res, next) => {
-
+     
     const users = await User.find();
 
     res.status(200).json({
@@ -135,3 +135,50 @@ exports.getUserDetails = async (req, res, next) => {
 
     
 }
+
+
+
+// update admin
+exports.updateAdminProfile = async (req, res, next) => {
+    const newUserData  = {
+        name:req.body.name,
+        email:req.body.email,
+        role:req.body.role
+    }   
+    const user = await User.findByIdAndUpdate(req.params.id, newUserData, {
+        new:true,
+        runValidators:true,
+        useFindAndModify:false
+    })
+
+    // Responde à requisição com um status 200 (OK) e envia um objeto JSON contendo sucesso (success: true) e os dados do usuário encontrado.
+    res.status(200).json({
+        success: true,
+        user
+    })
+}
+
+
+exports.deleteAdminProfile = async (req, res, next) => {
+    const user =  await User.findById(req.params.id);
+
+    if(!user){
+        return  res.status(400).json({
+            success: false,
+            error:"Erro ao deletar usuario com esse id"
+          });
+    }
+    
+    // remover avatar do cloundnary
+    
+    await user.deleteOne()
+    res.status(200).json({
+        success: true,
+        user
+      });
+
+    
+}
+
+
+
