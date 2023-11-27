@@ -3,10 +3,13 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const errorHandler = require('./errorHandler/errorHandler');
 
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+app.use(errorHandler);
+
 require('dotenv').config();
 
 // Configurações e middlewares
