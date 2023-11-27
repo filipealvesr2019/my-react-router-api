@@ -1,19 +1,18 @@
 const Order = require("../models/order");
-const Product = require("../models/product");
 
 // fazer um novo pedido => /api/v1/order/new
 exports.newOrder = async (req, res, next) => {
-    const {
-        orderItems,
-        shopingInfo,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-        paymentInfo
-    } = req.body;
-
     try {
+        const {
+            orderItems,
+            shopingInfo,
+            itemsPrice,
+            taxPrice,
+            shippingPrice,
+            totalPrice,
+            paymentInfo
+        } = req.body;
+
         const order = await Order.create({
             orderItems,
             shopingInfo,
@@ -22,10 +21,10 @@ exports.newOrder = async (req, res, next) => {
             shippingPrice,
             totalPrice,
             paymentInfo: {
-                id: Date.now().toString(), // Assuming you want to use a timestamp as the payment ID
-                status: paymentInfo.status // Assuming status is provided in the request payload
+                id: Date.now().toString(),
+                status: paymentInfo.status
             },
-            paidAt: Date.now(), // Set paidAt to the current date and time
+            paidAt: Date.now(),
             user: req.user_id
         });
 
@@ -35,9 +34,15 @@ exports.newOrder = async (req, res, next) => {
         });
     } catch (error) {
         console.error('Error creating order:', error);
-        res.status(500).json({
-            success: false,
-            error: 'Error creating order'
-        });
+
+        // Check if headers are already sent before sending the response
+        if (!res.headersSent) {
+            res.status(500).json({
+                success: false,
+                error: 'Error creating order'
+            });
+        } else {
+            console.error('Headers already sent, unable to send error response.');
+        }
     }
 };
