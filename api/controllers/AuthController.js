@@ -171,5 +171,18 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// deslogar um usuario api/v1/logout
+const logout = async (req, res, next) =>{
+  res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly:true,
+  })
+
+  res.status(200).json({
+      success:true,
+      message:"Deslogado"
+  })
+}
+
 module.exports = {  loginUser,
-  registerUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers  };
+  registerUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers, logout  };
