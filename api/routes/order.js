@@ -1,19 +1,25 @@
 const express = require("express");
 const router = express.Router();
 
-
+const userController = require("../controllers/CustumeEcommerce");
+const orderController = require("../controllers/orderController");
 const {
     newOrder
-} = require("../controllers/ordersController");
+} = require("../controllers/orderController");
 
 
 const { isAuthenticatedUser } = require("../middleware/auth")
 
-router.route("/products").get( );
-router.route("/product/:id").get();
+
 
 router.route("/order/new").post(isAuthenticatedUser, newOrder);
-router.route("/admin/product/:id").put(isAuthenticatedUser,);
-router.route("/admin/product/:id").delete(isAuthenticatedUser,);
+// Rotas de usuário
+router.post('/users/create', userController.createUser);
+router.get('/users/getAll', userController.getAllUsers);
+
+// Rotas de pedido
+router.post('/orders/create', isAuthenticatedUser, orderController.createOrder);
+router.route("/order/new").post(isAuthenticatedUser, orderController.createOrder);
+
 
 module.exports = router;

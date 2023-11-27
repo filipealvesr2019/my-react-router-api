@@ -8,4 +8,5 @@ router.post("/custume", userController.createUser);
 // Rota para obter todos os usuários
 router.get("/custume", userController.getAllUsers);
 
+
 module.exports = router;
