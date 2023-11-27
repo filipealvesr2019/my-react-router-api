@@ -1,6 +1,4 @@
 const Order = require("../models/order");
-
-const User = require("../models/CustumeModel");
 // fazer um novo pedido => /api/v1/order/new
 exports.newOrder = async (req, res, next) => {
     try {
