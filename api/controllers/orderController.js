@@ -53,12 +53,26 @@ exports.getSingleOrder = async (req, res) => {
 
     // Verificar se o pedido pertence ao usuário logado
     const order = await Order.findOne({ _id: orderId, user: req.user_id });
+    
+
+    let totalAmount = 0;
+
+
+  
+        if(order.orderItems && order.orderItems.length > 0){
+            order.orderItems.forEach((item) => {
+                totalAmount += item.price * item.quantity;
+            })
+           
+        }
+
+
 
     if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
-    res.status(200).json({ success: true, order });
+    res.status(200).json({ success: true,totalAmount, order });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
