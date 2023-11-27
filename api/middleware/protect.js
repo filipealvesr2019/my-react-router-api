@@ -3,8 +3,6 @@ const User = require('../models/UserRole');
 
 const protect = async (req, res, next) => {
     let token;
-    console.log('Token:', token);
-    console.log('User Role:', req.user.role);
     // Verificar se o token está presente nos cabeçalhos
     if (
         req.headers.authorization &&
