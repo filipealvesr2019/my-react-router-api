@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+const { v4: uuidv4 } = require('uuid');
 const orderShema = mongoose.Schema({
     shopingInfo:{
         address:{
@@ -25,7 +25,7 @@ const orderShema = mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
         required:true,
-        ref:"User"
+        ref:"Custume"
     },
 
     orderItems:[
@@ -56,7 +56,8 @@ const orderShema = mongoose.Schema({
     ],
     paymentInfo:{
         id:{
-            type:String
+            type: String,
+            default: uuidv4(),  // Gera um UUID único
         },
         status:{
             type:String

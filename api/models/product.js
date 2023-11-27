@@ -99,7 +99,7 @@ const productSchema = new mongoose.Schema({
         default:Date.now
     }
 
-        
+    
 })
 
 
