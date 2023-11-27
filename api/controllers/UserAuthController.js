@@ -121,7 +121,7 @@ exports.getUserDetails = async (req, res, next) => {
     const user =  await User.findById(req.params.id);
 
     if(!user){
-        return  res.status(200).json({
+        return  res.status(400).json({
             success: false,
             error:"Usuario não encontrado com esse id"
           });
