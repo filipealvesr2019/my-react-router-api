@@ -15,8 +15,8 @@ const { logout } = require('../controllers/UserAuthController');
 const { isAuthenticatedUser } = require("../middleware/auth")
 
 router.get('/users', getAllUsers); // Rota para buscar todos os usuários
-router.post('/login',isAuthenticatedUser,  loginUser); // Use directly from AuthController
-router.post('/user',isAuthenticatedUser,  protect, registerUser); // Use directly from AuthController
+router.post('/login',  loginUser); // Use directly from AuthController
+router.post('/user',  registerUser); // Use directly from AuthController
 router.get('/user/:id', getUser); // Rota para buscar usuário por ID
 router.put('/user/:id',isAuthenticatedUser,  updateUser); // Rota para atualizar usuário por ID
 router.delete('/user/:id',isAuthenticatedUser,  deleteUser); // Rota para excluir usuário por ID
