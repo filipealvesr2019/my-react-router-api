@@ -20,8 +20,10 @@ app.use(cookieParser());
 
 // Rotas
 const routes = require('./routes/AuthRoutes');
+const orders = require('./routes/order');
 app.use('/', routes);
 
+app.use('/', orders);
 
 const products = require('./routes/products')
 const auth = require('./routes/AuthUser')

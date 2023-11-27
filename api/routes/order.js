@@ -21,5 +21,4 @@ router.get('/users/getAll', userController.getAllUsers);
 router.post('/orders/create', isAuthenticatedUser, orderController.createOrder);
 router.route("/order/new").post(isAuthenticatedUser, orderController.createOrder);
 
-
 module.exports = router;
