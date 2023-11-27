@@ -69,19 +69,6 @@ UserRole.methods.getJwtToken = function () {
 }
 
 
-// gerar token para rezetar a senha
-UserRole.methods.getResetPasswordToken =  function () {
-    // gerar token
-    const resetToken = crypto.randomBytes(20).toString("hex");
-
-    // hash senha e envia devolta token de recuperção de senha
-    this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex")
-
-    // tempo de duração do token 
-    this.resetPasswordExpire = Date.now() + 30 * 60 * 1000
-
-    return resetToken;
-}
 
 
 
