@@ -115,3 +115,23 @@ exports.allUsers = async (req, res, next) => {
         users
       });
 }
+
+
+exports.getUserDetails = async (req, res, next) => {
+    const user =  await User.findById(req.params.id);
+
+    if(!user){
+        return  res.status(200).json({
+            success: false,
+            error:"Usuario não encontrado com esse id"
+          });
+    }
+
+
+    res.status(200).json({
+        success: true,
+        user
+      });
+
+    
+}
