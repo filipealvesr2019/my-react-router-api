@@ -85,11 +85,11 @@ const loginUser = async (req, res, next) => {
   // Agora, dependendo do papel (role) do usuário, você pode realizar ações específicas
   if (user.role === "administrador") {
     // Lógica para administrador
-    console.log("Usuário é um administrador");
+
     // Adicione aqui as ações específicas para o administrador
   } else if (user.role === "funcionario") {
     // Lógica para funcionário
-    console.log("Usuário é um funcionário");
+
     // Adicione aqui as ações específicas para o funcionário
   }
 
