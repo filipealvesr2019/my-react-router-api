@@ -150,3 +150,27 @@ async function  updateStock(id, quantity){
 
   await product.save({validateBeforeSave:false});
 }
+
+
+// Obter informações sobre um pedido específico por ID
+exports.deleteOrder = async (req, res) => {
+  const orderId = req.params.id;  // Corrigido para usar req.params.id
+  console.log("Order ID:", orderId);
+
+const order = await Order.findById(orderId);
+
+if (!order) {
+  return res.status(404).json({ error: "Pedido não encontrado." });
+}
+
+try {
+  // Tentar excluir o pedido
+  await Order.deleteOne({ _id: orderId, user: req.user_id });
+
+  res.status(200).json({ success: true });
+} catch (error) {
+  // Lidar com erros específicos da operação de exclusão
+  res.status(500).json({ error: "Erro ao excluir o pedido." });
+}
+
+};
