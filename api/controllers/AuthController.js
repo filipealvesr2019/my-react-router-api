@@ -26,7 +26,7 @@ const registerUser = async (req, res, next) => {
 
   try{
       const user = await User.create({
-          email, password,role,  avatar:{
+          email, password, role ,  avatar:{
               publica_id: "/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih",
               url:"https://res.cloudinary.com/dcodt2el6/image/upload/v1700826137/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih.jpg"
           }
@@ -46,37 +46,57 @@ const registerUser = async (req, res, next) => {
 }
 
 // logar usuario com JWT token
-const loginUser = async(req, res, next) => {
-  const {email, password, role} =  req.body;
+const loginUser = async (req, res, next) => {
+  const { email, password } = req.body;
+
+
 
   // verifica se o usuario esta logado com email e senha
-  if(!email || !password){
-      return res.status(400).json({
-          success:false,
-          error:"Email e senha são obrigatórios."
-      })
+  if (!email || !password) {
+    console.log('Email ou senha ausentes');
+    return res.status(400).json({
+      success: false,
+      error: "Email e senha são obrigatórios.",
+    });
   }
 
   // procurando usuario no banco de dados
-  const user =  await  User.findOne({email}).select("+ password")
-  if(!user){
-      return res.status(401).json({
-          success:false,
-          error:"Email ou senha invalida."
-      })
+  const user = await User.findOne({ email }).select("+password +role");
+
+  if (!user) {
+    console.log('Usuário não encontrado');
+    return res.status(401).json({
+      success: false,
+      error: "Email ou senha inválidos.",
+    });
   }
 
-  // verifica se a senha esta correta ou não
-  const isPasswordMatch = user.comparePassword(password)
-  if(!isPasswordMatch){
-      return res.status(401).json({
-          success:false,
-          error:"Email ou senha invalida."
-      })
+  // verifica se a senha está correta ou não
+  const isPasswordMatch = user.comparePassword(password);
+
+  if (!isPasswordMatch) {
+    console.log('Senha incorreta');
+    return res.status(401).json({
+      success: false,
+      error: "Email ou senha inválidos.",
+    });
   }
 
-  sendToken(user, 200, res)
-} 
+  // Agora, dependendo do papel (role) do usuário, você pode realizar ações específicas
+  if (user.role === "administrador") {
+    // Lógica para administrador
+
+    // Adicione aqui as ações específicas para o administrador
+  } else if (user.role === "funcionario") {
+    // Lógica para funcionário
+
+    // Adicione aqui as ações específicas para o funcionário
+  }
+
+  // Envie o token para o usuário
+  console.log('Enviando token para o usuário');
+  sendToken(user, 200, res);
+};
 
 
 const getUser = async (req, res) => {
@@ -151,5 +171,18 @@ const getAllUsers = async (req, res) => {
   }
 };
 
+// deslogar um usuario api/v1/logout
+const logout = async (req, res, next) =>{
+  res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly:true,
+  })
+
+  res.status(200).json({
+      success:true,
+      message:"Deslogado"
+  })
+}
+
 module.exports = {  loginUser,
-  registerUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers  };
+  registerUser, getUser, updateUser, deleteUser, getUserByUsername, getAllUsers, logout  };

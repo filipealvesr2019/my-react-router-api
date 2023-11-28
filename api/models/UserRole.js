@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 const validator = require("validator");
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
-
+const crypto = require("crypto")
 
 const UserRole = new mongoose.Schema({
     name: {
@@ -67,5 +67,9 @@ UserRole.methods.getJwtToken = function () {
         expiresIn:process.env.JWT_DURATION
     });
 }
+
+
+
+
 
 module.exports = mongoose.model("UserRole", UserRole);

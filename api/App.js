@@ -1,25 +1,42 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+const errorHandler = require('./errorHandler/errorHandler');
+
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+app.use(errorHandler);
+
 require('dotenv').config();
 
 // Configurações e middlewares
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+
 // Rotas
 const routes = require('./routes/AuthRoutes');
+const orders = require('./routes/order');
 app.use('/', routes);
 
+app.use('/', orders);
 
 const products = require('./routes/products')
 const auth = require('./routes/AuthUser')
+const order = require('./routes/order')
+const userRoutes = require("./routes/CustumeRoutes");
 
-app.use('/api/v1', products)
-app.use('/api/v1', auth)
+
+app.use('/api', products)
+app.use('/api', auth)
+app.use('/api', order)
+app.use("/users", userRoutes);
+
+
 app.use(express.json());
 
 
