@@ -23,7 +23,7 @@ const protect = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
 
         // Verificar as permissões do usuário
-        if (req.user.role === 'admin' || req.user.role === 'funcionario') {
+        if (req.user.role === 'administrador' || req.user.role === 'funcionario') {
             // Se for admin ou funcionario, permitir o acesso
             next();
         } else {
