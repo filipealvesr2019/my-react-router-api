@@ -1,4 +1,5 @@
 const Order = require("../models/order");
+const Product = require("../models/product");
 // fazer um novo pedido => /api/v1/order/new
 exports.newOrder = async (req, res, next) => {
   try {
@@ -106,3 +107,46 @@ exports.getUserOrders = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+
+
+// update pedidos de compra
+
+exports.updateOrders = async (req, res) => {
+  try {
+    // Encontrar todos os pedidos do usuário logado
+    const order = await Order.findById(req.params.id);
+
+    if(order.orderStatus === "Produto enviado"){
+      return  res.status(400).json({
+        success: false,
+        error:"Você já processou esse pedido."
+      });
+    }
+
+    order.orderStatus = req.body.status,
+    order.deliverdAt = Date.now()
+
+    await order.save()
+
+    order.orderItems.forEach(async item => {
+      await updateStock(item.product, item.quantity)
+    })
+
+    res.status(200).json({
+      success: true,
+      message:"Produto processado com sucesso."
+      
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+
+async function  updateStock(id, quantity){
+  const product = await Product.findById(id);
+  product.stock = product.stock - quantity;
+
+  await product.save({validateBeforeSave:false});
+}
