@@ -155,7 +155,7 @@ async function  updateStock(id, quantity){
 // Obter informações sobre um pedido específico por ID
 exports.deleteOrder = async (req, res) => {
   const orderId = req.params.id;  // Corrigido para usar req.params.id
-  console.log("Order ID:", orderId);
+
 
 const order = await Order.findById(orderId);
 
