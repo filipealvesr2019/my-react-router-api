@@ -158,10 +158,29 @@ exports.createProductReview = async (req, res, next) => {
 // mostrar lista de reviews /api/reviews
 exports.getProductReviews = async (req, res, next) =>{
 
-  const product =  await Product.findById(req.query.id)
+  
+  try{
+    const product =  await Product.findById(req.query.id)
+    
+    if(!product){
+      return res.status(404).json({
+        success:false,
+        error:"Erro produto nao encontrado com esse id."
 
+      })
+    }
   res.status(200).json({
     success:true,
-    reviews: product.reviews
+    reviews: product.reviews || [],
   })
+
+  }
+  catch(error){
+    console.error("Erro ao obter avaliações do produto: ",error);
+    res.status(500).json({
+      success:false,
+      error:"Erro interno do servidor ao obter avaliações do produto."
+    })
+
+  }
 }
