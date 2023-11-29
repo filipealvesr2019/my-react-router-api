@@ -169,6 +169,7 @@ exports.getProductReviews = async (req, res, next) =>{
 
       })
     }
+
   res.status(200).json({
     success:true,
     reviews: product.reviews || [],
@@ -184,3 +185,54 @@ exports.getProductReviews = async (req, res, next) =>{
 
   }
 }
+
+exports.deleteReview = async (req, res, next) => {
+  try {
+    const productId = req.body.productId; // Ajuste conforme necessário
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Erro: produto não encontrado com esse ID.",
+      });
+    }
+
+    const reviews = product.reviews.filter(
+      (review) => review._id.toString() !== req.query.id.toString()
+    );
+
+    const numOfReviews = reviews.length;
+    const ratings =
+      numOfReviews > 0
+        ? product.reviews.reduce((acc, item) => item.rating + acc, 0) /
+          numOfReviews
+        : 0;
+
+    await Product.findByIdAndUpdate(
+      productId, // Use a variável productId em vez de req.query.productId
+      {
+        reviews,
+        ratings,
+        numOfReviews,
+      },
+      {
+        new: true,
+        runValidators: true,
+        useFindAndModify: false,
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Erro ao excluir avaliação do produto: ", error);
+    res.status(500).json({
+      success: false,
+      error:
+        "Erro interno do servidor ao excluir avaliação do produto.",
+    });
+  }
+};
