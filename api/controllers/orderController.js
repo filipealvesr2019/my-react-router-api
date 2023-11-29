@@ -174,3 +174,38 @@ try {
 }
 
 };
+
+
+// mostrar lista de reviews /api/reviews
+// Import necessary modules, including Product model
+
+const getProductReviews = async (req, res, next) => {
+  try {
+    const productId = req.query.id;
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: 'Product not found.',
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      reviews: product.reviews,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      success: false,
+      error: 'Internal Server Error.',
+    });
+  }
+};
+
+// Export the function
+module.exports = {
+  getProductReviews,
+  // other functions...
+};
