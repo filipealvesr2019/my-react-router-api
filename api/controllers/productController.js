@@ -128,7 +128,7 @@ exports.createProductReview = async (req, res, next) => {
   if(isReviewed){
     product.reviews.forEach(review => {
       if(review.user.toString() === req.user._id.toString()){
-        review.comment = comment;
+        review.Comment = comment;
         review.rating = rating;
       }
     })
