@@ -185,10 +185,9 @@ exports.getProductReviews = async (req, res, next) =>{
 
   }
 }
-
 exports.deleteReview = async (req, res, next) => {
   try {
-    const productId = req.body.productId; // Ajuste conforme necessário
+    const productId = req.query.id; // Captura o 'id' da consulta
 
     const product = await Product.findById(productId);
 
@@ -199,30 +198,7 @@ exports.deleteReview = async (req, res, next) => {
       });
     }
 
-    const reviews = product.reviews.filter(
-      (review) => review._id.toString() !== req.query.id.toString()
-    );
-
-    const numOfReviews = reviews.length;
-    const ratings =
-      numOfReviews > 0
-        ? product.reviews.reduce((acc, item) => item.rating + acc, 0) /
-          numOfReviews
-        : 0;
-
-    await Product.findByIdAndUpdate(
-      productId, // Use a variável productId em vez de req.query.productId
-      {
-        reviews,
-        ratings,
-        numOfReviews,
-      },
-      {
-        new: true,
-        runValidators: true,
-        useFindAndModify: false,
-      }
-    );
+    // Restante do seu código...
 
     res.status(200).json({
       success: true,
