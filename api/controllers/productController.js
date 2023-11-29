@@ -100,7 +100,7 @@ exports.deleteProduct = async (req, res, next) => {
 };
 
 
-// criar novo review => /api/review
+// criar/atualisar novo review => /api/review
 exports.createProductReview = async (req, res, next) => {
 
   const { rating, comment, productId } = req.body;
