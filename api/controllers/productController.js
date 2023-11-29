@@ -151,3 +151,17 @@ exports.createProductReview = async (req, res, next) => {
   })
 
 }
+
+
+
+// mostrar lista de reviews /api/reviews
+// mostrar lista de reviews /api/reviews
+exports.getProductReview = async (req, res, next) =>{
+
+  const product =  await Product.findById(req.query.id)
+
+  res.status(200).json({
+    success:true,
+    reviews: product.reviews
+  })
+}
