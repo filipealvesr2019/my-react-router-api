@@ -12,7 +12,7 @@ exports.newOrder = async (req, res, next) => {
       totalPrice,
       paymentInfo,
     } = req.body;
-
+    console.log("usuario existe? ", req.user_id)
     const order = await Order.create({
       orderItems,
       shopingInfo,

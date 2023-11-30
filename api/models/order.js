@@ -26,9 +26,7 @@ const orderShema = mongoose.Schema({
         required:true,
         ref:"UserRole"
 
-    }
-    ,
-
+    },
     orderItems:[
         {
             name:{
