@@ -22,6 +22,6 @@ router.get("/user/:id", getUser); // Rota para buscar usuário por ID
 router.put("/user/:id", isAuthenticatedUser, updateUser); // Rota para atualizar usuário por ID
 router.delete("/user/:id", isAuthenticatedUser, deleteUser); // Rota para excluir usuário por ID
 router.get("/user", getUserByUsername); // Rota para buscar usuário por nome de usuário
-router.route("/logout").post(Userlogout);
+router.route("/logout").post(isAuthenticatedUser, Userlogout);
 
 module.exports = router;
