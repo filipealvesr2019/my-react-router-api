@@ -14,8 +14,8 @@ exports.newProduct = async (req, res, next) => {
 // mostrar produtos => /api/v1/products
 exports.getProducts = async (req, res, next) => {
     
-    const resPerPage = 4;
-    const productCount = await Product.countDocuments;
+    const resPerPage = 8;
+    const productsCount = await Product.countDocuments;
     const apiFeatures = new APIFeatures(Product.find(), req.query)
         .search()
         .filter()
@@ -23,11 +23,14 @@ exports.getProducts = async (req, res, next) => {
   
     const products = await apiFeatures.query; // Chame query como uma função assíncrona
 
-    res.status(200).json({
+    setTimeout(() => {
+      res.status(200).json({
         success: true,
-        productCount,
+        productsCount,
         products,
     })
+    }, 2000)
+   
 };
 
 // mostrar produto especifico por id => /api/v1/product/:id
