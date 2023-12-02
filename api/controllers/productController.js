@@ -23,13 +23,12 @@ exports.getProducts = async (req, res, next) => {
   
     const products = await apiFeatures.query; // Chame query como uma função assíncrona
 
-    setTimeout(() => {
       res.status(200).json({
         success: true,
         productsCount,
         products,
     })
-    }, 2000)
+ 
    
 };
 
