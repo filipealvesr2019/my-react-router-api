@@ -24,4 +24,7 @@ router.get("/order/:orderId", isAuthenticatedUser, orderController.getSingleOrde
 
 // Rota para obter todos os pedidos do usuário logado
 router.get("/orders", isAuthenticatedUser, orderController.getUserOrders);
+router.put("/order/:id", isAuthenticatedUser, orderController.updateOrders);
+router.delete("/order/:id", isAuthenticatedUser, orderController.deleteOrder);
+
 module.exports = router;

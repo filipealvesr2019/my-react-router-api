@@ -11,11 +11,11 @@ exports.newProduct = async (req, res, next) => {
   });
 };
 
-// mostrar produtos => /api/v1/products
+// mostrar produtos => /api/products
 exports.getProducts = async (req, res, next) => {
     
-    const resPerPage = 4;
-    const productCount = await Product.countDocuments;
+    const resPerPage = 8;
+    const productsCount = await Product.countDocuments();
     const apiFeatures = new APIFeatures(Product.find(), req.query)
         .search()
         .filter()
@@ -23,12 +23,19 @@ exports.getProducts = async (req, res, next) => {
   
     const products = await apiFeatures.query; // Chame query como uma função assíncrona
 
-    res.status(200).json({
+      res.status(200).json({
         success: true,
-        count: products.length,
-        productCount,
+        productsCount,
+        resPerPage,
         products,
+
+        
     })
+
+
+    
+ 
+   
 };
 
 // mostrar produto especifico por id => /api/v1/product/:id
@@ -95,6 +102,120 @@ exports.deleteProduct = async (req, res, next) => {
       success: false,
       message: "Erro ao deletar Produto",
       error: error.message,
+    });
+  }
+};
+
+
+// criar/atualisar novo review => /api/review
+exports.createProductReview = async (req, res, next) => {
+
+  const { rating, comment, productId } = req.body;
+
+  const review = {
+
+    user:req.user._id,
+    name:req.user.name,
+    rating:Number(rating),
+    comment
+  }
+
+  const product =  await Product.findById(productId);
+  if(!product){
+    return res.status(404).json({
+      success:false,
+      error:"id do Produto não existe"
+    })
+  }
+  const isReviewed =
+  Array.isArray(product.reviews) &&
+  product.reviews.find(
+    (r) => r && r.user && r.user.toString() === req.user._id.toString()
+  );
+  if(isReviewed){
+    product.reviews.forEach(review => {
+      if(review.user.toString() === req.user._id.toString()){
+        review.Comment = comment;
+        review.rating = rating;
+      }
+    })
+
+  } else {
+    product.reviews.push(review);
+    product.numOfReviews = product.reviews.length
+  }
+
+  product.ratings = product.reviews.reduce((acc, item) => item.rating + acc, 0) / product;
+  review.length
+
+  await product.save({
+    validateBeforeSave:false
+  })
+
+  res.status(200).json({
+    success:true,
+    message:"review enviado com sucesso"
+  })
+
+}
+
+
+
+// mostrar lista de reviews /api/reviews
+// mostrar lista de reviews /api/reviews
+exports.getProductReviews = async (req, res, next) =>{
+
+  
+  try{
+    const product =  await Product.findById(req.query.id)
+    
+    if(!product){
+      return res.status(404).json({
+        success:false,
+        error:"Erro produto nao encontrado com esse id."
+
+      })
+    }
+
+  res.status(200).json({
+    success:true,
+    reviews: product.reviews || [],
+  })
+
+  }
+  catch(error){
+    console.error("Erro ao obter avaliações do produto: ",error);
+    res.status(500).json({
+      success:false,
+      error:"Erro interno do servidor ao obter avaliações do produto."
+    })
+
+  }
+}
+exports.deleteReview = async (req, res, next) => {
+  try {
+    const productId = req.query.id; // Captura o 'id' da consulta
+
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        error: "Erro: produto não encontrado com esse ID.",
+      });
+    }
+
+    // Restante do seu código...
+
+    res.status(200).json({
+      success: true,
+    });
+  } catch (error) {
+    console.error("Erro ao excluir avaliação do produto: ", error);
+    res.status(500).json({
+      success: false,
+      error:
+        "Erro interno do servidor ao excluir avaliação do produto.",
     });
   }
 };
