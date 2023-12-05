@@ -11,11 +11,11 @@ exports.newProduct = async (req, res, next) => {
   });
 };
 
-// mostrar produtos => /api/v1/products
+// mostrar produtos => /api/products
 exports.getProducts = async (req, res, next) => {
     
     const resPerPage = 8;
-    const productsCount = await Product.countDocuments;
+    const productsCount = await Product.countDocuments();
     const apiFeatures = new APIFeatures(Product.find(), req.query)
         .search()
         .filter()
@@ -26,8 +26,14 @@ exports.getProducts = async (req, res, next) => {
       res.status(200).json({
         success: true,
         productsCount,
+        resPerPage,
         products,
+
+        
     })
+
+
+    
  
    
 };
