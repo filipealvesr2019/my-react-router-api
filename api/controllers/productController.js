@@ -11,7 +11,7 @@ exports.newProduct = async (req, res, next) => {
   });
 };
 
-
+// mostrar produtos => /api/products
 // mostrar produtos => /api/products
 exports.getProducts = async (req, res, next) => {
     try {
