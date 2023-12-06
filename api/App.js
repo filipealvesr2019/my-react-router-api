@@ -8,6 +8,8 @@ const errorHandler = require('./errorHandler/errorHandler');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+
+const cloudinary = require("cloudinary")
 app.use(errorHandler);
 
 require('dotenv').config();
@@ -35,6 +37,13 @@ app.use('/api', products)
 app.use('/api', auth)
 app.use('/api', order)
 app.use("/users", userRoutes);
+// cloudinary config
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET
+});
+app.use(bodyParser.urlencoded({extended:true}))
 
 
 app.use(express.json());

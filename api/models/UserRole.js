@@ -23,7 +23,7 @@ const UserRole = new mongoose.Schema({
         select: false,
     },
     avatar: {
-        publica_id:{
+        public_id:{
             type: String, // or any other type for your array elements
             required: true,
         },
