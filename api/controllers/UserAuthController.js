@@ -5,6 +5,13 @@ const sendToken = require("../utils/jwtToken");
 // cadastro de usuarios => /api/v1/register
 exports.registerUser = async (req, res, next) => {
   const { name, email, password } = req.body;
+  if (!password) {
+    return res.status(400).json({
+      success: false,
+      error: "A senha é obrigatória.",
+    });
+  }
+
 
   const existingUser = await User.findOne({ email });
   if (existingUser) {
@@ -12,6 +19,7 @@ exports.registerUser = async (req, res, next) => {
       success: false,
       error: "Usuário com este email já existe.",
     });
+    
   }
 
   if (password.length < 10) {
