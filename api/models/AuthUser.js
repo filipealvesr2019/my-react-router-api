@@ -25,17 +25,6 @@ const userSchema = new mongoose.Schema({
       validator: validateRole,
       message: "Digite uma credencial válida!",
     },
-  },
-  avatar: {
-    publica_id:{
-        type: String, // or any other type for your array elements
-        required: true,
-    },
-
-    url: {
-        type: String,
-        required: [true, "URL is required"],
-    },
   }
 });
 
