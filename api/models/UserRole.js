@@ -22,18 +22,6 @@ const UserRole = new mongoose.Schema({
         minLength: [10, "Digite uma senha de no mínimo 10 caracteres"],
         select: false,
     },
-    avatar: {
-        public_id:{
-            type: String, // or any other type for your array elements
-            required: true,
-        },
-    
-        url: {
-            type: String,
-            required: [true, "URL is required"],
-        },
-      }
-      ,
     role: {
         type: String,
         default: "UserRole",

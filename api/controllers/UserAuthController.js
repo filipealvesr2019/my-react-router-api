@@ -1,16 +1,9 @@
 const User = require("../models/UserRole");
 const validator = require("validator");
 const sendToken = require("../utils/jwtToken");
-const cloudinary = require("cloudinary");
+
 // cadastro de usuarios => /api/v1/register
 exports.registerUser = async (req, res, next) => {
-
-  const result =  await cloudinary.v2.uploader.update(req.body.avatar, {
-    folder:"avatars",
-    width:150,
-    crop:"scale"
-  })
-
   const { name, email, password } = req.body;
 
   const existingUser = await User.findOne({ email });
@@ -48,8 +41,8 @@ exports.registerUser = async (req, res, next) => {
       email,
       password,
       avatar: {
-        public_id: result.public_id,
-        url: result.secure_url,
+        publica_id: "/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih",
+        url: "https://res.cloudinary.com/dcodt2el6/image/upload/v1700826137/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih.jpg",
       },
     });
 
