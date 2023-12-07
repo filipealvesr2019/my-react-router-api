@@ -22,10 +22,6 @@ const UserRole = new mongoose.Schema({
         minLength: [10, "Digite uma senha de no mínimo 10 caracteres"],
         select: false,
     },
-    role: {
-        type: String,
-        default: "UserRole",
-    },
     create: {
         type: Date,
         default: Date.now,
