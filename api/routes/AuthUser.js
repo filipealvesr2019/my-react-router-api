@@ -9,13 +9,17 @@ const {
   allUsers,
   getUserDetails,
   updateAdminProfile,
-  deleteAdminProfile
+  deleteAdminProfile,
+   userDetails,
+   AuthenticatedUser
 } = require("../controllers/UserAuthController");
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").get(logout);
-router.route("/admin/user/:id").put(updateAdminProfile, isAuthenticatedUser);
+router.get("/userDetails", isAuthenticatedUser,AuthenticatedUser,  userDetails);
 
+
+router.route("/admin/user/:id").put(updateAdminProfile, isAuthenticatedUser);
 router.route("/admin/users").get(allUsers, isAuthenticatedUser);
 router.route("/admin/user/:id")
 .get(getUserDetails, isAuthenticatedUser)

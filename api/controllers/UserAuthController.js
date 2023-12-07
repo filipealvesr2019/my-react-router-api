@@ -189,4 +189,46 @@ exports.deleteAdminProfile = async (req, res, next) => {
 }
 
 
+// Middleware para verificar se o usuário está autenticado
+exports.AuthenticatedUser = async (req, res, next) => {
+  const { token } = req.cookies;
+
+  if (!token) {
+      return res.status(401).json({
+          success: false,
+          error: "Acesso negado. Faça login para acessar esta página."
+      });
+  }
+
+  try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      req.user = await User.findById(decoded.id);
+      next();
+  } catch (error) {
+      return res.status(401).json({
+          success: false,
+          error: "Token de autenticação inválido."
+      });
+  }
+};
+
+// Rota para obter detalhes do usuário logado
+exports.userDetails = async (req, res, next) => {
+  try {
+      // O middleware já terá verificado a autenticação, então você pode acessar o usuário diretamente
+      const loggedInUser = req.user;
+
+      res.status(200).json({
+          success: true,
+          user: loggedInUser
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          error: "Erro interno do servidor."
+      });
+  }
+};
+
+
 
