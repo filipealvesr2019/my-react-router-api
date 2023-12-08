@@ -1,6 +1,8 @@
 const User = require("../models/UserRole");
 const validator = require("validator");
 const sendToken = require("../utils/jwtToken");
+const crypto = require('crypto');
+const nodemailer = require('nodemailer');
 
 // cadastro de usuarios => /api/v1/register
 exports.registerUser = async (req, res, next) => {
@@ -211,3 +213,55 @@ exports.AuthenticatedUser = async (req, res, next) => {
       });
   }
 };
+
+
+// ... outras importações
+
+exports.forgotPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    // Verificar se o usuário existe
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'Usuário não encontrado com esse e-mail.',
+      });
+    }
+
+    // Gerar token de redefinição de senha e definir a expiração
+    const resetToken = generateResetToken();
+    user.resetPasswordToken = resetToken;
+    user.resetPasswordExpire = Date.now() + 3600000; // Token expira em 1 hora
+    await user.save();
+
+    
+// Configurar o transporte do e-mail
+const transporter = nodemailer.createTransport({
+  service: 'sandbox.smtp.mailtrap.io',
+  auth: {
+    user: 'usuario',
+    pass: 'senha',
+  },
+});
+
+
+    res.status(200).json({
+      success: true,
+      message: 'Um e-mail de recuperação de senha foi enviado.',
+    });
+  } catch (error) {
+    console.error('Erro ao solicitar recuperação de senha', error);
+    res.status(500).json({
+      success: false,
+      error: 'Erro interno do servidor.',
+    });
+  }
+};
+
+// Função para gerar token de redefinição de senha
+function generateResetToken() {
+  return crypto.randomBytes(20).toString('hex');
+}
