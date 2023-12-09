@@ -235,3 +235,24 @@ exports.deleteReview = async (req, res, next) => {
     });
   }
 };
+
+
+
+// mostrar produtos => /api/products
+exports.getAdminProducts = async (req, res, next) => {
+  try {
+     
+
+      const products = await Product.find();
+
+      res.status(200).json({
+          success: true,
+          products
+      });
+  } catch (error) {
+      res.status(500).json({
+          success: false,
+          error: error.message
+      });
+  }
+};

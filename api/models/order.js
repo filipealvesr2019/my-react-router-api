@@ -22,10 +22,8 @@ const orderShema = mongoose.Schema({
         },
     },
     user:{
-        type:mongoose.Schema.Types.ObjectId,
-        required:true,
-        ref:"UserRole"
-
+        type:String,
+        required:true
     },
     orderItems:[
         {
