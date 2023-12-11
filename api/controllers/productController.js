@@ -1,16 +1,54 @@
 const Product = require("../models/product");
 const APIFeatures = require("../utils/APIFeatures");
+const multer = require('multer');
+const cloudinary = require('cloudinary').v2;  // Importe a biblioteca Cloudinary
+// Configuração do Cloudinary
+cloudinary.config({
+  cloud_name: 'dcodt2el6',
+  api_key: '688568877724347',
+  api_secret: 'GoNox7oqH9no6YtkXq05yBFOuFk'
+});
 
-// criar produto => /api/v1/product/new
+// Configuração do Multer para upload de imagens em memória
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+// criar produto => /api/admin/product/new
+// criar produto => /api/admin/product/new
 exports.newProduct = async (req, res, next) => {
-  
-  const product = await Product.create(req.body);
-  res.status(201).json({
-    success: true,
-    product,
-  });
-};
+  try {
+    // Cria o produto no banco de dados
+    const product = await Product.create(req.body);
+    console.log('Dados recebidos:', product);
 
+    // Se houver uma imagem no corpo da solicitação
+    if (req.file) {
+      const result = await cloudinary.uploader.upload(req.file.buffer.toString('base64'), {
+        folder: 'products',  // Substitua pelo nome da sua pasta no Cloudinary
+      });
+
+      // Adiciona a imagem ao array de imagens do produto
+      product.images.push({
+        public_id: result.public_id,
+        url: result.secure_url
+      });
+
+      // Salva as alterações no produto com a nova imagem
+      await product.save();
+    }
+
+    console.log('Produto salvo no banco de dados.');
+    res.status(201).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Erro ao salvar o produto no banco de dados:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
 // mostrar produtos => /api/products
 // mostrar produtos => /api/products
 exports.getProducts = async (req, res, next) => {
@@ -238,21 +276,3 @@ exports.deleteReview = async (req, res, next) => {
 
 
 
-// mostrar produtos => /api/products
-exports.getAdminProducts = async (req, res, next) => {
-  try {
-     
-
-      const products = await Product.find();
-
-      res.status(200).json({
-          success: true,
-          products
-      });
-  } catch (error) {
-      res.status(500).json({
-          success: false,
-          error: error.message
-      });
-  }
-};

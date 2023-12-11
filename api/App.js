@@ -3,6 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
 const errorHandler = require('./errorHandler/errorHandler');
 
 const mongoose = require('mongoose');
@@ -23,20 +25,28 @@ app.use(cookieParser());
 // Rotas
 const routes = require('./routes/AuthRoutes');
 const orders = require('./routes/order');
-app.use('/', routes);
 
-app.use('/', orders);
 
 const products = require('./routes/products')
 const auth = require('./routes/AuthUser')
 const order = require('./routes/order')
 const userRoutes = require("./routes/CustumeRoutes");
+const category = require('./routes/category');
 
 
+app.post('/api/upload', upload.single('file'), (req, res) => {
+  // req.file contém as informações do arquivo enviado
+  // Faça o que for necessário, como salvar o caminho da imagem no banco de dados
+  const filePath = req.file.path;
+  res.status(200).send('Upload bem-sucedido!');
+});
 app.use('/api', products)
 app.use('/api', auth)
 app.use('/api', order)
+app.use('/api', category)
 app.use("/users", userRoutes);
+app.use('/', routes);
+app.use('/', orders);
 // cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
