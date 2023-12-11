@@ -1,61 +1,65 @@
 const mongoose = require("mongoose");
 
 const productSchema = new mongoose.Schema({
-    name: {
+  name: {
+    type: String,
+    required: [true, 'Entre o nome do Produto'],
+    trim: true,
+    maxLength: [100, 'O Produto não pode exceder 100 palavras'],
+  },
+  price: {
+    type: Number,
+    required: [true, 'Digite o preço'],
+    maxLength: [5, 'O preço não pode exceder 5 numeros'],
+    default: 0.0,
+  },
+  description: {
+    type: String,
+    required: [true, 'Digite a descrição'],
+  },
+  images: [
+    {
+      public_id: {
         type: String,
-        required: [true, 'Entre o nome do Produto'],
-        trim: true,
-        maxLength: [100, 'O Produto não pode exceder 100 palavras']
-    },
-    price: {
-        type: Number,
-        required: [true, 'Digite o preço'],
-        maxLength: [5, 'O preço não pode exceder 5 numeros'],
-        default: 0.0
-    },
-    description: {
+        required: true,
+      },
+      url: {
         type: String,
-        required: [true, 'Digite a descrição']
+        required: true,
+      },
     },
-    images: [
-        {
-            public_id: {
-                type: String,
-                required: true
-            },
-            url: {
-                type: String,
-                required: true
-            },
-        }
-    ],
-    color: {
-        type: String,
-        required: [true, "Digite a cor do Produto"]
+  ],
+  color: {
+    type: String,
+    required: [true, "Digite a cor do Produto"],
+  },
+  size: {
+    type: String,
+    required: [true, "Digite o tamanho do produto "],
+  },
+  category: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    required: [true, "Selecione a categoria do Produto"],
+  },
+  subcategories: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Subcategory',
     },
-    size: {
-        type: String,
-        required: [true, "Digite o tamanho do produto "]
-    },
-    categories: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Category',
-            required: [true, "Selecione a categoria do Produto"]
-        }
-    ],
-    inStock: {
-        type: Boolean,
-        default: true,
-    },
-    quantity: {
-        type: Number,
-        default: 1,
-    },
-    createdAt: {
-        type: Date,
-        default: Date.now
-    },
+  ],
+  inStock: {
+    type: Boolean,
+    default: true,
+  },
+  quantity: {
+    type: Number,
+    default: 1,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
 module.exports = mongoose.model('Product', productSchema);
