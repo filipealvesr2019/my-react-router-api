@@ -1,4 +1,4 @@
-const User = require("../models/UserRole");
+const User = require("../models/Customer");
 const validator = require("validator");
 const sendToken = require("../utils/jwtToken");
 const crypto = require('crypto');

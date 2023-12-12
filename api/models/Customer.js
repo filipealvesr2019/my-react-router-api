@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
 const crypto = require("crypto")
 
-const UserRole = new mongoose.Schema({
+const Customer = new mongoose.Schema({
     name: {
         type: String,
         required: [true, "Digite o seu nome."],
@@ -22,6 +22,12 @@ const UserRole = new mongoose.Schema({
         minLength: [10, "Digite uma senha de no mínimo 10 caracteres"],
         select: false,
     },
+    orders: [
+        {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Order',
+        },
+      ],
     create: {
         type: Date,
         default: Date.now,
@@ -31,13 +37,13 @@ const UserRole = new mongoose.Schema({
 });
 
 // comparar senhas de usuario
-UserRole.methods.comparePassword = async function (gotPassword){
+Customer.methods.comparePassword = async function (gotPassword){
     return await bcrypt.compare(gotPassword, this.password)
 }
 
 
 // criptografando a senha antes de salva o email e senha do usuario
-UserRole.pre('save', async function(next){
+Customer.pre('save', async function(next){
     if(!this.isModified("password")){
         next()
     }
@@ -46,7 +52,7 @@ UserRole.pre('save', async function(next){
 })
 
 // JWT token
-UserRole.methods.getJwtToken = function () {
+Customer.methods.getJwtToken = function () {
     return jwt.sign({id:this._id}, process.env.JWT_SECRET, {
         expiresIn:process.env.JWT_DURATION
     });
@@ -56,4 +62,4 @@ UserRole.methods.getJwtToken = function () {
 
 
 
-module.exports = mongoose.model("UserRole", UserRole);
+module.exports = mongoose.model("Customer", Customer);

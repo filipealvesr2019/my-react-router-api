@@ -11,7 +11,7 @@ const {
   updateAdminProfile,
   deleteAdminProfile,
   forgotPassword
-} = require("../controllers/UserAuthController");
+} = require("../controllers/CustomerController");
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").get(logout);

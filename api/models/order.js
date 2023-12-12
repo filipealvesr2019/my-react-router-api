@@ -1,101 +1,93 @@
 const mongoose = require("mongoose");
 const { v4: uuidv4 } = require('uuid');
-const orderShema = mongoose.Schema({
-    shopingInfo:{
-        address:{
-            type:String,
-            required:true
-        },
-        city:{
-            type:String,
-            required:true
-        },
-        phoneNumber:{
-            type:String        },
-        postalCode:{
-            type:String,
-            required:true
-        },
-        country:{
-            type:String,
-            required:true
-        },
-    },
-    userId:{
-        type:String,
-        required:true
-    },
-    orderItems:[
-        {
-            name:{
-                type:String,
-                required:true
-            },
-            quantity:{
-                type:Number,
-                required:true
-            },
-            image:{
-                type:String,
-                required:true
-            },
-            price:{
-                type:Number,
-                required:true
-            },
-            product:{
-                type:mongoose.Schema.Types.ObjectId,
-                required:true,
-                ref:"Product"
-            },
 
-        }
-    ],
-    paymentInfo:{
-        id:{
-            type: String,
-            default: uuidv4(),  // Gera um UUID único
-        },
-        status:{
-            type:String
-        }
+const orderSchema = mongoose.Schema({
+  shoppingInfo: {  // Corrigido de shopingInfo para shoppingInfo
+    country: {
+      type: String,
+      required: [true, "O país é obrigatório."]
     },
-    paidAt:{
-        type:Date
+    postalCode: {
+      type: String,
+      required: [true, "O código postal é obrigatório."]
     },
-
-    itemsPrice:{
-        type:Number,
-        required:true,
-        default:0.0
+    city: {
+      type: String,
+      required: [true, "A cidade é obrigatória."]
     },
-    taxPrice:{
-        type:Number,
-        required:true,
-        default:0.0
+    state: {
+      type: String,
+      required: [true, "O estado é obrigatório."]
     },
-    shippingPrice:{
-        type:Number,
-        required:true,
-        default:0.0
-    },
-    totalPrice:{
-        type:Number,
-        required:true,
-        default:0.0
-    },
-    orderStatus:{
-        type:String,
-        required:true,
-        default:"Processando..."
-    },
-    deliverdAt:{
-        type:Date
-    },
-    createAt:{
-        type:Date,
-        default:Date.now()
+    address: {
+      type: String,
+      required: [true, "O endereço é obrigatório."]
     }
-})
+  },
+  customer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Customer',
+    required: [true, "O cliente é obrigatório."]
+  },
+  orderItems: [
+    {
+      name: {
+        type: String,
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      },
+      image: {
+        type: String,
+        required: true
+      },
+      price: {
+        type: Number,
+        required: true
+      },
+      product: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: "Product"
+      },
+    }
+  ],
+  paymentInfo: {
+    id: {
+      type: String,
+      default: uuidv4(),
+    },
+    status: {
+      type: String
+    }
+  },
+  paidAt: {
+    type: Date
+  },
+  shippingFee: {
+    type: Number,
+    required: true,
+    default: 0.0
+  },
+  totalPrice: {
+    type: Number,
+    required: true,
+    default: 0.0
+  },
+  orderStatus: {
+    type: String,
+    required: true,
+    default: "Processando..."
+  },
+  deliveredAt: {
+    type: Date
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now()
+  }
+});
 
-module.exports = mongoose.model("Order", orderShema)
+module.exports = mongoose.model("Order", orderSchema);

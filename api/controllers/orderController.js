@@ -1,31 +1,42 @@
+const Customer = require("../models/Customer");
 const Order = require("../models/order");
 const Product = require("../models/product");
-// fazer um novo pedido => /api/v1/order/new
+
+// Criar um novo pedido => /api/v1/order/new
 exports.newOrder = async (req, res, next) => {
   try {
     const {
       orderItems,
       shopingInfo,
       itemsPrice,
-      taxPrice,
-      shippingPrice,
+      shippingFee,
       totalPrice,
       paymentInfo,
     } = req.body;
-    console.log("usuario existe? ", req.user_id)
+
+    const customerId = req.user._id;  // Obtenha o ID do cliente autenticado
+
+    // Certifique-se de que o ID do cliente é válido
+    const customer = await Customer.findById(customerId);
+    if (!customer) {
+      return res.status(400).json({
+        success: false,
+        error: 'Cliente não encontrado.',
+      })
+    }
+
     const order = await Order.create({
       orderItems,
       shopingInfo,
       itemsPrice,
-      taxPrice,
-      shippingPrice,
+      shippingFee,
       totalPrice,
       paymentInfo: {
         id: Date.now().toString(),
         status: paymentInfo.status,
       },
       paidAt: Date.now(),
-      user: req.user_id,
+      customer: customerId,  // Associando o cliente ao pedido
     });
 
     res.status(200).json({
@@ -33,19 +44,68 @@ exports.newOrder = async (req, res, next) => {
       order,
     });
   } catch (error) {
-    console.error("Error creating order:", error);
-
-    // Check if headers are already sent before sending the response
-    if (!res.headersSent) {
-      res.status(500).json({
-        success: false,
-        error: "Error creating order",
-      });
-    } else {
-      console.error("Headers already sent, unable to send error response.");
-    }
+    console.error('Error creating order:', error);
+    res.status(500).json({
+      success: false,
+      error: 'Error creating order',
+    });
   }
 };
+exports.createOrder = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const {
+      orderItems,
+      shoppingInfo,
+      itemsPrice,
+      shippingFee,
+      totalPrice,
+      paymentInfo,
+      paidAt,
+    } = req.body;
+
+    // Verifica se o usuário existe
+    const user = await Customer.findById(userId);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: "Usuário não encontrado com esse ID.",
+      });
+    }
+
+    // Crie o pedido associado ao usuário
+    const order = await Order.create({
+      orderItems,
+      shoppingInfo,
+      itemsPrice,
+      shippingFee,
+      totalPrice,
+      paymentInfo: {
+        id: Date.now().toString(),
+        status: paymentInfo.status,
+      },
+      paidAt: Date.now(),
+      customer: userId,  // Corrigido para usar userId
+      // ... outros atributos do pedido
+    });
+
+    // Adicione o ID do pedido ao array de pedidos do usuário
+    user.orders.push(order._id);
+    await user.save();
+
+    res.status(201).json({
+      success: true,
+      order,
+    });
+  } catch (error) {
+    console.error("Erro ao criar pedido", error);
+    res.status(500).json({
+      success: false,
+      error: "Erro interno do servidor.",
+    });
+  }
+};
+
 
 // Obter informações sobre um pedido específico por ID
 exports.getSingleOrder = async (req, res) => {
@@ -174,5 +234,8 @@ try {
 }
 
 };
+
+
+
 
 

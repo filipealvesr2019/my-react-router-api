@@ -28,9 +28,8 @@ const orders = require('./routes/order');
 
 
 const products = require('./routes/products')
-const auth = require('./routes/AuthUser')
+const auth = require('./routes/Customer')
 const order = require('./routes/order')
-const userRoutes = require("./routes/CustumeRoutes");
 const category = require('./routes/category');
 
 
@@ -44,7 +43,7 @@ app.use('/api', products)
 app.use('/api', auth)
 app.use('/api', order)
 app.use('/api', category)
-app.use("/users", userRoutes);
+
 app.use('/', routes);
 app.use('/', orders);
 // cloudinary config
