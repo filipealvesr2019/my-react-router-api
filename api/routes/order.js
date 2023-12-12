@@ -3,7 +3,6 @@ const router = express.Router();
 
 const orderController = require("../controllers/orderController");
 const {
-    newOrder,
     createOrder
 } = require("../controllers/orderController");
 
@@ -13,7 +12,6 @@ const { isAuthenticatedUser } = require("../middleware/auth")
 
 // Rotas de pedido
 
-router.route("/order/new").post(isAuthenticatedUser, newOrder);
 
 // Rota para obter informações sobre um pedido específico por ID
 router.get("/order/:orderId", isAuthenticatedUser, orderController.getSingleOrder);

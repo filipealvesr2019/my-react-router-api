@@ -2,55 +2,8 @@ const Customer = require("../models/Customer");
 const Order = require("../models/order");
 const Product = require("../models/product");
 
-// Criar um novo pedido => /api/v1/order/new
-exports.newOrder = async (req, res, next) => {
-  try {
-    const {
-      orderItems,
-      shopingInfo,
-      itemsPrice,
-      shippingFee,
-      totalPrice,
-      paymentInfo,
-    } = req.body;
+// Criar um novo pedido => /user/:userId/orders
 
-    const customerId = req.user._id;  // Obtenha o ID do cliente autenticado
-
-    // Certifique-se de que o ID do cliente é válido
-    const customer = await Customer.findById(customerId);
-    if (!customer) {
-      return res.status(400).json({
-        success: false,
-        error: 'Cliente não encontrado.',
-      })
-    }
-
-    const order = await Order.create({
-      orderItems,
-      shopingInfo,
-      itemsPrice,
-      shippingFee,
-      totalPrice,
-      paymentInfo: {
-        id: Date.now().toString(),
-        status: paymentInfo.status,
-      },
-      paidAt: Date.now(),
-      customer: customerId,  // Associando o cliente ao pedido
-    });
-
-    res.status(200).json({
-      success: true,
-      order,
-    });
-  } catch (error) {
-    console.error('Error creating order:', error);
-    res.status(500).json({
-      success: false,
-      error: 'Error creating order',
-    });
-  }
-};
 exports.createOrder = async (req, res, next) => {
   try {
     const { userId } = req.params;
