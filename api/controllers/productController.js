@@ -3,11 +3,7 @@ const APIFeatures = require("../utils/APIFeatures");
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;  // Importe a biblioteca Cloudinary
 // Configuração do Cloudinary
-cloudinary.config({
-  cloud_name: 'dcodt2el6',
-  api_key: '688568877724347',
-  api_secret: 'GoNox7oqH9no6YtkXq05yBFOuFk'
-});
+
 
 // Configuração do Multer para upload de imagens em memória
 const storage = multer.memoryStorage();
