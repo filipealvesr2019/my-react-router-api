@@ -20,6 +20,7 @@ require('dotenv').config();
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+const frete = require('frete');
 
 
 // Rotas
@@ -33,12 +34,16 @@ const order = require('./routes/order')
 const category = require('./routes/category');
 
 
+
 app.post('/api/upload', upload.single('file'), (req, res) => {
   // req.file contém as informações do arquivo enviado
   // Faça o que for necessário, como salvar o caminho da imagem no banco de dados
   const filePath = req.file.path;
   res.status(200).send('Upload bem-sucedido!');
 });
+
+
+
 app.use('/api', products)
 app.use('/api', auth)
 app.use('/api', order)

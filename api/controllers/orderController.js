@@ -2,6 +2,7 @@ const Customer = require("../models/Customer");
 const Order = require("../models/order");
 const Product = require("../models/product");
 
+
 // Criar um novo pedido => /user/:userId/orders
 
 exports.createOrder = async (req, res, next) => {
@@ -12,9 +13,9 @@ exports.createOrder = async (req, res, next) => {
       shoppingInfo,
       itemsPrice,
       shippingFee,
-      totalPrice,
+
       paymentInfo,
-      paidAt,
+      taxPrice,
     } = req.body;
 
     // Verifica se o usuário existe
@@ -32,13 +33,13 @@ exports.createOrder = async (req, res, next) => {
       shoppingInfo,
       itemsPrice,
       shippingFee,
-      totalPrice,
+      taxPrice,
       paymentInfo: {
         id: Date.now().toString(),
         status: paymentInfo.status,
       },
       paidAt: Date.now(),
-      customer: userId,  // Corrigido para usar userId
+      customer: userId, // Corrigido para usar userId
       // ... outros atributos do pedido
     });
 
@@ -58,8 +59,6 @@ exports.createOrder = async (req, res, next) => {
     });
   }
 };
-
-
 // Obter informações sobre um pedido específico por ID
 exports.getSingleOrder = async (req, res) => {
   try {
@@ -67,26 +66,28 @@ exports.getSingleOrder = async (req, res) => {
 
     // Verificar se o pedido pertence ao usuário logado
     const order = await Order.findOne({ _id: orderId, user: req.user_id });
-    
 
     let totalAmount = 0;
 
+    if (order.orderItems && order.orderItems.length > 0) {
+      order.orderItems.forEach((item) => {
+        totalAmount += item.price * item.quantity;
+      });
+    }
 
-  
-        if(order.orderItems && order.orderItems.length > 0){
-            order.orderItems.forEach((item) => {
-                totalAmount += item.price * item.quantity;
-            })
-           
-        }
+    // Adicionar taxas hardcoded ao totalAmount
+    const tax = 5; // Substitua pelo valor desejado
+    totalAmount += tax;
 
-
+    // Adicionar valor do frete hardcoded ao totalAmount
+    const frete = 10; // Substitua pelo valor desejado
+    totalAmount += frete;
 
     if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
-    res.status(200).json({ success: true,totalAmount, order });
+    res.status(200).json({ success: true, totalAmount, order });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -100,16 +101,20 @@ exports.getUserOrders = async (req, res) => {
 
     let totalAmount = 0;
 
-
     orders.forEach((order) => {
-        if(order.orderItems && order.orderItems.length > 0){
-            order.orderItems.forEach((item) => {
-                totalAmount += item.price * item.quantity;
-            })
-           
-        }
-
+      if (order.orderItems && order.orderItems.length > 0) {
+        order.orderItems.forEach((item) => {
+          totalAmount += item.price * item.quantity;
+        });
+      }
     });
+
+    const taxPriceHardcoded = 5; // Substitua pelo valor desejado
+    totalAmount += taxPriceHardcoded;
+
+    // Adicionar valor do frete hardcoded ao totalAmount
+    const freteHardcoded = 10; // Substitua pelo valor desejado
+    totalAmount += freteHardcoded;
 
     res.status(200).json({
       success: true,
@@ -121,8 +126,6 @@ exports.getUserOrders = async (req, res) => {
   }
 };
 
-
-
 // update pedidos de compra
 
 exports.updateOrders = async (req, res) => {
@@ -130,65 +133,54 @@ exports.updateOrders = async (req, res) => {
     // Encontrar todos os pedidos do usuário logado
     const order = await Order.findById(req.params.id);
 
-    if(order.orderStatus === "Produto enviado"){
-      return  res.status(400).json({
+    if (order.orderStatus === "Produto enviado") {
+      return res.status(400).json({
         success: false,
-        error:"Você já processou esse pedido."
+        error: "Você já processou esse pedido.",
       });
     }
 
-    order.orderStatus = req.body.status,
-    order.deliverdAt = Date.now()
+    (order.orderStatus = req.body.status), (order.deliverdAt = Date.now());
 
-    await order.save()
+    await order.save();
 
-    order.orderItems.forEach(async item => {
-      await updateStock(item.product, item.quantity)
-    })
+    order.orderItems.forEach(async (item) => {
+      await updateStock(item.product, item.quantity);
+    });
 
     res.status(200).json({
       success: true,
-      message:"Produto processado com sucesso."
-      
+      message: "Produto processado com sucesso.",
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 };
 
-
-async function  updateStock(id, quantity){
+async function updateStock(id, quantity) {
   const product = await Product.findById(id);
   product.stock = product.stock - quantity;
 
-  await product.save({validateBeforeSave:false});
+  await product.save({ validateBeforeSave: false });
 }
-
 
 // Obter informações sobre um pedido específico por ID
 exports.deleteOrder = async (req, res) => {
-  const orderId = req.params.id;  // Corrigido para usar req.params.id
+  const orderId = req.params.id; // Corrigido para usar req.params.id
 
+  const order = await Order.findById(orderId);
 
-const order = await Order.findById(orderId);
+  if (!order) {
+    return res.status(404).json({ error: "Pedido não encontrado." });
+  }
 
-if (!order) {
-  return res.status(404).json({ error: "Pedido não encontrado." });
-}
+  try {
+    // Tentar excluir o pedido
+    await Order.deleteOne({ _id: orderId, user: req.user_id });
 
-try {
-  // Tentar excluir o pedido
-  await Order.deleteOne({ _id: orderId, user: req.user_id });
-
-  res.status(200).json({ success: true });
-} catch (error) {
-  // Lidar com erros específicos da operação de exclusão
-  res.status(500).json({ error: "Erro ao excluir o pedido." });
-}
-
+    res.status(200).json({ success: true });
+  } catch (error) {
+    // Lidar com erros específicos da operação de exclusão
+    res.status(500).json({ error: "Erro ao excluir o pedido." });
+  }
 };
-
-
-
-
-
