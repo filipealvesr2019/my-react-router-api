@@ -3,7 +3,6 @@ const validator = require("validator");
 const sendToken = require("../utils/jwtToken");
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const jwt = require('jsonwebtoken');
 
 // cadastro de usuarios => /api/v1/register
 exports.registerUser = async (req, res, next) => {
@@ -238,26 +237,17 @@ exports.forgotPassword = async (req, res, next) => {
     user.resetPasswordExpire = Date.now() + 3600000; // Token expira em 1 hora
     await user.save();
 
-    // Configurar o transporte do e-mail para o Umbler (SMTP)
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.umbler.com',
-      port: 587,
-      secure: false,
-      auth: {
-        user: process.env.UMBLER_EMAIL, // Substitua com seu endereço de e-mail completo
-        pass: process.env.UMBLER_PASSWORD, // Substitua com sua senha de e-mail
-      },
-    });
+    
+// Configurar o transporte do e-mail
+const transport = nodemailer.createTransport({
+  host: "sandbox.smtp.mailtrap.io",
+  port: 2525,
+  auth: {
+    user: process.env.USER_MAILTRAP ,
+    pass: process.env.PASSWORD_MAILTRAP 
+  }
+});
 
-    // Configurar informações do e-mail
-    const mailOptions = {
-      from: 'joice@joycestore.com.br',      to: user.email,
-      subject: 'Recuperação de Senha',
-      text: `Você solicitou a recuperação de senha. Clique no seguinte link para redefinir sua senha: ${resetToken}`,
-    };
-
-    // Enviar e-mail
-    await transporter.sendMail(mailOptions);
 
     res.status(200).json({
       success: true,
@@ -276,3 +266,7 @@ exports.forgotPassword = async (req, res, next) => {
 function generateResetToken() {
   return crypto.randomBytes(20).toString('hex');
 }
+
+
+
+
