@@ -69,7 +69,8 @@ exports.registerUser = async (req, res, next) => {
 // logar usuario com JWT token
 exports.loginUser = async (req, res, next) => {
   const { email, password } = req.body;
-
+  
+  
   // verifica se o usuario esta logado com email e senha
   if (!email || !password) {
     return res.status(400).json({
@@ -78,12 +79,25 @@ exports.loginUser = async (req, res, next) => {
     });
   }
 
+  if(!password){
+    return "senha ou email incoreta!"
+  }
+
   // procurando usuario no banco de dados
   const user = await User.findOne({ email }).select("+ password");
   if (!user) {
     return res.status(401).json({
       success: false,
       error: "Email ou senha invalida.",
+    });
+  }
+  
+
+  // Verifica se o usuário está temporariamente bloqueado devido a muitas tentativas de login incorretas
+  if (user.lockUntil > Date.now()) {
+    return res.status(401).json({
+      success: false,
+      error: `Você excedeu o número máximo de tentativas de login. Tente novamente após ${calculateRemainingLockTime(user.lockUntil)} minutos.`,
     });
   }
 
@@ -112,8 +126,10 @@ exports.logout = async (req, res, next) => {
   });
 };
 
-
-// admin routes
+function calculateRemainingLockTime(lockUntil) {
+  const remainingTime = Math.ceil((lockUntil - Date.now()) / 60000); // Calcula o tempo restante em minutos
+  return remainingTime;
+}
 
 // get all users => /api/v1/admin/users
 exports.allUsers = async (req, res, next) => {
