@@ -104,6 +104,19 @@ exports.loginUser = async (req, res, next) => {
   // verifica se a senha esta correta ou não
   const isPasswordMatch = user.comparePassword(password);
   if (!isPasswordMatch) {
+    user.loginAttempts += 1;
+    await user.save();
+  }
+
+  // ...
+
+  // Se a senha estiver incorreta após 3 tentativas, bloqueie temporariamente o usuário por 1 hora
+  if (!isPasswordMatch && user.loginAttempts >= 3) {
+    user.lockUntil = Date.now() + 3600000; // Bloqueado por 1 hora
+    user.loginAttempts = 0; // Reinicia o contador de tentativas de login
+    await user.save();
+  }
+  if (!isPasswordMatch) {
     return res.status(401).json({
       success: false,
       error: "Email ou senha invalida.",
