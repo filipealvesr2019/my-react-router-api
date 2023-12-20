@@ -68,7 +68,7 @@ const loginUser = async (req, res, next) => {
   }
 
   // verifica se a senha está correta ou não
-  const isPasswordMatch = user.comparePassword(password);
+  const isPasswordMatch = await user.comparePassword(password);
 
   if (!isPasswordMatch) {
     console.log("Senha incorreta");
