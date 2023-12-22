@@ -15,7 +15,8 @@
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.9.7",
     "uuid": "^9.0.1",
-    "validator": "^13.11.0"
+    "validator": "^13.11.0",
+    "vercel": "^33.0.1"
   },
   "scripts": {
     "dev": "nodemon App.js"
