@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
 });
 
 function validateRole(value) {
-  const allowedRoles = ["administrador", "funcionario"];
+  const allowedRoles = ["administrador","Gerente", "funcionario"];
   return allowedRoles.includes(value);
 }
 userSchema.methods.comparePassword = async function (gotPassword){
