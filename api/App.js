@@ -32,7 +32,7 @@ const products = require('./routes/products')
 const auth = require('./routes/Customer')
 const order = require('./routes/order')
 const category = require('./routes/category');
-
+const subcategory = require('./routes/Subcategory');
 
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
@@ -48,7 +48,7 @@ app.use('/api', products)
 app.use('/api', auth)
 app.use('/api', order)
 app.use('/api', category)
-
+app.use('/api', subcategory)
 app.use('/', routes);
 app.use('/', orders);
 // cloudinary config

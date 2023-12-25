@@ -6,7 +6,6 @@ const categoriesController = require('../controllers/categoriesController'); // 
 // Rota para adicionar nova categoria
 router.post('/admin/category/new', categoriesController.newCategory);
 router.get('/categories', categoriesController.getAllCategories);
-
 router.get('/categories/:categoryId', categoriesController.getCategoryById);
 router.post('/categories/:categoryId/subcategories', categoriesController.createSubcategory);
 
