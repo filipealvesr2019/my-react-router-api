@@ -1,4 +1,6 @@
 const Product = require("../models/product");
+const Category = require('../models/category');  // Certifique-se de que o caminho do modelo está correto
+
 const APIFeatures = require("../utils/APIFeatures");
 const multer = require('multer');
 const cloudinary = require('cloudinary').v2;  // Importe a biblioteca Cloudinary
@@ -271,4 +273,46 @@ exports.deleteReview = async (req, res, next) => {
 };
 
 
+// Obter produtos por categoria e subcategorias
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
 
+    // Use o método `populate` para preencher os documentos na matriz de subcategorias
+    const category = await Category.findById(categoryId).populate('subcategories').exec();
+
+    if (!category) {
+      return res.status(404).json({ message: 'Categoria não encontrada.' });
+    }
+
+    // Agora, para cada subcategoria, popule os produtos
+    const productsByCategory = await Promise.all(
+      category.subcategories.map(async (subcategory) => {
+        const products = await Product.find({ subcategories: subcategory._id });
+        return {
+          subcategory,
+          products,
+        };
+      })
+    );
+
+    res.status(200).json({ success: true, productsByCategory });
+  } catch (error) {
+    console.error('Erro ao obter produtos por categoria:', error);
+    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+  }
+};
+
+
+// Obter produtos por subcategoria
+exports.getProductsBySubcategory = async (req, res) => {
+  try {
+    const subcategoryId = req.params.subcategoryId;
+    const products = await Product.find({ subcategories: subcategoryId });
+
+    res.status(200).json({ success: true, products });
+  } catch (error) {
+    console.error('Erro ao obter produtos por subcategoria:', error);
+    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+  }
+};

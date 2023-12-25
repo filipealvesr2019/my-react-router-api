@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const protect = require('../middleware/protect');
 const adminAuth = require('../middleware/adminAuth');
+const productsController = require('../controllers/productController');
 
 const {
   getProducts,
@@ -12,7 +13,7 @@ const {
   createProductReview,
   getProductReviews,
   deleteReview,
-  getAdminProducts
+  getProductsByCategory
 
 } = require("../controllers/productController");
 
@@ -27,5 +28,11 @@ router.route("/admin/product/:id").delete(isAuthenticatedUser,protect,adminAuth,
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
+router.get('/products/category/:categoryId', productsController.getProductsByCategory);
+
+// ... (outras rotas)
+
+// Obter produtos por subcategoria
+router.get('/products/subcategory/:subcategoryId', productsController.getProductsBySubcategory);
 
 module.exports = router;
