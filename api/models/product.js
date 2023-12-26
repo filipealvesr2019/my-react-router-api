@@ -23,16 +23,20 @@ const productSchema = new mongoose.Schema({
         type: String,
         required: true,
       },
-      url: {
-        type: String,
-        required: true,
-      },
+      colors: [
+        {
+          color: {
+            type: String,
+            required: true,
+          },
+          url: {
+            type: String,
+            required: true,
+          },
+        },
+      ],
     },
   ],
-  color: {
-    type: String,
-    required: [true, "Digite a cor do Produto"],
-  },
   size: {
     type: String,
     required: [true, "Digite o tamanho do produto"],

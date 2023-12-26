@@ -1,110 +1,137 @@
 [
-    {
-        "name": "Camiseta Legal",
-        "price": 25.99,
-        "description": "Uma camiseta incrível",
-        "ratings": 0,
-        "images": [
-          {
-            "public_id": "imagem1",
-            "url": "https://i.ibb.co/Vq1nsqv/ian-dooley-TT-ROx-Wj9n-A-unsplash-1.jpg"
-          }
-        ],
-        "color": "Azul",
-        "size": "M",
-        "category": "Camisetas Femininas",
-        "stock": 100,
-        "numOfReviews": 0,
-        "reviews": [],
-        "createdAt": "2023-11-20T12:00:00Z"
-      },
-      {
-        "name": "Vestido Floral",
-        "price": 49.99,
-        "description": "Vestido elegante com estampa floral",
-        "ratings": 0,
-        "images": [
-          {
-            "public_id": "imagem2",
-            "url": "https://i.ibb.co/107x4rT/hannah-busing-ff5-K3-k-YPHA-unsplash.jpg"
-          },
-          {
-            "public_id": "imagem3",
-            "url": "https://exemplo.com/imagem3.jpg"
-          }
-        ],
-        "color": "Rosa",
-        "size": "G",
-        "category": "Vestidos",
+  {
+    "name": "Moletom Casual Masculino",
+    "price": 79.99,
+    "description": "Moletom casual e confortável para homens modernos.",
+    "ratings": 4.6,
+    "images": [{"public_id": "imagem_moletom_masculino", "url": "https://twicpics.celine.com/product-prd/images/large/2Y321670Q.09GB_2_SUM21.jpg?twic=v1/cover=1:1/resize-max=720"}],
+    "color": "Cinza",
+    "size": "L",
+    "category": "Masculino",
+    "subcategories": ["formal"],
+    "stock": 50
+  },
+  {
+    "name": "Blusa de Tricô Elegante",
+    "price": 69.99,
+    "description": "Blusa de tricô elegante para mulheres que buscam estilo e conforto.",
+    "ratings": 4.9,
+    "images": [{"public_id": "imagem_blusa_trico", "url": "https://cdn.dooca.store/370/products/bi518-blusao-tricot-bege-2_450x600.jpg?v=1680007721"}],
+    "color": "Beige",
+    "size": "XL",
+    "category": "Feminino",
+    "subcategories": ["delicado"],
+    "stock": 45
+  },
+  {
+    "name": "Conjunto Infantil Estampado",
+    "price": 39.99,
+    "description": "Conjunto infantil com estampa divertida para meninos e meninas.",
+    "ratings": 4.7,
+    "images": [{"public_id": "imagem_conjunto_infantil", "url": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRDnIPrqcJgYxvGOtbI2LdeKPj3ber83E7RnA&s"}],
+    "color": "yellow",
+    "size": "M",
+    "category": "Infantil",
+    "subcategories": ["florido"],
+    "stock": 35
+  },
+  {
+    "name": "Calça Jeans Casual",
+    "price": 49.99,
+    "description": "Calça jeans casual para um visual despojado e confortável.",
+    "ratings": 4.5,
+    "images": [{"public_id": "imagem_calca_jeans", "url": "https://acdn.mitiendanube.com/stores/001/125/313/products/126-4db3b13ceca2755ba716978333337626-640-0.webp"}],
+    "color": "Azul",
+    "size": "S",
+    "category": "Masculino",
+    "subcategories": ["moda casa"],
+    "stock": 55
+  },
+  {
+    "name": "Vestido de Festa Elegante",
+    "price": 89.99,
+    "description": "Vestido de festa elegante para ocasiões especiais.",
+    "ratings": 4.8,
+    "images": [{"public_id": "imagem_vestido_festa", "url": "https://1259028l.ha.azioncdn.net/img/2023/10/produto/72803/catiussa-detalhe.jpg?ims=614x819"}],
+    "color": "Preto",
+    "size": "L",
+    "category": "Feminino",
+    "subcategories": ["estontiante"],
+    "stock": 40
+  },
+  {
+    "name": "Tênis Esportivo Conforto Total",
+    "price": 89.99,
+    "description": "Um tênis esportivo com design moderno e total conforto para suas atividades físicas.",
+    "ratings": 4.7,
+    "images": [{"public_id": "imagem_tenis", "url": "https://static.netshoes.com.br/produtos/tenis-esportivo-ascencion-conforto-total-lege-21/14/A4N-0014-014/A4N-0014-014_zoom1.jpg?ts=1675186187&"}],
+    "color": "Preto e Branco",
+    "size": "S",
+    "category": "Masculino",
+    "subcategories": "",
+    "stock": 60
+  },
+  {
+    "name": "Vestido Floral Elegante",
+    "price": 59.99,
+    "description": "Um vestido floral elegante para ocasiões especiais.",
+    "ratings": 4.5,
+    "images": [{"public_id": "imagem_vestido", "url": "https://1259028l.ha.azioncdn.net/img/2023/08/produto/69584/vestido-marinho-floral-flobela-capa.jpg?ims=614x819"}],
+    "color": "Rosa",
+    "size": "M",
+    "category": "Feminino",
+    "subcategories": "",
+    "stock": 40
+  },
+  {
+    "name": "Camiseta Divertida Infantil",
+    "price": 29.99,
+    "description": "Uma camiseta infantil com estampa divertida para os pequenos.",
+    "ratings": 4.8,
+    "images": [{"public_id": "imagem_camiseta_infantil", "url": "https://wgsgeek.com.br/cdn/shop/products/wgs-xtreme.myshopify.com_Branco_fff75cd6-04ae-4647-b174-389e238e6756_720x.png?v=1618885816"}],
+    "color": "Azul",
+    "size": "XS",
+    "category": "Infantil",
+    "subcategories": "Camiseta Infantil",
+    "stock": 30
+  },
+
+  {
+    "name": "Tênis Esportivo Conforto Total",
+    "price": 89.99,
+    "description": "Um tênis esportivo com design moderno e total conforto para suas atividades físicas.",
+    "ratings": 4.7,
+    "images": [{"public_id": "imagem_tenis", "url": "https://orthoworksacessorios.com.br/cdn/shop/files/TenisOrtopedicoparaatividadesfisicasrespiravelorthoworksacessorios_8_800x.jpg?v=1684770442"}],
+    "color": "white",
+    "size": "S",
+    "category": "Feminino",
+    "subcategories": "estiloso",
+    "stock": 60
+  },
+  {
+    "name": "Vestido Floral Elegante",
+    "price": 59.99,
+    "description": "Um vestido floral elegante para ocasiões especiais.",
+    "ratings": 4.5,
+    "images": [{"public_id": "imagem_vestido", "url": "https://ae01.alicdn.com/kf/S9cf11d18752f4d71bd80ad7bba9b32ecp/Vestido-floral-feminino-de-seda-cetim-ponto-preto-manga-curta-elegante-t-nica-de-baile-vestido.jpg_.webp"}],
+    "color": "Rosa",
+    "size": "M",
+    "category": "Feminino",
+    "subcategories": "elegante",
+    "stock": 40
+  },
+  {
+    "name": "Camiseta Divertida Infantil",
+    "price": 29.99,
+    "description": "Uma camiseta infantil com estampa divertida para os pequenos.",
+    "ratings": 4.8,
+    "images": [{"public_id": "imagem_camiseta_infantil", "url": "https://wgsgeek.com.br/cdn/shop/products/wgs-xtreme.myshopify.com_Rosa-pink_8f45ca09-3bdb-456f-b123-03619b652456_720x.png?v=1618885824"}],
+    "color": "pink",
+    "size": "XS",
+    "category": "Infantil",
+    "subcategories": "Camiseta Infantil",
+    "stock": 30
+  }
   
-        "stock": 50,
-        "numOfReviews": 0,
-        "reviews": [],
-        "createdAt": "2023-11-21T14:30:00Z"
-      },
-      {
-        "name": "Camisa Listrada",
-        "price": 34.99,
-        "description": "Camisa casual com listras elegantes",
-        "ratings": 0,
-        "images": [
-          {
-            "public_id": "imagem4",
-            "url": "https://i.ibb.co/4PdDv9k/henri-pham-F4-HFTm3-Y8g-E-unsplash.jpg"
-          }
-        ],
-        "color": "Branco e Azul",
-        "size": "P",
-        "category": "Camisas Masculinas",
-     
-        "stock": 75,
-        "numOfReviews": 0,
-        "reviews": [],
-        "createdAt": "2023-11-22T10:45:00Z"
-      },
-      {
-        "name": "Calça Jeans Skinny",
-        "price": 59.99,
-        "description": "Calça jeans moderna com corte skinny",
-        "ratings": 0,
-        "images": [
-          {
-            "public_id": "imagem5",
-            "url": "https://i.ibb.co/fHL05yD/chalo-garcia-Sv586r5-A99w-unsplash.jpg"
-          }
-        ],
-        "color": "Azul Escuro",
-        "size": "GG",
-        "category": "Calças",
-  
-        "stock": 30,
-        "numOfReviews": 0,
-        "reviews": [],
-        "createdAt": "2023-11-23T16:15:00Z"
-      },
-      {
-        "name": "Calça Jeans Skinny",
-        "price": 59.99,
-        "description": "Calça jeans moderna com corte skinny",
-        "ratings": 0,
-        "images": [
-          {
-            "public_id": "imagem5",
-            "url": "https://i.ibb.co/7VSDnkK/joshua-rondeau-SWNKUe13wqk-unsplash.jpg"
-          }
-        ],
-        "color": "Azul Escuro",
-        "size": "GG",
-        "category": "Calças",
-        "seller": "Tendência Jeans",
-        "stock": 30,
-        "numOfReviews": 0,
-        "reviews": [],
-        "createdAt": "2023-11-23T16:15:00Z"
-      }
-      
-      
-      
-      
-      
+
 ]
