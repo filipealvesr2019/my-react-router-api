@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
   price: {
     type: Number,
     required: [true, 'Digite o preço'],
-    maxLength: [5, 'O preço não pode exceder 5 numeros'],
+    maxLength: [5, 'O preço não pode exceder 5 números'],
     default: 0.0,
   },
   description: {
@@ -35,16 +35,12 @@ const productSchema = new mongoose.Schema({
   },
   size: {
     type: String,
-    required: [true, "Digite o tamanho do produto "],
+    required: [true, "Digite o tamanho do produto"],
   },
-  category: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Category',
-    required: [true, "Selecione a categoria do Produto"],
-  },
+  category: String,
   subcategories: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: String, // Mudança: altere para String
       ref: 'Subcategory',
     },
   ],

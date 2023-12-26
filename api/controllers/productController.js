@@ -273,46 +273,26 @@ exports.deleteReview = async (req, res, next) => {
 };
 
 
-// Obter produtos por categoria e subcategorias
+
+
+
+
+
+
+
+// Rota para obter todos os produtos de uma categoria específica por nome
 exports.getProductsByCategory = async (req, res) => {
   try {
-    const categoryId = req.params.categoryId;
+    const categoryName = req.params.categoryName;
+    const products = await Product.find({ category: categoryName });
 
-    // Use o método `populate` para preencher os documentos na matriz de subcategorias
-    const category = await Category.findById(categoryId).populate('subcategories').exec();
-
-    if (!category) {
-      return res.status(404).json({ message: 'Categoria não encontrada.' });
+    if (!products || products.length === 0) {
+      return res.status(404).json({ success: false, message: 'Nenhum produto encontrado para esta categoria' });
     }
-
-    // Agora, para cada subcategoria, popule os produtos
-    const productsByCategory = await Promise.all(
-      category.subcategories.map(async (subcategory) => {
-        const products = await Product.find({ subcategories: subcategory._id });
-        return {
-          subcategory,
-          products,
-        };
-      })
-    );
-
-    res.status(200).json({ success: true, productsByCategory });
-  } catch (error) {
-    console.error('Erro ao obter produtos por categoria:', error);
-    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
-  }
-};
-
-
-// Obter produtos por subcategoria
-exports.getProductsBySubcategory = async (req, res) => {
-  try {
-    const subcategoryId = req.params.subcategoryId;
-    const products = await Product.find({ subcategories: subcategoryId });
 
     res.status(200).json({ success: true, products });
   } catch (error) {
-    console.error('Erro ao obter produtos por subcategoria:', error);
-    res.status(500).json({ success: false, message: 'Erro interno do servidor' });
+    console.error(error);
+    res.status(500).json({ success: false, error: 'Erro interno do servidor' });
   }
 };
