@@ -32,25 +32,6 @@ exports.newProduct = async (req, res, next) => {
     // Cria uma instância do modelo com os dados recebidos
     const product = new Product(req.body);
 
-    // Se houver uma imagem no corpo da solicitação
-    if (req.file) {
-      // Faz o upload da imagem para o ImgBB
-      const imageInfo = await uploadImageToImgBB(req.file.buffer);
-
-      // Adiciona a imagem ao array de imagens do produto
-      const newImage = {
-        _id: imageInfo.id,
-        colors: [
-          {
-            color: 'default',
-            url: imageInfo.url,
-          },
-        ],
-      };
-
-      product.images.push(newImage);
-    }
-
     // Salva o produto no banco de dados
     await product.save();
 
@@ -67,6 +48,7 @@ exports.newProduct = async (req, res, next) => {
     });
   }
 };
+
 // mostrar produtos => /api/products
 // mostrar produtos => /api/products
 exports.getProducts = async (req, res, next) => {
