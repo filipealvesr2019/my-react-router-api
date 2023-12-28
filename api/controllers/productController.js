@@ -3,36 +3,56 @@ const Category = require('../models/category');  // Certifique-se de que o camin
 
 const APIFeatures = require("../utils/APIFeatures");
 const multer = require('multer');
-const cloudinary = require('cloudinary').v2;  // Importe a biblioteca Cloudinary
+  // Importe a biblioteca Cloudinary
 // Configuração do Cloudinary
-
 
 // Configuração do Multer para upload de imagens em memória
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-// criar produto => /api/admin/product/new
-// criar produto => /api/admin/product/new
+
+// Função para fazer o upload da imagem para o ImgBB
+const uploadImageToImgBB = async (imageBuffer) => {
+  try {
+    const response = await axios.post('https://api.imgbb.com/1/upload', {
+      key: process.env.ImgBB_KEY, // Substitua com sua chave de API ImgBB
+      image: imageBuffer.toString('base64'),
+    });
+
+    // A resposta conterá informações sobre a imagem enviada
+    return response.data.data;
+  } catch (error) {
+    console.error('Erro ao fazer upload da imagem para o ImgBB:', error.message);
+    throw error;
+  }
+};
+
+// Controlador para criar um novo produto
 exports.newProduct = async (req, res, next) => {
   try {
-    // Cria o produto no banco de dados
-    const product = await Product.create(req.body);
-    console.log('Dados recebidos:', product);
+    // Cria uma instância do modelo com os dados recebidos
+    const product = new Product(req.body);
 
     // Se houver uma imagem no corpo da solicitação
     if (req.file) {
-      const result = await cloudinary.uploader.upload(req.file.buffer.toString('base64'), {
-        folder: 'products',  // Substitua pelo nome da sua pasta no Cloudinary
-      });
+      // Faz o upload da imagem para o ImgBB
+      const imageInfo = await uploadImageToImgBB(req.file.buffer);
 
       // Adiciona a imagem ao array de imagens do produto
-      product.images.push({
-        public_id: result.public_id,
-        url: result.secure_url
-      });
+      const newImage = {
+        _id: imageInfo.id,
+        colors: [
+          {
+            color: 'default',
+            url: imageInfo.url,
+          },
+        ],
+      };
 
-      // Salva as alterações no produto com a nova imagem
-      await product.save();
+      product.images.push(newImage);
     }
+
+    // Salva o produto no banco de dados
+    await product.save();
 
     console.log('Produto salvo no banco de dados.');
     res.status(201).json({
