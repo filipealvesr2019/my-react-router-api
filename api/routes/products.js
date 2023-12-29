@@ -2,23 +2,32 @@ const express = require("express");
 const router = express.Router();
 const protect = require('../middleware/protect');
 const adminAuth = require('../middleware/adminAuth');
-const productController = require('../controllers/productController');
-const { isAuthenticatedUser } = require("../middleware/auth");
+const productController = require('../controllers/productController'); // Corrigir o nome do controlador
 
-router.route("/products").get(productController.getProducts);
-router.route("/product/:id")
-  .get(productController.getSingleProduct)
-  .put(adminAuth, productController.updateProduct)
-  .delete(adminAuth, productController.deleteProduct);
+const {
+  getProducts,
+  newProduct,
+  getSingleProduct,
+  updateProduct,
+  deleteProduct,
+  createProductReview,
+  getProductReviews,
+  deleteReview
+} = require("../controllers/productController");
 
-router.route("/admin/product/new").post(adminAuth, productController.newProduct);
+const { isAuthenticatedUser } = require("../middleware/auth")
 
-router.route("/review")
-  .put(isAuthenticatedUser, productController.createProductReview)
-  .delete(isAuthenticatedUser, productController.deleteReview);
+router.route("/products").get(getProducts);
+router.route("/product/:id").get(getSingleProduct);
+router.route("/admin/product/new").post(newProduct);
+router.route("/admin/product/:id").put(updateProduct);
+router.route("/admin/product/:id").delete( deleteProduct);
+router.route("/review").put(isAuthenticatedUser, createProductReview);
+router.get("/reviews", isAuthenticatedUser, getProductReviews);
+router.route("/review").delete(isAuthenticatedUser, deleteReview);
 
-router.get("/reviews", isAuthenticatedUser, productController.getProductReviews);
-
+// ... (outras rotas)
 router.get('/category/:categoryName', productController.getProductsByCategory);
+// Obter produtos por subcategoria
 
 module.exports = router;
