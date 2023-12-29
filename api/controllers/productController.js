@@ -110,26 +110,46 @@ exports.getSingleProduct = async (req, res, next) => {
 };
 
 // atualisar produto => /api/v1/admin/product/:id
+// Assuming you have your Product model and necessary imports
 
+// atualisar produto => /api/v1/admin/product/:id
 exports.updateProduct = async (req, res, next) => {
-  let product = await Product.findById(req.params.id);
+  try {
+    const productId = req.params.id;
+    
+    // Find the product by ID
+    const product = await Product.findById(productId);
 
-  if (!product) {
-    return res.status(404).json({
+    // Check if the product exists
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Product not found',
+      });
+    }
+
+    // Update the product with the new data
+    const updatedProduct = await Product.findByIdAndUpdate(
+      productId,
+      req.body, // Assuming req.body contains the updated fields
+      {
+        new: true, // Return the modified document
+        runValidators: true, // Run model validations on update
+        useFindAndModify: false, // Use new MongoDB driver's update method
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      product: updatedProduct,
+    });
+  } catch (error) {
+    console.error('Error updating product:', error.message);
+    res.status(500).json({
       success: false,
-      message: "Produto não encontrado",
+      message: 'Internal Server Error',
     });
   }
-
-  product = await Product.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-    useFindAndModify: false,
-  });
-  res.status(200).json({
-    success: true,
-    product,
-  });
 };
 
 // deletar produtos => /api/v1/admin/product/:id
