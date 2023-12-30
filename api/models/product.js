@@ -19,7 +19,7 @@ const productSchema = new mongoose.Schema(
       required: [true, "Digite a descrição"],
     },
 
-    colors: [
+    variations: [
       {
         color: {
           type: String,

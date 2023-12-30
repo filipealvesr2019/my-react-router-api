@@ -1,5 +1,6 @@
 const Product = require("../models/product");
-const Category = require('../models/category');  // Certifique-se de que o caminho do modelo está correto
+const axios = require('axios');  // Certifique-se de que o caminho do modelo está correto
+
 
 const APIFeatures = require("../utils/APIFeatures");
 const multer = require('multer');
@@ -9,7 +10,7 @@ const multer = require('multer');
 // Configuração do Multer para upload de imagens em memória
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
+// ... Your existing server code ...
 // Função para fazer o upload da imagem para o ImgBB
 const uploadImageToImgBB = async (imageBuffer) => {
   try {
@@ -47,6 +48,49 @@ exports.newProduct = async (req, res, next) => {
       message: 'Erro interno do servidor',
     });
   }
+};
+
+// mostrar produtos => /api/products
+// mostrar produtos => /api/products
+exports.getProducts = async (req, res, next) => {
+    try {
+        const resPerPage = 8;
+        let productsCount;
+
+        // Verificar se os parâmetros de preço foram fornecidos
+        let priceFilter = {};
+        if (req.query.minPrice && req.query.maxPrice) {
+            priceFilter = {
+                price: {
+                    $gte: req.query.minPrice,
+                    $lte: req.query.maxPrice
+                }
+            };
+        }
+
+        // Contar o número total de produtos considerando os filtros
+        productsCount = await Product.countDocuments(priceFilter);
+
+        // Consultar produtos com os filtros aplicados
+        const apiFeatures = new APIFeatures(Product.find(priceFilter), req.query)
+            .search()
+            .filter()
+            .pagination(resPerPage);
+
+        const products = await apiFeatures.query;
+
+        res.status(200).json({
+            success: true,
+            productsCount,
+            resPerPage,
+            products
+        });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            error: error.message
+        });
+    }
 };
 
 // mostrar produtos => /api/products

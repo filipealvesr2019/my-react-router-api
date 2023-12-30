@@ -55,12 +55,7 @@ app.use('/', orders);
 app.use('/products', productRoutes);
 
 
-// cloudinary config
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
+
 app.use(bodyParser.urlencoded({extended:true}))
 
 
