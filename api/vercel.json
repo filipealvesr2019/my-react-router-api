@@ -1,5 +1,5 @@
 
 {
-    "rewrites": [{ "source": "/App.js", "destination": "/" }]
+    "rewrites": [{ "source": "my-react-router-api/api/App.js", "destination": "/" }]
   }
   
