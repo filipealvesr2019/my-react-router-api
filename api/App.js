@@ -32,6 +32,7 @@ const auth = require('./routes/Customer')
 const order = require('./routes/order')
 const category = require('./routes/category');
 const subcategory = require('./routes/Subcategory');
+const productRoutes = require('./routes/products');
 
 
 app.post('/api/upload', upload.single('file'), (req, res) => {
@@ -50,6 +51,10 @@ app.use('/api', category)
 app.use('/api', subcategory)
 app.use('/', routes);
 app.use('/', orders);
+
+app.use('/products', productRoutes);
+
+
 // cloudinary config
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,

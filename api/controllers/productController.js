@@ -109,31 +109,18 @@ exports.getSingleProduct = async (req, res, next) => {
   });
 };
 
-// atualisar produto => /api/v1/admin/product/:id
-// Assuming you have your Product model and necessary imports
-// Inside your updateProduct controller function
 exports.updateProduct = async (req, res) => {
-  const productId = req.params.id;
-  const updatedProductData = req.body;
-
   try {
-    // Log received data
-    console.log('Received data for update:', updatedProductData);
+    const productId = req.params.productId;
+    const updatedProduct = req.body;
 
-    // Perform the update operation in the database
-    const updatedProduct = await Product.findByIdAndUpdate(
-      productId,
-      updatedProductData,
-      { new: true }
-    );
+    // Use mongoose to find and update the product
+    const result = await Product.findByIdAndUpdate(productId, updatedProduct, { new: true });
 
-    // Log the updated product
-    console.log('Updated Product:', updatedProduct);
-
-    res.json({ success: true, updatedProduct });
+    res.json(result);
   } catch (error) {
     console.error('Error updating product:', error);
-    res.status(500).json({ success: false, error: 'Internal Server Error' });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 };
 

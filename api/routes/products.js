@@ -20,7 +20,7 @@ const { isAuthenticatedUser } = require("../middleware/auth")
 router.route("/products").get(getProducts);
 router.route("/product/:id").get(getSingleProduct);
 router.route("/admin/product/new").post(newProduct);
-router.route("/admin/product/:id").put(updateProduct);
+router.put('/:productId', productController.updateProduct);
 router.route("/admin/product/:id").delete( deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
