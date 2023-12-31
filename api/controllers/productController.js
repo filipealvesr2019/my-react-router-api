@@ -1,62 +1,37 @@
 const Product = require("../models/product");
-const axios = require('axios');
-const APIFeatures = require ("../utils/APIFeatures")
-const admin = require('firebase-admin');
+const axios = require('axios');  // Certifique-se de que o caminho do modelo está correto
+
+
+const APIFeatures = require("../utils/APIFeatures");
 const multer = require('multer');
-const serviceAccount = require('./firebase-storage-key.json'); // Substitua pelo caminho do seu arquivo de chave do serviço Firebase
+  // Importe a biblioteca Cloudinary
+// Configuração do Cloudinary
 
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  storageBucket: "gs://storage-7cfc7.appspot.com"
-});
-
-
-const bucket = admin.storage().bucket();
-
-// Configuração do Multer para upload de arquivos
+// Configuração do Multer para upload de imagens em memória
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-
-const uploadToFirebaseStorage = async (fileBuffer, fileName) => {
+// ... Your existing server code ...
+// Função para fazer o upload da imagem para o ImgBB
+const uploadImageToImgBB = async (imageBuffer) => {
   try {
-    // Faz o upload do arquivo para o Firebase Storage
-    const file = bucket.file(fileName);
-    await file.save(fileBuffer);
+    const response = await axios.post('https://api.imgbb.com/1/upload', {
+      key: process.env.ImgBB_KEY, // Substitua com sua chave de API ImgBB
+      image: imageBuffer.toString('base64'),
+    });
 
-    // Obtém a URL do arquivo recém-carregado
-    const [url] = await file.getSignedUrl({ action: 'read', expires: '01-01-2500' });
-
-    return url;
+    // A resposta conterá informações sobre a imagem enviada
+    return response.data.data;
   } catch (error) {
-    throw new Error(`Erro ao fazer upload da imagem para o Firebase Storage: ${error.message}`);
+    console.error('Erro ao fazer upload da imagem para o ImgBB:', error.message);
+    throw error;
   }
 };
-
-// Restante do seu código...
 
 // Controlador para criar um novo produto
 exports.newProduct = async (req, res, next) => {
   try {
-    // Verifique se há uma imagem no corpo da solicitação
-    if (!req.file) {
-      throw new Error('Nenhuma imagem fornecida');
-    }
-
-    // Gere um nome único para o arquivo (você pode implementar sua própria lógica de geração de nomes)
-    const fileName = `product_${Date.now()}.jpg`;
-
-    // Faça o upload da imagem para o Firebase Storage
-    const imageUrl = await uploadToFirebaseStorage(req.file.buffer, fileName);
-
-    // Crie uma instância do modelo com os dados recebidos
-   // Crie uma instância do modelo com os dados recebidos
-const product = new Product({
-  ...req.body,
-  variations: Array.isArray(req.body.variations) ? req.body.variations : [],
-  imageUrl: imageUrl, // Salve a URL da imagem no modelo do produto
-});
-
+    // Cria uma instância do modelo com os dados recebidos
+    const product = new Product(req.body);
 
     // Salva o produto no banco de dados
     await product.save();
@@ -67,17 +42,13 @@ const product = new Product({
       product,
     });
   } catch (error) {
-    console.error('Erro ao salvar o produto no banco de dados:', error.message);
+    console.error('Erro ao salvar o produto no banco de dados:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',
     });
   }
 };
-
-
-// Restante do seu código...
-
 
 // mostrar produtos => /api/products
 // mostrar produtos => /api/products
