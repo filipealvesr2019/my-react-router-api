@@ -3,16 +3,13 @@ const app = express();
 const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-const multer = require('multer');
-const upload = multer({ dest: 'uploads/' });
-const errorHandler = require('./errorHandler/errorHandler');
+
 
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-const cloudinary = require("cloudinary")
-app.use(errorHandler);
+
 
 require('dotenv').config();
 
@@ -34,13 +31,6 @@ const category = require('./routes/category');
 const subcategory = require('./routes/Subcategory');
 const productRoutes = require('./routes/products');
 
-
-app.post('/api/upload', upload.single('file'), (req, res) => {
-  // req.file contém as informações do arquivo enviado
-  // Faça o que for necessário, como salvar o caminho da imagem no banco de dados
-  const filePath = req.file.path;
-  res.status(200).send('Upload bem-sucedido!');
-});
 
 
 
