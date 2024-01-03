@@ -2,32 +2,6 @@ const Product = require("../models/product");
 const axios = require("axios"); // Certifique-se de que o caminho do modelo está correto
 
 const APIFeatures = require("../utils/APIFeatures");
-const multer = require("multer");
-// Importe a biblioteca Cloudinary
-// Configuração do Cloudinary
-
-// Configuração do Multer para upload de imagens em memória
-const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
-// ... Your existing server code ...
-// Função para fazer o upload da imagem para o ImgBB
-const uploadImageToImgBB = async (imageBuffer) => {
-  try {
-    const response = await axios.post("https://api.imgbb.com/1/upload", {
-      key: process.env.ImgBB_KEY, // Substitua com sua chave de API ImgBB
-      image: imageBuffer.toString("base64"),
-    });
-
-    // A resposta conterá informações sobre a imagem enviada
-    return response.data.data;
-  } catch (error) {
-    console.error(
-      "Erro ao fazer upload da imagem para o ImgBB:",
-      error.message
-    );
-    throw error;
-  }
-};
 
 // Controlador para criar um novo produto
 exports.newProduct = async (req, res, next) => {
@@ -166,6 +140,7 @@ exports.updateProduct = async (req, res) => {
     });
 
     res.json(result);
+    
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).json({ error: "Internal Server Error" });
