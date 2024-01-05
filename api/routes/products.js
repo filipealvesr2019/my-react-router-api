@@ -25,7 +25,7 @@ router.route("/admin/product/new").post(
   newProduct
 );
 
-router.put('/:productId', productController.updateProduct);
+router.put('/update/product/:productId', productController.updateProduct);
 router.route("/admin/product/:id").delete( deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);

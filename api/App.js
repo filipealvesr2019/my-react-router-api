@@ -29,7 +29,6 @@ const auth = require('./routes/Customer')
 const order = require('./routes/order')
 const category = require('./routes/category');
 const subcategory = require('./routes/Subcategory');
-const productRoutes = require('./routes/products');
 
 
 
@@ -42,7 +41,6 @@ app.use('/api', subcategory)
 app.use('/', routes);
 app.use('/', orders);
 
-app.use('/products', productRoutes);
 
 
 
