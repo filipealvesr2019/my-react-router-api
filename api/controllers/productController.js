@@ -44,6 +44,8 @@ exports.getProducts = async (req, res, next) => {
       };
     }
 
+    
+
     // Contar o número total de produtos considerando os filtros
     productsCount = await Product.countDocuments(priceFilter);
 

@@ -71,10 +71,89 @@ const createSubcategory = async (req, res) => {
       res.status(500).json({ success: false, message: 'Erro interno do servidor' });
     }
   };
-  
+ 
+// No seu arquivo categoryController.js
+// ...
+
+// Adiciona uma subcategoria a uma categoria pelo nome
+// Adiciona uma subcategoria a uma categoria pelo nome
+const addSubcategoryToCategory = async (req, res) => {
+  try {
+      const { categoryId } = req.params;
+      const { name } = req.body;
+
+      // Encontre a categoria pelo ID
+      const category = await Category.findById(categoryId);
+
+      if (!category) {
+          return res.status(404).json({ message: 'Categoria não encontrada.' });
+      }
+
+      // Crie a subcategoria
+      const subcategory = new Subcategory({ name });
+      await subcategory.save();
+
+      // Adicione a subcategoria à categoria
+      category.subcategories.push(subcategory._id); // Utilize o _id da subcategoria
+      await category.save();
+
+      res.status(201).json({ success: true, subcategory });
+  } catch (error) {
+      console.error('Erro ao adicionar subcategoria à categoria:', error);
+      res.status(500).json({ success: false, message: 'Erro interno do servidor.' });
+  }
+};
+
+// Exclui uma categoria pelo ID
+const deleteCategory = async (req, res) => {
+  try {
+      const categoryId = req.params.categoryId;
+
+      // Remove a categoria pelo ID
+      await Category.findByIdAndRemove(categoryId);
+
+      res.status(200).json({ success: true, message: 'Categoria excluída com sucesso.' });
+  } catch (error) {
+      console.error('Erro ao excluir categoria por ID:', error);
+      res.status(500).json({ success: false, message: 'Erro interno do servidor.' });
+  }
+};
+
+// controllers/categoriesController.js
+
+// ...
+
+// Edita uma categoria pelo ID
+const editCategory = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const { name } = req.body;
+
+    // Encontra e atualiza a categoria pelo ID
+    const updatedCategory = await Category.findByIdAndUpdate(categoryId, { name }, { new: true });
+
+    if (!updatedCategory) {
+      return res.status(404).json({ success: false, message: 'Categoria não encontrada.' });
+    }
+
+    res.status(200).json({ success: true, category: updatedCategory });
+  } catch (error) {
+    console.error('Erro ao editar categoria por ID:', error);
+    res.status(500).json({ success: false, message: 'Erro interno do servidor.' });
+  }
+};
+
+// ...
+
+
   module.exports = {
     newCategory,
     getAllCategories,
     getCategoryById,
     createSubcategory,
+    addSubcategoryToCategory,
+    deleteCategory, // Adiciona a função de exclusão de categoria
+    editCategory, // Adiciona a função de edição de categoria
+
+
   };
