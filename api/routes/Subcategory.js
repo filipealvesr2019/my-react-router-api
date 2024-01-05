@@ -8,11 +8,7 @@ router.post('/admin/subcategories/new', subcategoriesController.createSubcategor
 router.get('/admin/subcategories', subcategoriesController.getSubcategories);
 router.delete('/admin/subcategories/:subcategoryId', subcategoriesController.deleteSubcategory);
 router.put('/admin/subcategories/:subcategoryId', subcategoriesController.editSubcategory);
-router.put('/api/admin/addSubcategoryToCategory', subcategoriesController.addSubcategoryToCategory);
 
-// Rota GET para obter subcategorias adicionadas a uma categoria específica
-router.post('/admin/subcategories/addToCategory', subcategoriesController.addSubcategoryToCategory);
 
-// Rota GET para obter todas as subcategorias
 
 module.exports = router;

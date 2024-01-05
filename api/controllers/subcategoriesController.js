@@ -1,5 +1,6 @@
 // controllers/subcategoriesController.js
 const Subcategory = require('../models/Subcategory');
+const Category = require('../models/category');
 
 // Rota para adicionar nova subcategoria
 const createSubcategory = async (req, res) => {
@@ -81,32 +82,12 @@ const editSubcategory = async (req, res) => {
 };
 
 
-const addSubcategoryToCategory = async (req, res) => {
-  try {
-      const { name, category } = req.body;
-
-      // Lógica para adicionar nova subcategoria ao banco de dados
-      // Certifique-se de validar e salvar corretamente os dados
-
-      // Exemplo:
-      const newSubcategory = new Subcategory({ name, category });
-      const savedSubcategory = await newSubcategory.save();
-
-      // Resposta de sucesso
-      res.status(200).json({ success: true, message: 'Subcategoria adicionada com sucesso.', subcategory: savedSubcategory });
-  } catch (error) {
-      // Resposta de erro
-      console.error('Erro ao criar subcategoria:', error);
-      res.status(500).json({ success: false, error: 'Erro interno do servidor.' });
-  }
-};
-
 module.exports = {
   createSubcategory,
   getSubcategories,
   deleteSubcategory, // Adiciona a função de exclusão de subcategoria
   editSubcategory, // Adiciona a função de edição de subcategoria
-  addSubcategoryToCategory,
+ 
 
   
 
