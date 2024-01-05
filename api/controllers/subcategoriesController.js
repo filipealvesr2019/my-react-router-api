@@ -100,11 +100,15 @@ const addSubcategoryToCategory = async (req, res) => {
       res.status(500).json({ success: false, error: 'Erro interno do servidor.' });
   }
 };
+
 module.exports = {
   createSubcategory,
   getSubcategories,
   deleteSubcategory, // Adiciona a função de exclusão de subcategoria
   editSubcategory, // Adiciona a função de edição de subcategoria
-  addSubcategoryToCategory
+  addSubcategoryToCategory,
+
+  
+
 
 };
