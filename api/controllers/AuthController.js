@@ -26,11 +26,7 @@ const registerUser = async (req, res, next) => {
     const user = await User.create({
       email,
       password,
-      role,
-      avatar: {
-        publica_id: "/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih",
-        url: "https://res.cloudinary.com/dcodt2el6/image/upload/v1700826137/avatars/michael-dam-mEZ3PoFGs_k-unsplash_2_pmcmih.jpg",
-      },
+      role
     });
 
     sendToken(user, 200, res);
