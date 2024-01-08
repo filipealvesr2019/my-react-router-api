@@ -21,7 +21,9 @@
     "vercel": "^33.0.1"
   },
   "scripts": {
-    "dev": "nodemon App.js"
+    "dev": "nodemon App.js",
+    "build": "my-react-router-api/api/App.js"
+
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
