@@ -18,12 +18,11 @@
     "opn": "^6.0.0",
     "uuid": "^9.0.1",
     "validator": "^13.11.0",
-    "vercel": "^33.0.1"
+    "vercel": "^32.3.0"
   },
   "scripts": {
     "dev": "nodemon App.js",
-    "build": "my-react-router-api/api/App.js"
-
+    "build": "react-scripts build"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
