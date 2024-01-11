@@ -28,48 +28,7 @@ exports.newProduct = async (req, res, next) => {
 
 // mostrar produtos => /api/products
 // mostrar produtos => /api/products
-exports.getProducts = async (req, res, next) => {
-  try {
-    const resPerPage = 8;
-    let productsCount;
 
-    // Verificar se os parâmetros de preço foram fornecidos
-    let priceFilter = {};
-    if (req.query.minPrice && req.query.maxPrice) {
-      priceFilter = {
-        price: {
-          $gte: req.query.minPrice,
-          $lte: req.query.maxPrice,
-        },
-      };
-    }
-
-    
-
-    // Contar o número total de produtos considerando os filtros
-    productsCount = await Product.countDocuments(priceFilter);
-
-    // Consultar produtos com os filtros aplicados
-    const apiFeatures = new APIFeatures(Product.find(priceFilter), req.query)
-      .search()
-      .filter()
-      .pagination(resPerPage);
-
-    const products = await apiFeatures.query;
-
-    res.status(200).json({
-      success: true,
-      productsCount,
-      resPerPage,
-      products,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
 
 // mostrar produtos => /api/products
 // mostrar produtos => /api/products
@@ -92,6 +51,10 @@ exports.getProducts = async (req, res, next) => {
     // Contar o número total de produtos considerando os filtros
     productsCount = await Product.countDocuments(priceFilter);
 
+    // Lógica para calcular totalPages (total de itens / itens por página)
+    const totalItems = await Product.countDocuments(priceFilter);
+    const totalPages = Math.ceil(totalItems / resPerPage);
+
     // Consultar produtos com os filtros aplicados
     const apiFeatures = new APIFeatures(Product.find(priceFilter), req.query)
       .search()
@@ -104,6 +67,7 @@ exports.getProducts = async (req, res, next) => {
       success: true,
       productsCount,
       resPerPage,
+      totalPages,  // Incluindo totalPages na resposta
       products,
     });
   } catch (error) {
@@ -113,6 +77,7 @@ exports.getProducts = async (req, res, next) => {
     });
   }
 };
+
 
 // mostrar produto especifico por id => /api/v1/product/:id
 
