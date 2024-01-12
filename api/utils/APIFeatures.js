@@ -5,15 +5,15 @@ class APIFeatures {
     }
   
    
-  search() {
-    const { keyword } = this.queryString;
-    if (keyword) {
-      // Use regex to perform a case-insensitive search on the 'name' field
-      const regex = new RegExp(keyword, 'i');
-      this.query = this.query.find({ name: regex });
-    }
-    return this;
-  }
+    search() {
+        const { keyword } = this.queryString;
+        if (keyword) {
+          // Use regex to perform a case-insensitive search on the 'name' field
+          const regex = new RegExp(keyword, 'i');
+          this.query = this.query.find({ name: regex });
+        }
+        return this;
+      }
   
     filter() {
       // Your existing filter logic

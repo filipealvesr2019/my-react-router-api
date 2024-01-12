@@ -32,56 +32,45 @@ exports.newProduct = async (req, res, next) => {
 
 // mostrar produtos => /api/products
 // mostrar produtos => /api/products
+// Modify the getProducts controller
 exports.getProducts = async (req, res, next) => {
   try {
     const resPerPage = 10;
-    let productsCount;
-
-    // Verificar se os parâmetros de preço foram fornecidos
-    let priceFilter = {};
-    if (req.query.minPrice && req.query.maxPrice) {
-      priceFilter = {
-        price: {
-          $gte: req.query.minPrice,
-          $lte: req.query.maxPrice,
-        },
-      };
-    }
-
-    // Contar o número total de produtos considerando os filtros
-    productsCount = await Product.countDocuments(priceFilter);
+    const currentPage = Number(req.query.page) || 1;
+    const { keyword } = req.query;
 
     // Lógica para calcular totalPages (total de itens / itens por página)
-    const totalItems = await Product.countDocuments(priceFilter);
-    const totalPages = Math.ceil(totalItems / resPerPage);
+    let totalItems, totalPages;
+    if (keyword) {
+      // Count all products matching the search term
+      totalItems = await Product.countDocuments({
+        name: { $regex: new RegExp(keyword, 'i') },
+      });
+      totalPages = Math.ceil(totalItems / resPerPage);
+    } else {
+      // Count all products
+      totalItems = await Product.countDocuments({});
+      totalPages = Math.ceil(totalItems / resPerPage);
+    }
 
     // Consultar produtos com os filtros aplicados
-    const apiFeatures = new APIFeatures(Product.find(priceFilter), req.query)
+    const apiFeatures = new APIFeatures(Product.find({}), req.query)
       .search()
-      .filter()
-      .pagination(resPerPage);
+      .filter();
+
+    // Apply pagination only if a search term is not provided
+    if (!keyword) {
+      apiFeatures.pagination(resPerPage);
+    }
 
     const products = await apiFeatures.query;
 
     res.status(200).json({
       success: true,
-      productsCount,
       resPerPage,
-      totalPages,  // Incluindo totalPages na resposta
+      totalPages,
       products,
     });
-
-
-    
-    //setTimeout(() => {
-    // res.status(200).json({
-    //  success: true,
-    //   productsCount,
-    //  resPerPage,
-    //  totalPages,  // Incluindo totalPages na resposta
-    //  products,
-    // });
-    // }, 2000);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -89,6 +78,7 @@ exports.getProducts = async (req, res, next) => {
     });
   }
 };
+
 
 
 // mostrar produto especifico por id => /api/v1/product/:id
