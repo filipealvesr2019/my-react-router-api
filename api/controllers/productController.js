@@ -70,6 +70,18 @@ exports.getProducts = async (req, res, next) => {
       totalPages,  // Incluindo totalPages na resposta
       products,
     });
+
+
+    
+    //setTimeout(() => {
+    // res.status(200).json({
+    //  success: true,
+    //   productsCount,
+    //  resPerPage,
+    //  totalPages,  // Incluindo totalPages na resposta
+    //  products,
+    // });
+    // }, 2000);
   } catch (error) {
     res.status(500).json({
       success: false,
