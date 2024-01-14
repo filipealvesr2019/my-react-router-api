@@ -319,3 +319,21 @@ exports.getAllCategories = async (req, res) => {
 
 
 
+// Função para obter produtos por palavra-chave
+exports.getProductsByKeyword = async (req, res) => {
+  try {
+    const { keyword } = req.query;
+
+    if (!keyword) {
+      return res.status(400).json({ message: 'Palavra-chave não fornecida' });
+    }
+
+    const regex = new RegExp(keyword, 'i');
+
+    const products = await Product.find({ name: regex });
+
+    res.json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
