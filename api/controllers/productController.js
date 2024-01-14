@@ -30,6 +30,55 @@ exports.newProduct = async (req, res, next) => {
 // mostrar produtos => /api/products
 
 
+// mostrar produtos => /api/products
+// mostrar produtos => /api/products
+// Modify the getProducts controller
+exports.getProducts = async (req, res, next) => {
+  try {
+    const resPerPage = 10;
+    const currentPage = Number(req.query.page) || 1;
+    const { keyword } = req.query;
+
+    // Lógica para calcular totalPages (total de itens / itens por página)
+    let totalItems, totalPages;
+    if (keyword) {
+      // Count all products matching the search term
+      totalItems = await Product.countDocuments({
+        name: { $regex: new RegExp(keyword, 'i') },
+      });
+      totalPages = Math.ceil(totalItems / resPerPage);
+    } else {
+      // Count all products
+      totalItems = await Product.countDocuments({});
+      totalPages = Math.ceil(totalItems / resPerPage);
+    }
+
+    // Consultar produtos com os filtros aplicados
+    const apiFeatures = new APIFeatures(Product.find({}), req.query)
+      .search()
+      .filter();
+
+    // Apply pagination only if a search term is not provided
+    if (!keyword) {
+      apiFeatures.pagination(resPerPage);
+    }
+
+    const products = await apiFeatures.query;
+
+    res.status(200).json({
+      success: true,
+      resPerPage,
+      totalPages,
+      products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      error: error.message,
+    });
+  }
+};
+
 
 
 // mostrar produto especifico por id => /api/v1/product/:id
@@ -199,6 +248,11 @@ exports.deleteReview = async (req, res, next) => {
 
 
 
+
+
+
+
+
 // Função para obter todos os produtos de uma categoria com subcategorias
 exports.getProductsByCategory = async (req, res) => {
   try {
@@ -259,3 +313,9 @@ exports.getAllCategories = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+
+
+
