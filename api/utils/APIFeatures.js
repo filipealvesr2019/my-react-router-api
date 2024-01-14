@@ -19,6 +19,9 @@ class APIFeatures {
       // Your existing filter logic
       return this;
     }
+
+
+    
   
     pagination(resPerPage) {
       const currentPage = Number(this.queryString.page) || 1;
@@ -27,6 +30,18 @@ class APIFeatures {
       this.query = this.query.limit(resPerPage).skip(skip);
       return this;
     }
+
+    priceFilter() {
+      const { minPrice, maxPrice } = this.queryString;
+      if (minPrice && maxPrice) {
+        this.query = this.query.find({
+          price: { $gte: minPrice, $lte: maxPrice }
+        });
+      }
+      return this;
+    }
+
+    
   }
   
   module.exports = APIFeatures;

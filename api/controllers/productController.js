@@ -251,10 +251,47 @@ exports.deleteReview = async (req, res, next) => {
 // Adicione esta função para obter categorias, subcategorias e produtos associados
 exports.getAllCategoriesWithProducts = async (req, res, next) => {
   try {
-    const categoriesWithProducts = await Product.getAllCategoriesWithProducts();
+    const resPerPage = 10;
+    const currentPage = Number(req.query.page) || 1;
+    const { keyword, minPrice, maxPrice } = req.query;
+
+    let totalItems, totalPages;
+    if (keyword) {
+      totalItems = await Product.countDocuments({
+        name: { $regex: new RegExp(keyword, 'i') },
+      });
+      totalPages = Math.ceil(totalItems / resPerPage);
+    } else {
+      totalItems = await Product.countDocuments({});
+      totalPages = Math.ceil(totalItems / resPerPage);
+    }
+
+    const apiFeatures = new APIFeatures(Product.find({}), req.query)
+      .search()
+      .filter()
+      .priceFilter()
+      .pagination(resPerPage);
+
+    let categoriesWithProducts = await apiFeatures.query;
+
+    // Populate subcategories and products
+    categoriesWithProducts = await Promise.all(
+      categoriesWithProducts.map(async (category) => {
+        const subcategories = await Product.distinct('subcategory', { category: category.category });
+        const products = await Product.find({ category: category.category });
+
+        return {
+          ...category.toObject(),
+          subcategories,
+          products,
+        };
+      })
+    );
 
     res.status(200).json({
       success: true,
+      resPerPage,
+      totalPages,
       categoriesWithProducts,
     });
   } catch (error) {
@@ -265,6 +302,3 @@ exports.getAllCategoriesWithProducts = async (req, res, next) => {
     });
   }
 };
-
-
-
