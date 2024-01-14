@@ -245,24 +245,26 @@ exports.deleteReview = async (req, res, next) => {
   }
 };
 
-// Rota para obter todos os produtos de uma categoria específica por nome
-exports.getProductsByCategory = async (req, res) => {
+
+
+
+// Adicione esta função para obter categorias, subcategorias e produtos associados
+exports.getAllCategoriesWithProducts = async (req, res, next) => {
   try {
-    const categoryName = req.params.categoryName;
-    const products = await Product.find({ category: categoryName });
+    const categoriesWithProducts = await Product.getAllCategoriesWithProducts();
 
-    if (!products || products.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "Nenhum produto encontrado para esta categoria",
-        });
-    }
-
-    res.status(200).json({ success: true, products });
+    res.status(200).json({
+      success: true,
+      categoriesWithProducts,
+    });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, error: "Erro interno do servidor" });
+    console.error("Erro ao obter categorias, subcategorias e produtos associados:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro interno do servidor",
+    });
   }
 };
+
+
+

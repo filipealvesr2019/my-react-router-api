@@ -30,9 +30,8 @@ router.route("/admin/product/:id").delete( deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
+router.get("/getAllCategories", productController.getAllCategoriesWithProducts);
 
 // ... (outras rotas)
-router.get('/category/:categoryName', productController.getProductsByCategory);
-// Obter produtos por subcategoria
 
 module.exports = router;

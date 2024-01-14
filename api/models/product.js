@@ -43,6 +43,10 @@ const productSchema = new mongoose.Schema(
     subcategory: {
       type: String, // Mudança: altere para String
     },
+    parentCategory: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
     inStock: {
       type: Boolean,
       default: true,
@@ -62,4 +66,23 @@ const productSchema = new mongoose.Schema(
   }
 );
 
+
+// Adicione esta função para obter categorias, subcategorias e produtos associados
+productSchema.statics.getAllCategoriesWithProducts = async function () {
+  const categories = await this.distinct("category").exec();
+  const categoriesWithProducts = [];
+
+  for (const category of categories) {
+    const subcategories = await this.distinct("subcategory", { category }).exec();
+    const products = await this.find({ category }).exec();
+
+    categoriesWithProducts.push({
+      category,
+      subcategories,
+      products,
+    });
+  }
+
+  return categoriesWithProducts;
+};
 module.exports = mongoose.model("Product", productSchema);
