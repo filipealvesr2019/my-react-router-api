@@ -30,55 +30,6 @@ exports.newProduct = async (req, res, next) => {
 // mostrar produtos => /api/products
 
 
-// mostrar produtos => /api/products
-// mostrar produtos => /api/products
-// Modify the getProducts controller
-exports.getProducts = async (req, res, next) => {
-  try {
-    const resPerPage = 10;
-    const currentPage = Number(req.query.page) || 1;
-    const { keyword } = req.query;
-
-    // Lógica para calcular totalPages (total de itens / itens por página)
-    let totalItems, totalPages;
-    if (keyword) {
-      // Count all products matching the search term
-      totalItems = await Product.countDocuments({
-        name: { $regex: new RegExp(keyword, 'i') },
-      });
-      totalPages = Math.ceil(totalItems / resPerPage);
-    } else {
-      // Count all products
-      totalItems = await Product.countDocuments({});
-      totalPages = Math.ceil(totalItems / resPerPage);
-    }
-
-    // Consultar produtos com os filtros aplicados
-    const apiFeatures = new APIFeatures(Product.find({}), req.query)
-      .search()
-      .filter();
-
-    // Apply pagination only if a search term is not provided
-    if (!keyword) {
-      apiFeatures.pagination(resPerPage);
-    }
-
-    const products = await apiFeatures.query;
-
-    res.status(200).json({
-      success: true,
-      resPerPage,
-      totalPages,
-      products,
-    });
-  } catch (error) {
-    res.status(500).json({
-      success: false,
-      error: error.message,
-    });
-  }
-};
-
 
 
 // mostrar produto especifico por id => /api/v1/product/:id
@@ -248,57 +199,63 @@ exports.deleteReview = async (req, res, next) => {
 
 
 
-// Adicione esta função para obter categorias, subcategorias e produtos associados
-exports.getAllCategoriesWithProducts = async (req, res, next) => {
+// Função para obter todos os produtos de uma categoria com subcategorias
+exports.getProductsByCategory = async (req, res) => {
   try {
-    const resPerPage = 10;
-    const currentPage = Number(req.query.page) || 1;
-    const { keyword, minPrice, maxPrice } = req.query;
+    const categoria = req.params.categoria; // Supondo que a categoria é passada como um parâmetro na URL
 
-    let totalItems, totalPages;
-    if (keyword) {
-      totalItems = await Product.countDocuments({
-        name: { $regex: new RegExp(keyword, 'i') },
-      });
-      totalPages = Math.ceil(totalItems / resPerPage);
-    } else {
-      totalItems = await Product.countDocuments({});
-      totalPages = Math.ceil(totalItems / resPerPage);
-    }
+    // Encontrar produtos da categoria principal e suas subcategorias
+    const produtos = await Product.find({
+      $or: [
+        { category: { $regex: new RegExp(categoria, 'i') } }, // Case-insensitive match
+        { subcategory: { $regex: new RegExp(categoria, 'i') } }, // Case-insensitive match
+      ],
+    }).select('-variations'); // Removendo 'variations' por simplicidade
 
-    const apiFeatures = new APIFeatures(Product.find({}), req.query)
-      .search()
-      .filter()
-      .priceFilter()
-      .pagination(resPerPage);
-
-    let categoriesWithProducts = await apiFeatures.query;
-
-    // Populate subcategories and products
-    categoriesWithProducts = await Promise.all(
-      categoriesWithProducts.map(async (category) => {
-        const subcategories = await Product.distinct('subcategory', { category: category.category });
-        const products = await Product.find({ category: category.category });
-
-        return {
-          ...category.toObject(),
-          subcategories,
-          products,
-        };
-      })
-    );
-
-    res.status(200).json({
-      success: true,
-      resPerPage,
-      totalPages,
-      categoriesWithProducts,
-    });
+    res.json(produtos);
   } catch (error) {
-    console.error("Erro ao obter categorias, subcategorias e produtos associados:", error);
-    res.status(500).json({
-      success: false,
-      message: "Erro interno do servidor",
-    });
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// Função para obter todas as categorias, subcategorias e produtos
+exports.getAllCategories = async (req, res) => {
+  try {
+    const categorias = await Product.aggregate([
+      {
+        $group: {
+          _id: { category: '$category', subcategory: '$subcategory' },
+          products: {
+            $push: {
+              _id: '$_id',
+              name: '$name',
+              price: '$price',
+              description: '$description',
+              variations: '$variations',
+              size: '$size',
+              inStock: '$inStock',
+              quantity: '$quantity',
+              createdAt: '$createdAt',
+              lastModifiedAt: '$lastModifiedAt',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.category',
+          subcategories: {
+            $push: {
+              subcategory: '$_id.subcategory',
+              products: '$products',
+            },
+          },
+        },
+      },
+    ]);
+
+    res.json(categorias);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };

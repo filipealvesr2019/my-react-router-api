@@ -43,10 +43,7 @@ const productSchema = new mongoose.Schema(
     subcategory: {
       type: String, // Mudança: altere para String
     },
-    parentCategory: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Product",
-    },
+   
     inStock: {
       type: Boolean,
       default: true,
@@ -66,29 +63,6 @@ const productSchema = new mongoose.Schema(
   }
 );
 
-productSchema.statics.getAllCategoriesWithProducts = async function () {
-  const categories = await this.distinct("category").exec();
-  const categoriesWithProducts = [];
-
-  for (const category of categories) {
-    console.log(`Category: ${category}`);
-    
-    const subcategories = await this.distinct("subcategory", { category }).exec();
-    console.log(`Subcategories for ${category}: ${subcategories}`);
-    
-    const products = await this.find({ category }).exec();
-    console.log(`Products for ${category}: ${products.length}`);
-
-    categoriesWithProducts.push({
-      category,
-      subcategories,
-      products,
-    });
-  }
-  
-  console.log("All categories with products:", categoriesWithProducts);
-  return categoriesWithProducts;
-};
 
 
 

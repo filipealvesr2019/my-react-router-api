@@ -12,12 +12,12 @@ const {
   deleteProduct,
   createProductReview,
   getProductReviews,
-  deleteReview
+  deleteReview 
+
 } = require("../controllers/productController");
 
 const { isAuthenticatedUser } = require("../middleware/auth")
 
-router.route("/products").get(getProducts);
 router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
 router.route("/admin/product/new").post(
@@ -30,7 +30,8 @@ router.route("/admin/product/:id").delete( deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
-router.get("/getAllCategories", productController.getAllCategoriesWithProducts);
+router.get('/produtos/:categoria', productController.getProductsByCategory);
+router.get('/allCategories', productController.getAllCategories);
 
 // ... (outras rotas)
 
