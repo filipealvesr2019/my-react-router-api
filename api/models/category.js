@@ -1,6 +1,8 @@
 // models/Category.js
 const mongoose = require('mongoose');
-
+const imageSchema = new mongoose.Schema({
+  imageUrl: String,
+});
 const categorySchema = new mongoose.Schema({
   name:{ 
     type:String,
@@ -13,7 +15,7 @@ const categorySchema = new mongoose.Schema({
     ref: 'Subcategory',
   }],
   images: [{
-    type: String, // Assuming you store photo URLs
+    type:  [imageSchema], // Assuming you store photo URLs
   }],
 });
 

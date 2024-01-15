@@ -1,6 +1,6 @@
 const Category = require('../models/category'); // Substitua pelo caminho real do seu modelo
 const Subcategory = require('../models/Subcategory');
-const Product = require('../models/product');
+const mongoose = require('mongoose');
 // Adicionar nova categoria
 const newCategory = async (req, res) => {
     try {
@@ -144,34 +144,102 @@ const editCategory = async (req, res) => {
 };
 
 
+
+
+
 const addImageToCategory = async (req, res) => {
   try {
-    const { categoryId } = req.params;
     const { imageUrl } = req.body;
-// Inside your controller function
+    const { categoryId } = req.params;
 
-if (!imageUrl) {
-  return res.status(400).json({ message: 'Image URL is required.' });
-}
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Categoria não encontrada.' });
+    }
 
-// Rest of the logic
+    // Criar um novo objeto image com _id exclusivo
+    const newImage = {
+      _id: new mongoose.Types.ObjectId(),
+      imageUrl,
+    };
 
-    // Find the category by ID
+    category.images.push(newImage);
+    await category.save();
+
+    res.status(200).json({ message: 'Imagem adicionada com sucesso à categoria.', category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao adicionar a imagem à categoria.' });
+  }
+};
+
+const updateImage = async (req, res) => {
+  try {
+    const { categoryId, imageIndex } = req.params;
+    const { newImageUrl } = req.body;
+
     const category = await Category.findById(categoryId);
     if (!category) {
       return res.status(404).json({ message: 'Category not found.' });
     }
 
-    // Add the image URL to the category's images array
-    category.images.push(imageUrl);
+    if (imageIndex < 0 || imageIndex >= category.images.length) {
+      return res.status(400).json({ message: 'Invalid image index.' });
+    }
 
-    // Save the updated category in the database
+    const imageToUpdate = category.images[imageIndex];
+    if (!imageToUpdate) {
+      return res.status(404).json({ message: 'Image not found at the specified index.' });
+    }
+
+    imageToUpdate.imageUrl = newImageUrl;
     await category.save();
 
-    res.status(200).json({ message: 'Image added to the category successfully.', category });
+    res.status(200).json({ message: 'Image updated successfully in the category.', category });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error adding the image to the category.' });
+    res.status(500).json({ message: 'Error updating the image in the category.' });
+  }
+};
+
+
+const deleteImage = async (req, res) => {
+  try {
+    const { categoryId, imageIndex } = req.params;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found.' });
+    }
+
+    if (imageIndex < 0 || imageIndex >= category.images.length) {
+      return res.status(400).json({ message: 'Invalid image index.' });
+    }
+
+    category.images.splice(imageIndex, 1);
+    await category.save();
+
+    res.status(200).json({ message: 'Image deleted successfully from the category.', category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting the image from the category.' });
+  }
+};
+
+const getImagesByCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found.' });
+    }
+
+    const images = category.images;
+    res.status(200).json({ images });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error getting images by category.' });
   }
 };
 
@@ -184,7 +252,10 @@ if (!imageUrl) {
     addSubcategoryToCategory,
     deleteCategory, // Adiciona a função de exclusão de categoria
     editCategory, // Adiciona a função de edição de categoria
-    addImageToCategory
+    addImageToCategory,
+    updateImage, 
+    deleteImage,
+    getImagesByCategory
 
 
   };
