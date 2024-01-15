@@ -10,6 +10,7 @@ router.get('/categories/:categoryId', categoriesController.getCategoryById);
 router.post('/categories/:categoryId/subcategories', categoriesController.createSubcategory);
 router.post('/categories/:categoryName/subcategories', categoriesController.addSubcategoryToCategory);
 router.put('/admin/categories/:categoryId', categoriesController.editCategory);
+router.post('/categories/:categoryId/images', categoriesController.addImageToCategory);
 
 // Rota para excluir uma categoria
 router.delete('/admin/categories/:categoryId', categoriesController.deleteCategory);

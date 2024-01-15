@@ -12,6 +12,9 @@ const categorySchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Subcategory',
   }],
+  images: [{
+    type: String, // Assuming you store photo URLs
+  }],
 });
 
 module.exports = mongoose.model('Category', categorySchema);

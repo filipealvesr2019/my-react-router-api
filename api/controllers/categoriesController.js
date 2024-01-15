@@ -143,7 +143,37 @@ const editCategory = async (req, res) => {
   }
 };
 
-// ...
+
+const addImageToCategory = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const { imageUrl } = req.body;
+// Inside your controller function
+
+if (!imageUrl) {
+  return res.status(400).json({ message: 'Image URL is required.' });
+}
+
+// Rest of the logic
+
+    // Find the category by ID
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found.' });
+    }
+
+    // Add the image URL to the category's images array
+    category.images.push(imageUrl);
+
+    // Save the updated category in the database
+    await category.save();
+
+    res.status(200).json({ message: 'Image added to the category successfully.', category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error adding the image to the category.' });
+  }
+};
 
 
   module.exports = {
@@ -154,6 +184,7 @@ const editCategory = async (req, res) => {
     addSubcategoryToCategory,
     deleteCategory, // Adiciona a função de exclusão de categoria
     editCategory, // Adiciona a função de edição de categoria
+    addImageToCategory
 
 
   };
