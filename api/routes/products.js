@@ -33,7 +33,13 @@ router.route("/review").delete(isAuthenticatedUser, deleteReview);
 router.get('/allCategories', productController.getAllCategories);
 router.get('/products/search', productController.getProductsByKeyword);
 router.post('/product/:productId/add-color', productController.addColorToProduct);
-router.post('/product/:productId/add-color/:color/add-urls', productController.addUrlsToColor);
+router.post('/product/:productId/add-color/:colorName/add-urls', productController.addUrlsToColor);
+
+// Rota para excluir uma URL de uma cor específica
+router.delete('/product/:productId/color/:colorName/url/:urlId', productController.deleteUrlFromColor);
+
+// Rota para excluir uma cor completa de um produto
+router.delete('/product/:productId/color/:color', productController.deleteColorFromProduct);
 
 // ... (outras rotas)
 

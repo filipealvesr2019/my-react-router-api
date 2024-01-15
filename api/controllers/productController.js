@@ -383,6 +383,51 @@ exports.addColorToProduct = async (req, res, next) => {
 };
 
 
+
+
+
+
+
+// Controlador para excluir uma cor específica de um produto
+exports.deleteColorFromProduct = async (req, res, next) => {
+  try {
+    const { productId, color } = req.params;
+
+    // Encontre o produto pelo ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produto não encontrado.',
+      });
+    }
+
+    // Remova a cor do array de variações do produto
+    product.variations = product.variations.filter((variation) => variation.color !== color);
+
+    // Salve as alterações no banco de dados
+    await product.save();
+
+    res.status(200).json({
+      success: true,
+      message: `Cor ${color} excluída com sucesso do produto ${productId}.`,
+    });
+  } catch (error) {
+    console.error('Erro ao excluir cor:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor.',
+    });
+  }
+};
+
+
+
+
+
+
+
 // Controlador para adicionar URLs a uma cor específica de um produto existente
 exports.addUrlsToColor = async (req, res, next) => {
   try {
@@ -429,6 +474,68 @@ exports.addUrlsToColor = async (req, res, next) => {
     });
   } catch (error) {
     console.error('Erro ao adicionar URLs à cor do produto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+
+
+
+
+exports.deleteUrlFromColor = async (req, res, next) => {
+  try {
+    const productId = req.params.productId;
+    const color = req.params.color;
+    const urlIndex = req.params.urlIndex; // Índice da URL a ser excluída
+
+    // Encontra o produto pelo ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produto não encontrado',
+      });
+    }
+
+    // Encontra a variação específica pela cor
+    const variation = product.variations.find((v) => v.color === color);
+
+    if (!variation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cor não encontrada no produto',
+      });
+    }
+
+    // Verifica se o índice da URL está dentro dos limites
+    if (urlIndex < 0 || urlIndex >= variation.urls.length) {
+      return res.status(400).json({
+        success: false,
+        message: 'Índice de URL inválido',
+      });
+    }
+
+    // Remove a URL pelo índice
+    variation.urls.splice(urlIndex, 1);
+
+    // Atualiza a data de modificação do produto
+    product.lastModifiedAt = new Date();
+
+    // Salva as alterações no banco de dados
+    await product.save();
+
+    console.log('URL removida da cor do produto.');
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Erro ao remover URL da cor do produto:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',
