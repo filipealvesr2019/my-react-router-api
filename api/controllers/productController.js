@@ -482,16 +482,13 @@ exports.addUrlsToColor = async (req, res, next) => {
 };
 
 
-
-
-
 exports.deleteUrlFromColor = async (req, res, next) => {
   try {
     const productId = req.params.productId;
-    const color = req.params.color;
-    const urlIndex = req.params.urlIndex; // Índice da URL a ser excluída
+    const colorName = req.params.colorName;
+    const urlId = req.params.urlId;
 
-    // Encontra o produto pelo ID
+    // Encontrar o produto pelo ID
     const product = await Product.findById(productId);
 
     if (!product) {
@@ -501,8 +498,8 @@ exports.deleteUrlFromColor = async (req, res, next) => {
       });
     }
 
-    // Encontra a variação específica pela cor
-    const variation = product.variations.find((v) => v.color === color);
+    // Encontrar a variação específica pela cor
+    const variation = product.variations.find((v) => v.color === colorName);
 
     if (!variation) {
       return res.status(404).json({
@@ -511,21 +508,21 @@ exports.deleteUrlFromColor = async (req, res, next) => {
       });
     }
 
-    // Verifica se o índice da URL está dentro dos limites
-    if (urlIndex < 0 || urlIndex >= variation.urls.length) {
+    // Verificar se o índice da URL está dentro dos limites
+    if (urlId < 0 || urlId >= variation.urls.length) {
       return res.status(400).json({
         success: false,
         message: 'Índice de URL inválido',
       });
     }
 
-    // Remove a URL pelo índice
-    variation.urls.splice(urlIndex, 1);
+    // Remover a URL pelo índice
+    variation.urls.splice(urlId, 1);
 
-    // Atualiza a data de modificação do produto
+    // Atualizar a data de modificação do produto
     product.lastModifiedAt = new Date();
 
-    // Salva as alterações no banco de dados
+    // Salvar as alterações no banco de dados
     await product.save();
 
     console.log('URL removida da cor do produto.');
