@@ -425,16 +425,26 @@ exports.deleteColorFromProduct = async (req, res, next) => {
 
 
 
-
-
-
-// Controlador para adicionar URLs a uma cor específica de um produto existente
-exports.addUrlsToColor = async (req, res, next) => {
+exports.addUrlToColor = async (req, res, next) => {
   try {
     const productId = req.params.productId;
-    const color = req.params.color;
+    const colorName = req.params.colorName;
+    const { url } = req.body;
+    console.log('Recebendo requisição para adicionar URL:', productId, colorName, url);
 
-    // Encontra o produto pelo ID
+    // Restante do código...
+    
+    console.log('Nova URL adicionada à cor do produto.');
+    
+    // Validar se a URL está presente na solicitação
+    if (!url) {
+      return res.status(400).json({
+        success: false,
+        message: 'A URL é obrigatória',
+      });
+    }
+
+    // Encontrar o produto pelo ID
     const product = await Product.findById(productId);
 
     if (!product) {
@@ -444,8 +454,8 @@ exports.addUrlsToColor = async (req, res, next) => {
       });
     }
 
-    // Encontra a variação específica pela cor
-    const variation = product.variations.find((v) => v.color === color);
+    // Encontrar a variação específica pela cor
+    const variation = product.variations.find((v) => v.color === colorName);
 
     if (!variation) {
       return res.status(404).json({
@@ -454,32 +464,41 @@ exports.addUrlsToColor = async (req, res, next) => {
       });
     }
 
-    // Extrai as URLs do corpo da requisição
-    const { urls } = req.body;
+    // Adicionar a nova URL à variação
+    variation.urls.push(url);
 
-    // Adiciona as URLs à variação da cor
-    variation.urls = urls;
-
-    // Atualiza a data de modificação do produto
+    // Atualizar a data de modificação do produto
     product.lastModifiedAt = new Date();
 
-    // Salva as alterações no banco de dados
+    // Salvar as alterações no banco de dados
     await product.save();
 
-    console.log('URLs adicionadas à cor do produto.');
+    console.log('Nova URL adicionada à cor do produto.');
 
     res.status(200).json({
       success: true,
       product,
     });
   } catch (error) {
-    console.error('Erro ao adicionar URLs à cor do produto:', error);
+    console.error('Erro ao adicionar nova URL à cor do produto:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 exports.deleteUrlFromColor = async (req, res, next) => {
