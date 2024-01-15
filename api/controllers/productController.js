@@ -337,3 +337,101 @@ exports.getProductsByKeyword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+
+// Controlador para adicionar uma nova cor a um produto existente
+exports.addColorToProduct = async (req, res, next) => {
+  try {
+    const productId = req.params.productId;
+
+    // Encontra o produto pelo ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produto não encontrado',
+      });
+    }
+
+    // Extrai os dados da nova cor do corpo da requisição
+    const { color, urls } = req.body;
+
+    // Adiciona a nova cor às variações do produto
+    product.variations.push({ color, urls });
+
+    // Atualiza a data de modificação do produto
+    product.lastModifiedAt = new Date();
+
+    // Salva as alterações no banco de dados
+    await product.save();
+
+    console.log('Nova cor adicionada ao produto.');
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Erro ao adicionar cor ao produto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+
+// Controlador para adicionar URLs a uma cor específica de um produto existente
+exports.addUrlsToColor = async (req, res, next) => {
+  try {
+    const productId = req.params.productId;
+    const color = req.params.color;
+
+    // Encontra o produto pelo ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produto não encontrado',
+      });
+    }
+
+    // Encontra a variação específica pela cor
+    const variation = product.variations.find((v) => v.color === color);
+
+    if (!variation) {
+      return res.status(404).json({
+        success: false,
+        message: 'Cor não encontrada no produto',
+      });
+    }
+
+    // Extrai as URLs do corpo da requisição
+    const { urls } = req.body;
+
+    // Adiciona as URLs à variação da cor
+    variation.urls = urls;
+
+    // Atualiza a data de modificação do produto
+    product.lastModifiedAt = new Date();
+
+    // Salva as alterações no banco de dados
+    await product.save();
+
+    console.log('URLs adicionadas à cor do produto.');
+
+    res.status(200).json({
+      success: true,
+      product,
+    });
+  } catch (error) {
+    console.error('Erro ao adicionar URLs à cor do produto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
