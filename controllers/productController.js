@@ -663,3 +663,18 @@ const calculateExpirationDate = (expirationDays) => {
   }
   return null;
 };
+
+
+
+// Rota para obter produtos com desconto
+exports.getProductsOnOffer = async (req, res) => {
+  try {
+    // Encontrar produtos com desconto (você pode ajustar a lógica conforme necessário)
+    const productsOnOffer = await Product.find({ 'discount.currentPrice': { $gt: 0 } });
+
+    res.status(200).json({ products: productsOnOffer });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
