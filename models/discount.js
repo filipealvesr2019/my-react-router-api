@@ -1,3 +1,4 @@
+// models/discount.js
 const mongoose = require('mongoose');
 
 const discountSchema = new mongoose.Schema({
@@ -19,6 +20,7 @@ const discountSchema = new mongoose.Schema({
         {
           color: String,
           urls: [String],
+          _id: mongoose.Schema.Types.ObjectId, // Incluir o campo _id para armazenar o ID da variação
         },
       ],
       size: String,
@@ -26,6 +28,9 @@ const discountSchema = new mongoose.Schema({
       subcategory: String,
       inStock: Boolean,
       quantity: Number,
+      previousPrice: Number,
+      _id: mongoose.Schema.Types.ObjectId, // Incluir o campo _id para armazenar o ID do produto
+      __v: Number, // Incluir o campo __v para armazenar a versão do documento
     },
     required: true,
   },

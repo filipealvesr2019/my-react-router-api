@@ -25,6 +25,9 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
 
     // Verificar se o preço calculado é um número válido e maior ou igual a zero
     if (!isNaN(discountedPrice) && discountedPrice >= 0) {
+      // Salvar o preço original no campo previousPrice
+      copiedProduct.previousPrice = originalProduct.price;
+
       copiedProduct.price = discountedPrice;
 
       // Remover o _id da cópia para garantir que um novo ID seja gerado ao salvar
@@ -39,7 +42,10 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
       const discount = new Discount({
         productId: savedProduct._id,
         percentage: discountPercentage,
-        discountedProductDetails: savedProduct,
+        discountedProductDetails: {
+          ...savedProduct.toObject(),  // Adiciona todas as propriedades do produto
+          previousPrice: originalProduct.price,
+        },
       });
 
       // Salvar o desconto no banco de dados
@@ -67,9 +73,6 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
     });
   }
 };
-
-
-
 
 
 exports.getDiscountedProducts = async (req, res, next) => {
