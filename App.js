@@ -44,6 +44,9 @@ app.use('/', orders);
 
 
 
+app.get("/", (req, res) => {
+  res.send({ working: true });
+});
 
 app.use(bodyParser.urlencoded({extended:true}))
 
