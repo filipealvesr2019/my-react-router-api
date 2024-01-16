@@ -20,7 +20,7 @@ app.use(cookieParser());
 
 
 // Rotas
-const routes = require('./routes/AuthRoutes');
+const AuthRoutes = require('./routes/AuthRoutes');
 const orders = require('./routes/order');
 
 
@@ -42,7 +42,7 @@ app.use('/api', category)
 app.use('/api', subcategory)
 app.use('/api', slider)
 
-app.use('/api', routes);
+app.use('/', AuthRoutes);
 app.use('/api', orders);
 
 
