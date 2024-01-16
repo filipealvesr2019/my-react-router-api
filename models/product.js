@@ -63,12 +63,10 @@ const productSchema = new mongoose.Schema(
       default: Date.now,
     },
     discount: {
-      previousPrice: { type: Number, default: 0.0 },
-      currentPrice: { type: Number, default: 0.0 },
-      percentage: { type: Number, default: 0 },
-      expirationDate: { type: Date },
-      discountTimer: { type: Object }, // Referência para o cronômetro
+      percentage: Number,
+      duration: Number, // Duration in days or months
     },
+ 
   }
 );
 

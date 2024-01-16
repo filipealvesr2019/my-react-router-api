@@ -582,90 +582,6 @@ exports.listNewArrivals = async (req, res) => {
 
 
 
-
-
-exports.applyDiscount = async (req, res) => {
-  const { productId, discountPercentage, expirationDays } = req.body;
-
-  try {
-    // Encontrar o produto pelo ID
-    const product = await Product.findById(productId);
-
-    if (!product) {
-      return res.status(404).json({ message: 'Produto não encontrado' });
-    }
-
-    // Cancelar cronômetro existente, se houver
-    cancelDiscountTimer(product);
-
-    // Armazenar o preço anterior antes de aplicar o desconto
-    const previousPrice = product.price;
-
-    // Calcular o preço atual com desconto
-    const currentPrice = applyDiscountToPrice(previousPrice, discountPercentage);
-
-    // Atualizar o produto com os novos valores
-    product.price = currentPrice;
-    product.discount = {
-      previousPrice,
-      currentPrice,
-      percentage: discountPercentage,
-      expirationDate: calculateExpirationDate(expirationDays),
-      discountTimer: createDiscountTimer(product),
-    };
-
-    // Salvar as alterações no produto
-    await product.save();
-
-    res.status(200).json({ message: 'Desconto aplicado com sucesso', product });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Erro interno do servidor' });
-  }
-};
-
-// Função auxiliar para criar o cronômetro individual
-const createDiscountTimer = (product) => {
-  if (product.discount.expirationDate) {
-    return cron.schedule(
-      product.discount.expirationDate,
-      () => {
-        // Lógica para reverter desconto quando o cronômetro expirar
-        product.price = product.discount.previousPrice;
-        product.discount = {};
-        product.save();
-      },
-      { scheduled: false }
-    );
-  }
-  return null;
-};
-
-// Função auxiliar para cancelar o cronômetro existente
-const cancelDiscountTimer = (product) => {
-  if (product.discount.discountTimer) {
-    product.discount.discountTimer.destroy();
-  }
-};
-
-// Função auxiliar para aplicar desconto ao preço
-const applyDiscountToPrice = (originalPrice, discountPercentage) => {
-  const discountFactor = 1 - discountPercentage / 100;
-  return originalPrice * discountFactor;
-};
-
-// Função auxiliar para calcular a data de expiração
-const calculateExpirationDate = (expirationDays) => {
-  if (expirationDays > 0) {
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + expirationDays);
-    return expirationDate;
-  }
-  return null;
-};
-
-
-
 // Rota para obter produtos com desconto
 exports.getProductsOnOffer = async (req, res) => {
   try {
@@ -678,3 +594,68 @@ exports.getProductsOnOffer = async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
+
+
+// controllers/productController.js
+
+exports.applyDiscount = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { percentage, duration } = req.body;
+
+    // Calculate the expiration date based on the current date and duration
+    const expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + duration);
+
+    // Find the product by ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Product not found' });
+    }
+
+    // Calculate the discounted price
+    const discountedPrice = product.originalPrice * (1 - percentage / 100);
+
+    // Update the discount information in the product
+    product.discount = {
+      percentage,
+      expirationDate,
+    };
+
+    // Save the changes to the database
+    await product.save();
+
+    // Respond with the details of the applied discount
+    res.json({
+      expirationDate,
+      originalPrice: product.originalPrice,
+      discountedPrice,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+exports.getProductsWithDiscount = async (req, res) => {
+  try {
+    // Find all products with discounts that haven't expired
+    const currentDate = new Date();
+    const productsWithDiscount = await Product.find({
+      'discount': {
+        $exists: true,
+        $gte: currentDate, // Only get products with discounts that haven't expired
+      },
+    });
+
+    // Respond with the list of products with discounts
+    res.json(productsWithDiscount);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+

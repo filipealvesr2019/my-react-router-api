@@ -45,10 +45,11 @@ router.delete('/product/:productId/color/:color', productController.deleteColorF
 
 
 // Rota para aplicar desconto
-router.post('/products/applyDiscount', productController.applyDiscount);
 router.get('/products/offers', productController.getProductsOnOffer);
+router.get('/products/with-discount', productController.getProductsWithDiscount);
 
 
+router.post('/product/:id/apply-discount', productController.getProductsOnOffer);
 
 
 router.get('/products/new-arrivals', productController.listNewArrivals);
