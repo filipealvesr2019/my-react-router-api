@@ -21,8 +21,7 @@
     "vercel": "^32.3.0"
   },
   "scripts": {
-    "dev": "nodemon App.js",
-    "build": "react-scripts build"
+    "dev": "nodemon App.js"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
