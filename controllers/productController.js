@@ -596,49 +596,6 @@ exports.getProductsOnOffer = async (req, res) => {
 };
 
 
-// controllers/productController.js
-
-exports.applyDiscount = async (req, res) => {
-  try {
-    const productId = req.params.id;
-    const { percentage, duration } = req.body;
-
-    // Calculate the expiration date based on the current date and duration
-    const expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + duration);
-
-    // Find the product by ID
-    const product = await Product.findById(productId);
-
-    if (!product) {
-      return res.status(404).json({ message: 'Product not found' });
-    }
-
-    // Calculate the discounted price
-    const discountedPrice = product.originalPrice * (1 - percentage / 100);
-
-    // Update the discount information in the product
-    product.discount = {
-      percentage,
-      expirationDate,
-    };
-
-    // Save the changes to the database
-    await product.save();
-
-    // Respond with the details of the applied discount
-    res.json({
-      expirationDate,
-      originalPrice: product.originalPrice,
-      discountedPrice,
-    });
-
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 exports.getProductsWithDiscount = async (req, res) => {
   try {
     // Find all products with discounts that haven't expired
@@ -659,3 +616,64 @@ exports.getProductsWithDiscount = async (req, res) => {
   }
 };
 
+// controllers/productController.js
+
+exports.applyDiscount = async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const { percentage, duration } = req.body;
+
+    // Encontrar o produto pelo ID
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Produto não encontrado' });
+    }
+
+    // Salvar o preço original antes de aplicar o desconto
+    const originalPrice = product.price;
+
+    // Calcular a data de expiração com base na data atual e na duração
+    const expirationDate = calculateExpirationDate(duration);
+
+    // Validar se a expirationDate é uma data válida
+    if (!(expirationDate instanceof Date && !isNaN(expirationDate))) {
+      return res.status(400).json({ message: 'Data de expiração inválida' });
+    }
+
+    // Verificar se o desconto já expirou
+    if (expirationDate <= new Date()) {
+      return res.status(400).json({ message: 'O desconto já expirou' });
+    }
+
+    // Atualizar as informações de desconto no produto
+    product.discount = {
+      percentage,
+      expirationDate,
+    };
+
+    // Calcular o preço com desconto e atualizar o campo price
+    product.price = originalPrice * (1 - percentage / 100);
+
+    // Salvar as alterações no banco de dados
+    await product.save();
+
+    // Responder com os detalhes do desconto aplicado
+    res.json({
+      expirationDate,
+      originalPrice,
+      discountedPrice: product.price,
+      success: true,
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+
+const calculateExpirationDate = (duration) => {
+  const expirationDate = new Date();
+  expirationDate.setDate(expirationDate.getDate() + duration);
+  return expirationDate;
+};

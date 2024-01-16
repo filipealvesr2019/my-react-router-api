@@ -63,9 +63,16 @@ const productSchema = new mongoose.Schema(
       default: Date.now,
     },
     discount: {
-      percentage: Number,
-      duration: Number, // Duration in days or months
+      percentage: {
+        type: Number,
+        default: 0,
+      },
+      expirationDate: {
+        type: Date,
+        default: null,
+      },
     },
+  
  
   }
 );

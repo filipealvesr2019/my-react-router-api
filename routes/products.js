@@ -49,7 +49,7 @@ router.get('/products/offers', productController.getProductsOnOffer);
 router.get('/products/with-discount', productController.getProductsWithDiscount);
 
 
-router.post('/product/:id/apply-discount', productController.getProductsOnOffer);
+router.post('/product/:id/apply-discount', productController.applyDiscount);
 
 
 router.get('/products/new-arrivals', productController.listNewArrivals);
