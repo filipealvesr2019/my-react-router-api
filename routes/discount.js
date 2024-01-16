@@ -10,7 +10,5 @@ router.post('/copyProduct', discountController.copyAndApplyDiscount);
 router.get('/ofertas', discountController.getDiscountedProducts);
 router.delete('/delete/productOffer/:productId', discountController.deleteDiscountedProduct);
 
-// Rota para aplicar desconto a um produto
-router.post('/applyDiscount', discountController.applyDiscountToProduct);
 
 module.exports = router;
