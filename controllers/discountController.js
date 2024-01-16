@@ -1,10 +1,11 @@
-// controllers/productController.js
+// controllers/discountController.js
 const Product = require('../models/product');
 const Discount = require('../models/discount');
+const cloneDeep = require('lodash/cloneDeep');
 
-exports.copyProduct = async (req, res, next) => {
+exports.copyAndApplyDiscount = async (req, res, next) => {
   try {
-    const { productId } = req.body;
+    const { productId, discountPercentage } = req.body;
 
     // Encontrar o produto original pelo ID
     const originalProduct = await Product.findById(productId);
@@ -16,27 +17,57 @@ exports.copyProduct = async (req, res, next) => {
       });
     }
 
-    // Copiar o produto original
-    const copiedProduct = new Product({ ...originalProduct.toObject(), _id: undefined });
+    // Criar uma cópia profunda do produto original
+    const copiedProduct = cloneDeep(originalProduct.toObject());
 
-    // Salvar o produto copiado no banco de dados
-    await copiedProduct.save();
+    // Aplicar desconto ao preço do produto copiado
+    const discountedPrice = copiedProduct.price * (1 - discountPercentage / 100);
 
-    console.log("Produto copiado salvo no banco de dados.");
+    // Verificar se o preço calculado é um número válido e maior ou igual a zero
+    if (!isNaN(discountedPrice) && discountedPrice >= 0) {
+      copiedProduct.price = discountedPrice;
 
-    // Retornar o ID do produto copiado
-    res.status(201).json({
-      success: true,
-      copiedProductId: copiedProduct._id,
-    });
+      // Remover o _id da cópia para garantir que um novo ID seja gerado ao salvar
+      delete copiedProduct._id;
+
+      // Salvar o produto copiado no banco de dados
+      const savedProduct = await Product.create(copiedProduct);
+
+      console.log("Produto copiado salvo no banco de dados com desconto aplicado:", savedProduct);
+
+      // Criar um desconto associado ao produto copiado
+      const discount = new Discount({
+        productId: savedProduct._id,
+        percentage: discountPercentage,
+        discountedProductDetails: savedProduct,
+      });
+
+      // Salvar o desconto no banco de dados
+      await discount.save();
+
+      console.log("Documento de desconto salvo no banco de dados:", discount);
+
+      // Retornar o ID do produto copiado
+      res.status(201).json({
+        success: true,
+        copiedProductId: savedProduct._id,
+      });
+    } else {
+      // Se o preço não for um número válido ou menor que zero, retornar uma resposta apropriada
+      return res.status(400).json({
+        success: false,
+        message: "O desconto resulta em um preço inválido ou negativo.",
+      });
+    }
   } catch (error) {
-    console.error("Erro ao copiar o produto:", error);
+    console.error("Erro ao copiar o produto e aplicar desconto:", error);
     res.status(500).json({
       success: false,
       message: "Erro interno do servidor",
     });
   }
 };
+
 
 exports.applyDiscountToProduct = async (req, res, next) => {
   try {
@@ -60,17 +91,55 @@ exports.applyDiscountToProduct = async (req, res, next) => {
 
     console.log("Desconto aplicado ao produto copiado e salvo no banco de dados.");
 
-    // Criar um registro de desconto associado ao produto copiado
-    const discount = new Discount({
-      productId: copiedProductId,
-      percentage: discountPercentage,
-    });
-    await discount.save();
+    // Atualizar o documento de desconto com a nova porcentagem
+    const discount = await Discount.findOne({ productId: copiedProductId });
+
+    if (discount) {
+      discount.percentage = discountPercentage;
+      await discount.save();
+    }
 
     // Retornar o produto com desconto
     res.status(200).json({
       success: true,
       discountedProduct: copiedProduct,
+    });
+  } catch (error) {
+    console.error("Erro ao aplicar desconto ao produto:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro interno do servidor",
+    });
+  }
+};
+
+
+exports.applyDiscountToProduct = async (req, res, next) => {
+  try {
+    const { discountId, discountPercentage } = req.body;
+
+    // Encontrar o documento de desconto pelo ID
+    const discount = await Discount.findById(discountId);
+
+    if (!discount) {
+      return res.status(404).json({
+        success: false,
+        message: "Documento de desconto não encontrado",
+      });
+    }
+
+    // Atualizar a porcentagem de desconto no documento de desconto
+    discount.percentage = discountPercentage;
+
+    // Salvar o documento de desconto atualizado no banco de dados
+    await discount.save();
+
+    console.log("Desconto aplicado e salvo no banco de dados.");
+
+    // Retornar o documento de desconto atualizado
+    res.status(200).json({
+      success: true,
+      updatedDiscount: discount,
     });
   } catch (error) {
     console.error("Erro ao aplicar desconto ao produto:", error);

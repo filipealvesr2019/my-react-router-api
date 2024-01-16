@@ -31,6 +31,7 @@ const category = require('./routes/category');
 const subcategory = require('./routes/Subcategory');
 
 const slider = require('./routes/Slider');
+const discount = require('./routes/discount');
 
 
 
@@ -41,6 +42,7 @@ app.use('/api', order)
 app.use('/api', category)
 app.use('/api', subcategory)
 app.use('/api', slider)
+app.use('/api', discount);
 
 app.use('/', AuthRoutes);
 app.use('/api', orders);

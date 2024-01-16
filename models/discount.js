@@ -1,4 +1,3 @@
-// models/discount.js
 const mongoose = require('mongoose');
 
 const discountSchema = new mongoose.Schema({
@@ -10,6 +9,25 @@ const discountSchema = new mongoose.Schema({
   percentage: {
     type: Number,
     required: [true, 'Porcentagem de desconto é obrigatória'],
+  },
+  discountedProductDetails: {
+    type: {
+      name: String,
+      price: Number,
+      description: String,
+      variations: [
+        {
+          color: String,
+          urls: [String],
+        },
+      ],
+      size: String,
+      category: String,
+      subcategory: String,
+      inStock: Boolean,
+      quantity: Number,
+    },
+    required: true,
   },
 });
 
