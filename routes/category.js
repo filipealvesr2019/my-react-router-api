@@ -16,7 +16,7 @@ router.put('/admin/categories/:categoryId', categoriesController.editCategory);
 router.get('/categories/:categoryId/images', categoriesController.getImagesByCategory);
 
 // Rota para atualizar uma imagem em uma categoria
-router.put('/categories/:categoryId/images/:imageIndex', categoriesController.updateImage);
+router.put('/category/updateImageURL', categoriesController.updateImageURL);
 
 // Rota para excluir uma imagem de uma categoria
 router.delete('/categories/:categoryId/images/:imageIndex', categoriesController.deleteImage);

@@ -173,34 +173,10 @@ const addImageToCategory = async (req, res) => {
   }
 };
 
-const updateImage = async (req, res) => {
-  try {
-    const { categoryId, imageIndex } = req.params;
-    const { newImageUrl } = req.body;
 
-    const category = await Category.findById(categoryId);
-    if (!category) {
-      return res.status(404).json({ message: 'Category not found.' });
-    }
 
-    if (imageIndex < 0 || imageIndex >= category.images.length) {
-      return res.status(400).json({ message: 'Invalid image index.' });
-    }
 
-    const imageToUpdate = category.images[imageIndex];
-    if (!imageToUpdate) {
-      return res.status(404).json({ message: 'Image not found at the specified index.' });
-    }
 
-    imageToUpdate.imageUrl = newImageUrl;
-    await category.save();
-
-    res.status(200).json({ message: 'Image updated successfully in the category.', category });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error updating the image in the category.' });
-  }
-};
 
 
 const deleteImage = async (req, res) => {
@@ -243,6 +219,37 @@ const getImagesByCategory = async (req, res) => {
   }
 };
 
+// controllers/categoriesController.js
+
+
+const updateImageURL = async (req, res) => {
+  const { categoryId, imageIndex, newImageUrl } = req.body;
+
+  try {
+    const category = await Category.findById(categoryId);
+
+    if (!category) {
+      return res.status(404).json({ message: 'Categoria não encontrada' });
+    }
+
+    if (
+      imageIndex < 0 ||
+      imageIndex >= category.images.length ||
+      category.images[imageIndex].length === 0
+    ) {
+      return res.status(400).json({ message: 'Índice de imagem inválido' });
+    }
+
+    category.images[imageIndex][0].imageUrl = newImageUrl;
+    await category.save();
+
+    res.status(200).json({ message: 'URL da imagem atualizada com sucesso', category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+
 
   module.exports = {
     newCategory,
@@ -253,9 +260,9 @@ const getImagesByCategory = async (req, res) => {
     deleteCategory, // Adiciona a função de exclusão de categoria
     editCategory, // Adiciona a função de edição de categoria
     addImageToCategory,
-    updateImage, 
     deleteImage,
-    getImagesByCategory
+    getImagesByCategory,
+    updateImageURL
 
 
   };
