@@ -558,3 +558,17 @@ exports.deleteUrlFromColor = async (req, res, next) => {
     });
   }
 };
+
+
+
+
+exports.listNewArrivals = async (req, res) => {
+  try {
+    // Find the latest added products
+    const newArrivals = await Product.find().sort('-createdAt').limit(5); // Limiting to 5 for example, adjust as needed
+    res.json(newArrivals);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error fetching new arrivals' });
+  }
+};

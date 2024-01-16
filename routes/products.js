@@ -43,6 +43,13 @@ router.delete('/product/:productId/color/:colorName/url/:urlId', productControll
 // Rota para excluir uma cor completa de um produto
 router.delete('/product/:productId/color/:color', productController.deleteColorFromProduct);
 
+
+
+
+
+
+router.get('/products/new-arrivals', productController.listNewArrivals);
+
 // ... (outras rotas)
 
 module.exports = router;
