@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const cron = require('node-cron');
 
 const productSchema = new mongoose.Schema(
   {
@@ -52,6 +53,7 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 1,
     },
+    
     createdAt: {
       type: Date,
       default: Date.now,
@@ -59,6 +61,13 @@ const productSchema = new mongoose.Schema(
     lastModifiedAt: {
       type: Date,
       default: Date.now,
+    },
+    discount: {
+      previousPrice: { type: Number, default: 0.0 },
+      currentPrice: { type: Number, default: 0.0 },
+      percentage: { type: Number, default: 0 },
+      expirationDate: { type: Date },
+      discountTimer: { type: Object }, // Referência para o cronômetro
     },
   }
 );

@@ -44,6 +44,8 @@ router.delete('/product/:productId/color/:colorName/url/:urlId', productControll
 router.delete('/product/:productId/color/:color', productController.deleteColorFromProduct);
 
 
+// Rota para aplicar desconto
+router.post('/products/applyDiscount', productController.applyDiscount);
 
 
 
