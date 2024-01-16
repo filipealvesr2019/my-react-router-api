@@ -617,6 +617,7 @@ exports.applyDiscount = async (req, res) => {
       product.price = product.originalPrice || product.price;
       // Remover o desconto
       delete product.discount;
+      delete product.originalPrice;
     } else {
       // Salvar o preço original antes de aplicar o desconto
       product.originalPrice = product.price;
@@ -645,4 +646,3 @@ exports.applyDiscount = async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
-

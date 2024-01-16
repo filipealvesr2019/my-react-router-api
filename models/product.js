@@ -68,7 +68,9 @@ const productSchema = new mongoose.Schema(
         default: 0,
       }
     },
-  
+    originalPrice: {
+      type: Number,
+    },
  
   }
 );
