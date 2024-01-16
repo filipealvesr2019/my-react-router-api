@@ -597,8 +597,6 @@ exports.getProductsOnOffer = async (req, res) => {
 
 
 // controllers/productController.js
-// controllers/productController.js
-
 exports.applyDiscount = async (req, res) => {
   try {
     const productId = req.params.id;
