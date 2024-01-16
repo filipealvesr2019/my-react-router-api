@@ -23,6 +23,7 @@
   "scripts": {
     "dev": "nodemon App.js"
   },
+  
   "devDependencies": {
     "nodemon": "^3.0.1"
   }
