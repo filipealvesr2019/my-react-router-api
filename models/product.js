@@ -62,18 +62,10 @@ const productSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
-    discount: {
-      percentage: {
-        type: Number,
-        default: 0,
-      }
-    },
-  
- 
+   
   }
 );
-
-
+v
 
 
 module.exports = mongoose.model("Product", productSchema);

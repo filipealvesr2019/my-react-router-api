@@ -44,12 +44,8 @@ router.delete('/product/:productId/color/:colorName/url/:urlId', productControll
 router.delete('/product/:productId/color/:color', productController.deleteColorFromProduct);
 
 
-
-router.post('/product/:id/apply-discount', productController.applyDiscount);
-
-router.get('/produtos/ofertas', productController.getProductsOnOffer);
-
 router.get('/products/new-arrivals', productController.listNewArrivals);
+
 
 // ... (outras rotas)
 
