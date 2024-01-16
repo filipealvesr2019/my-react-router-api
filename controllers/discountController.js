@@ -176,3 +176,41 @@ exports.getDiscountedProducts = async (req, res, next) => {
       });
     }
   };
+
+
+
+
+
+
+exports.deleteDiscountedProduct = async (req, res, next) => {
+  try {
+    const { productId } = req.params;
+
+    // Verificar se o produto existe
+    const product = await Product.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({
+        success: false,
+        message: 'Produto não encontrado',
+      });
+    }
+
+    // Remover o produto com desconto
+    await Product.findByIdAndRemove(productId);
+
+    // Remover o desconto associado ao produto
+    await Discount.findOneAndRemove({ productId });
+
+    res.status(200).json({
+      success: true,
+      message: 'Produto com desconto removido com sucesso',
+    });
+  } catch (error) {
+    console.error('Erro ao excluir produto com desconto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
