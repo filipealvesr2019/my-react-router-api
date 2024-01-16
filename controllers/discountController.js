@@ -149,3 +149,30 @@ exports.applyDiscountToProduct = async (req, res, next) => {
     });
   }
 };
+
+
+
+
+exports.getDiscountedProducts = async (req, res, next) => {
+    try {
+      // Encontrar todos os descontos ativos
+      const discounts = await Discount.find({ percentage: { $gt: 0 } });
+  
+      // Obter os IDs dos produtos com desconto
+      const productIds = discounts.map(discount => discount.productId);
+  
+      // Encontrar os produtos correspondentes
+      const productsWithDiscount = await Product.find({ _id: { $in: productIds } });
+  
+      res.status(200).json({
+        success: true,
+        productsWithDiscount,
+      });
+    } catch (error) {
+      console.error("Erro ao obter produtos com desconto:", error);
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor",
+      });
+    }
+  };
