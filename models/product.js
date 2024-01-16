@@ -66,11 +66,7 @@ const productSchema = new mongoose.Schema(
       percentage: {
         type: Number,
         default: 0,
-      },
-      expirationDate: {
-        type: Date,
-        default: null,
-      },
+      }
     },
   
  
