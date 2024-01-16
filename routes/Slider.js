@@ -12,6 +12,6 @@ router.put('/slider/updateImage/:imageId', sliderController.updateImageInSlider)
 router.delete('/slider/deleteImage/:imageId', sliderController.deleteImageFromSlider);
 
 // Rota para excluir uma imagem do slider
-router.delete('/slider/deleteImage/:sliderId/:imageIndex', sliderController.deleteImageFromSlider);
+router.delete('/slider/deleteImage/:imageIndex', sliderController.deleteImageFromSlider);
 
 module.exports = router;
