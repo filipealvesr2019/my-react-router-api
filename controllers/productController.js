@@ -544,7 +544,6 @@ exports.listNewArrivals = async (req, res) => {
 
 
 // Controller para obter produtos com base no tamanho e categoria
-// Controller para obter produtos com base no tamanho e categoria
 exports.getProductsByFilter = async (req, res) => {
   try {
     const { size, category } = req.query;
@@ -555,12 +554,11 @@ exports.getProductsByFilter = async (req, res) => {
     const filter = {};
 
     if (size) {
-      // Use uma expressão regular para encontrar produtos com o tamanho específico
       filter.size = new RegExp(`\\b${size}\\b`);
     }
 
     if (category) {
-      filter.category = category;
+      filter.category = new RegExp(`\\b${category}\\b`);
     }
 
     console.log("Filtro aplicado:", filter);
@@ -575,4 +573,3 @@ exports.getProductsByFilter = async (req, res) => {
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
-
