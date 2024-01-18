@@ -538,16 +538,16 @@ exports.listNewArrivals = async (req, res) => {
   }
 };
 
+// Controller para obter produtos com base no tamanho, categoria, subcategoria e faixa de preço
 
-
-
-// Controller para obter produtos com base no tamanho, categoria e faixa de preço
+// Controller para obter produtos com base no tamanho, categoria, subcategoria e faixa de preço
 exports.getProductsByFilter = async (req, res) => {
   try {
-    const { size, category, priceRange } = req.query;
+    const { size, category, subcategory, priceRange } = req.query;
 
     console.log("Tamanhos:", size);
     console.log("Categoria:", category);
+    console.log("Subcategoria:", subcategory);
     console.log("Faixa de Preço:", priceRange);
 
     const filter = {};
@@ -556,16 +556,17 @@ exports.getProductsByFilter = async (req, res) => {
       filter.size = new RegExp(`\\b${size}\\b`);
     }
 
-    if (category) {
-      filter.category = new RegExp(`\\b${category}\\b`);
+    if (priceRange) {
+      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
+      filter.price = { $gte: minPrice, $lte: maxPrice };
     }
 
-    if (priceRange) {
-      // Separe a faixa de preço em valores mínimo e máximo
-      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
-
-      // Adicione o filtro de preço à consulta
-      filter.price = { $gte: minPrice, $lte: maxPrice };
+    if (subcategory) {
+      // Remova espaços em branco extras ao redor da subcategoria
+      const cleanedSubcategory = subcategory.trim();
+      filter.subcategory = new RegExp(`\\b${cleanedSubcategory}\\b`, 'i'); // 'i' torna a busca case-insensitive
+    } else if (category) {
+      filter.category = new RegExp(`\\b${category}\\b`);
     }
 
     console.log("Filtro aplicado:", filter);
