@@ -538,16 +538,15 @@ exports.listNewArrivals = async (req, res) => {
   }
 };
 
-// Controller para obter produtos com base no tamanho, categoria, subcategoria e faixa de preço
-
-// Controller para obter produtos com base no tamanho, categoria, subcategoria e faixa de preço
+// Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 exports.getProductsByFilter = async (req, res) => {
   try {
-    const { size, category, subcategory, priceRange } = req.query;
+    const { size, category, subcategory, color, priceRange } = req.query;
 
     console.log("Tamanhos:", size);
     console.log("Categoria:", category);
     console.log("Subcategoria:", subcategory);
+    console.log("Cor:", color);
     console.log("Faixa de Preço:", priceRange);
 
     const filter = {};
@@ -559,6 +558,10 @@ exports.getProductsByFilter = async (req, res) => {
     if (priceRange) {
       const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
       filter.price = { $gte: minPrice, $lte: maxPrice };
+    }
+
+    if (color) {
+      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
     }
 
     if (subcategory) {
