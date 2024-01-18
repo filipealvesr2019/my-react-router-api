@@ -541,15 +541,14 @@ exports.listNewArrivals = async (req, res) => {
 
 
 
-
-
-// Controller para obter produtos com base no tamanho e categoria
+// Controller para obter produtos com base no tamanho, categoria e faixa de preço
 exports.getProductsByFilter = async (req, res) => {
   try {
-    const { size, category } = req.query;
+    const { size, category, priceRange } = req.query;
 
     console.log("Tamanhos:", size);
     console.log("Categoria:", category);
+    console.log("Faixa de Preço:", priceRange);
 
     const filter = {};
 
@@ -559,6 +558,14 @@ exports.getProductsByFilter = async (req, res) => {
 
     if (category) {
       filter.category = new RegExp(`\\b${category}\\b`);
+    }
+
+    if (priceRange) {
+      // Separe a faixa de preço em valores mínimo e máximo
+      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
+
+      // Adicione o filtro de preço à consulta
+      filter.price = { $gte: minPrice, $lte: maxPrice };
     }
 
     console.log("Filtro aplicado:", filter);
