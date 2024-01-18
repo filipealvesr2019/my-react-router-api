@@ -76,12 +76,13 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
 
 
 
-// controllers/discountController.js
+
+
 exports.getProductsByMaxDiscount = async (req, res) => {
   try {
     const discounts = await Discount.find({ percentage: { $gt: 0 } })
       .sort({ percentage: -1 })
-      .limit(5); // Altere a quantidade conforme necessário
+      .limit(5);
 
     if (discounts.length === 0) {
       return res.status(404).json({
@@ -92,25 +93,33 @@ exports.getProductsByMaxDiscount = async (req, res) => {
 
     const productIds = discounts.map(discount => discount.productId);
 
-    let productsWithMaxDiscount = await Product.find({ _id: { $in: productIds } });
+    // Buscar produtos com desconto
+    const productsWithMaxDiscount = await Product.find({ _id: { $in: productIds } });
 
-    // Mapear os produtos com suas porcentagens de desconto correspondentes
-    const productsWithDiscountDetails = productsWithMaxDiscount.map(product => {
-      const discount = discounts.find(discount => discount.productId.toString() === product._id.toString());
+    // Ordenar produtos com base nos descontos correspondentes
+    const sortedProductsWithMaxDiscount = productsWithMaxDiscount.sort((a, b) => {
+      const discountA = discounts.find(d => d.productId.equals(a._id));
+      const discountB = discounts.find(d => d.productId.equals(b._id));
+
+      return discountB.percentage - discountA.percentage; // Ordenar do maior para o menor desconto
+    });
+
+    // Mapear os descontos correspondentes aos produtos
+    const productsWithDiscountDetails = sortedProductsWithMaxDiscount.map(product => {
+      const discount = discounts.find(d => d.productId.equals(product._id));
+
       return {
         ...product.toObject(),
         discount: {
           percentage: discount.percentage,
+          previousPrice: discount.discountedProductDetails.previousPrice,
         },
       };
     });
 
-    // Ordenar os produtos com base na porcentagem de desconto
-    productsWithMaxDiscount = productsWithDiscountDetails.sort((a, b) => b.discount.percentage - a.discount.percentage);
-
     res.status(200).json({
       success: true,
-      productsWithMaxDiscount,
+      productsWithMaxDiscount: productsWithDiscountDetails,
     });
   } catch (error) {
     console.error('Erro ao obter produtos com maiores descontos:', error);
@@ -120,6 +129,16 @@ exports.getProductsByMaxDiscount = async (req, res) => {
     });
   }
 };
+
+
+
+
+
+
+
+
+
+
 
 exports.deleteDiscountedProduct = async (req, res, next) => {
   try {
