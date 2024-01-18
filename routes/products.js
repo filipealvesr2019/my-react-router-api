@@ -30,7 +30,6 @@ router.route("/admin/product/:id").delete( deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
-router.get('/allCategories', productController.getAllCategories);
 router.get('/products/search', productController.getProductsByKeyword);
 router.post('/product/:productId/add-color', productController.addColorToProduct);
 

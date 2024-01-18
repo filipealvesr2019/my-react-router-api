@@ -26,4 +26,12 @@ router.post('/categories/:categoryId/images', categoriesController.addImageToCat
 // Rota para excluir uma categoria
 router.delete('/admin/categories/:categoryId', categoriesController.deleteCategory);
 
+
+
+router.get('/allCategories', categoriesController.getAllCategoriesWithProducts);
+
+
+
+
+
 module.exports = router;

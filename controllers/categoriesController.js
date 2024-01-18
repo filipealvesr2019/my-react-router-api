@@ -1,5 +1,7 @@
 const Category = require('../models/category'); // Substitua pelo caminho real do seu modelo
 const Subcategory = require('../models/Subcategory');
+const Product = require('../models/product'); // Substitua pelo caminho real do seu modelo Product
+
 const mongoose = require('mongoose');
 // Adicionar nova categoria
 const newCategory = async (req, res) => {
@@ -251,6 +253,75 @@ const updateImageURL = async (req, res) => {
 };
 
 
+
+
+
+
+
+// Função para obter todas as categorias, subcategorias e produtos
+const getAllCategoriesWithProducts = async (req, res) => {
+  try {
+    const result = await Product.aggregate([
+      {
+        $match: {
+          category: { $exists: true, $ne: null },
+        },
+      },
+      {
+        $group: {
+          _id: { category: '$category', subcategory: '$subcategory' },
+          products: {
+            $push: {
+              _id: '$_id',
+              name: '$name',
+              price: '$price',
+              description: '$description',
+              variations: '$variations',
+              size: '$size',
+              inStock: '$inStock',
+              quantity: '$quantity',
+              createdAt: '$createdAt',
+              lastModifiedAt: '$lastModifiedAt',
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: '$_id.category',
+          subcategories: {
+            $push: {
+              subcategory: '$_id.subcategory',
+              products: '$products',
+            },
+          },
+        },
+      },
+    ]);
+
+    const categories = result.map(categoryGroup => {
+      return {
+        category: categoryGroup._id,
+        subcategories: categoryGroup.subcategories.map(subcategoryGroup => {
+          return {
+            subcategory: subcategoryGroup.subcategory,
+            products: subcategoryGroup.products.reduce((allProducts, product) => {
+              return allProducts.concat(product);
+            }, []),
+          };
+        }),
+      };
+    });
+
+    res.json(categories);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+};
+
+
+
   module.exports = {
     newCategory,
     getAllCategories,
@@ -262,7 +333,8 @@ const updateImageURL = async (req, res) => {
     addImageToCategory,
     deleteImage,
     getImagesByCategory,
-    updateImageURL
+    updateImageURL,
+    getAllCategoriesWithProducts
 
 
   };

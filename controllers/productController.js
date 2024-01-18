@@ -272,47 +272,12 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 
-// Função para obter todas as categorias, subcategorias e produtos
-exports.getAllCategories = async (req, res) => {
-  try {
-    const categorias = await Product.aggregate([
-      {
-        $group: {
-          _id: { category: '$category', subcategory: '$subcategory' },
-          products: {
-            $push: {
-              _id: '$_id',
-              name: '$name',
-              price: '$price',
-              description: '$description',
-              variations: '$variations',
-              size: '$size',
-              inStock: '$inStock',
-              quantity: '$quantity',
-              createdAt: '$createdAt',
-              lastModifiedAt: '$lastModifiedAt',
-            },
-          },
-        },
-      },
-      {
-        $group: {
-          _id: '$_id.category',
-          subcategories: {
-            $push: {
-              subcategory: '$_id.subcategory',
-              products: '$products',
-            },
-          },
-        },
-      },
-    ]);
 
-    res.json(categorias);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
+
+
+
+
+
 
 
 
