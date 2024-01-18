@@ -286,30 +286,13 @@ const getAllCategoriesWithProducts = async (req, res) => {
           },
         },
       },
-      {
-        $group: {
-          _id: '$_id.category',
-          subcategories: {
-            $push: {
-              subcategory: '$_id.subcategory',
-              products: '$products',
-            },
-          },
-        },
-      },
     ]);
 
-    const categories = result.map(categoryGroup => {
+    const categories = result.map(group => {
       return {
-        category: categoryGroup._id,
-        subcategories: categoryGroup.subcategories.map(subcategoryGroup => {
-          return {
-            subcategory: subcategoryGroup.subcategory,
-            products: subcategoryGroup.products.reduce((allProducts, product) => {
-              return allProducts.concat(product);
-            }, []),
-          };
-        }),
+        category: group._id.category,
+        subcategory: group._id.subcategory,
+        products: group.products,
       };
     });
 
