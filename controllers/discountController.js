@@ -75,33 +75,49 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
 };
 
 
-exports.getDiscountedProducts = async (req, res, next) => {
-    try {
-      // Encontrar todos os descontos ativos
-      const discounts = await Discount.find({ percentage: { $gt: 0 } });
-  
-      // Obter os IDs dos produtos com desconto
-      const productIds = discounts.map(discount => discount.productId);
-  
-      // Encontrar os produtos correspondentes
-      const productsWithDiscount = await Product.find({ _id: { $in: productIds } });
-  
-      res.status(200).json({
-        success: true,
-        productsWithDiscount,
-      });
-    } catch (error) {
-      console.error("Erro ao obter produtos com desconto:", error);
-      res.status(500).json({
+
+// controllers/discountController.js
+
+exports.getProductsByMaxDiscount = async (req, res) => {
+  try {
+    const discounts = await Discount.find({ percentage: { $gt: 0 } })
+      .sort({ percentage: -1 })
+      .limit(5);
+
+    if (discounts.length === 0) {
+      return res.status(404).json({
         success: false,
-        message: "Erro interno do servidor",
+        message: 'Nenhum produto com desconto encontrado',
       });
     }
-  };
 
+    const productIds = discounts.map(discount => discount.productId);
 
+    const productsWithMaxDiscount = await Product.find({ _id: { $in: productIds } });
 
+    // Adicione as porcentagens à resposta
+    const productsWithMaxDiscountAndPercentage = productsWithMaxDiscount.map(product => {
+      const discount = discounts.find(d => d.productId.equals(product._id));
+      return {
+        ...product.toObject(),
+        discount: {
+          percentage: discount.percentage,
+        },
+      };
+    });
 
+    res.status(200).json({
+      success: true,
+      productsWithMaxDiscount: productsWithMaxDiscountAndPercentage,
+    });
+  } catch (error) {
+    console.error('Erro ao obter produtos com maiores descontos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
 
 
 exports.deleteDiscountedProduct = async (req, res, next) => {
