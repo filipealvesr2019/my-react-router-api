@@ -27,7 +27,6 @@ router.post('/categories/:categoryId/images', categoriesController.addImageToCat
 router.delete('/admin/categories/:categoryId', categoriesController.deleteCategory);
 
 
-
 router.get('/allCategories', categoriesController.getAllCategoriesWithProducts);
 
 

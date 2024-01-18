@@ -261,58 +261,51 @@ const updateImageURL = async (req, res) => {
 // Função para obter todas as categorias, subcategorias e produtos
 const getAllCategoriesWithProducts = async (req, res) => {
   try {
-    const { category, size } = req.query;
-
-    const aggregationStages = [
+    const result = await Product.aggregate([
       {
         $match: {
           category: { $exists: true, $ne: null },
         },
       },
-    ];
-
-    // Adiciona estágios de filtragem com base nos parâmetros da solicitação
-    if (category) {
-      aggregationStages.push({
-        $match: {
-          'category': { $regex: new RegExp(category, 'i') },
+      {
+        $group: {
+          _id: { category: '$category', subcategory: '$subcategory' },
+          products: {
+            $push: {
+              _id: '$_id',
+              name: '$name',
+              price: '$price',
+              description: '$description',
+              variations: '$variations',
+              size: '$size',
+              inStock: '$inStock',
+              quantity: '$quantity',
+              createdAt: '$createdAt',
+              lastModifiedAt: '$lastModifiedAt',
+            },
+          },
         },
-      });
-    }
+      },
+    ]);
 
-    if (size) {
-      // Adiciona a condição de tamanho apenas se estiver definido
-      aggregationStages.push({
-        $match: {
-          'size': { $regex: new RegExp(size, 'i') },
-        },
-      });
-    }
+    console.log('Result:', result);
 
-    console.log('Agregação Antes:', aggregationStages);
-
-    const result = await Product.aggregate(aggregationStages);
-
-    console.log('Agregação Depois:', aggregationStages);
-    console.log('Category:', category);
-    console.log('Size:', size);
-    console.log('Aggregation Result:', result);
-
-    const categories = result.map(product => {
+    const categories = result.map(group => {
       return {
-        category: product.category,
-        subcategory: product.subcategory,
-        products: [product],
+        category: group._id.category,
+        subcategory: group._id.subcategory,
+        products: group.products,
       };
     });
 
     res.json(categories);
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
+
 
 
 
@@ -330,7 +323,9 @@ const getAllCategoriesWithProducts = async (req, res) => {
     deleteImage,
     getImagesByCategory,
     updateImageURL,
-    getAllCategoriesWithProducts
+    getAllCategoriesWithProducts,
+ 
+
 
 
   };

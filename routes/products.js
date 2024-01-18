@@ -45,6 +45,7 @@ router.delete('/product/:productId/color/:color', productController.deleteColorF
 
 router.get('/products/new-arrivals', productController.listNewArrivals);
 
+router.get("/productsFilter", productController.getProductsByFilter);
 
 // ... (outras rotas)
 

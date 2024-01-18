@@ -543,4 +543,36 @@ exports.listNewArrivals = async (req, res) => {
 
 
 
+// Controller para obter produtos com base no tamanho e categoria
+// Controller para obter produtos com base no tamanho e categoria
+exports.getProductsByFilter = async (req, res) => {
+  try {
+    const { size, category } = req.query;
+
+    console.log("Tamanhos:", size);
+    console.log("Categoria:", category);
+
+    const filter = {};
+
+    if (size) {
+      // Use uma expressão regular para encontrar produtos com o tamanho específico
+      filter.size = new RegExp(`\\b${size}\\b`);
+    }
+
+    if (category) {
+      filter.category = category;
+    }
+
+    console.log("Filtro aplicado:", filter);
+
+    const products = await Product.find(filter);
+
+    console.log("Produtos encontrados:", products);
+
+    res.json(products);
+  } catch (error) {
+    console.error("Erro ao obter produtos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
 
