@@ -539,6 +539,7 @@ exports.listNewArrivals = async (req, res) => {
 };
 
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
+// Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 exports.getProductsByFilter = async (req, res) => {
   try {
     const { size, category, subcategory, color, priceRange } = req.query;
@@ -549,7 +550,7 @@ exports.getProductsByFilter = async (req, res) => {
     console.log("Cor:", color);
     console.log("Faixa de Preço:", priceRange);
 
-    const filter = {};
+    const filter = { quantity: { $gt: 0 } }; // Adiciona a condição para filtrar produtos com quantidade maior que zero
 
     if (size) {
       filter.size = new RegExp(`\\b${size}\\b`);
