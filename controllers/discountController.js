@@ -2,6 +2,9 @@
 const Product = require('../models/product');
 const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
+// controllers/discountController.js
+
+// ... outras importações
 
 exports.copyAndApplyDiscount = async (req, res, next) => {
   try {
@@ -29,6 +32,9 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
       copiedProduct.previousPrice = originalProduct.price;
 
       copiedProduct.price = discountedPrice;
+
+      // Salvar a porcentagem de desconto no campo discountPercentage
+      copiedProduct.discountPercentage = discountPercentage;
 
       // Remover o _id da cópia para garantir que um novo ID seja gerado ao salvar
       delete copiedProduct._id;
@@ -74,9 +80,14 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
   }
 };
 
+// ... outros controladores
 
 
 
+
+// controllers/discountController.js
+
+// ... outras importações
 
 exports.getProductsByMaxDiscount = async (req, res) => {
   try {
@@ -110,9 +121,10 @@ exports.getProductsByMaxDiscount = async (req, res) => {
 
       return {
         ...product.toObject(),
-        discount: {
+        discountDetails: {
           percentage: discount.percentage,
           previousPrice: discount.discountedProductDetails.previousPrice,
+          discountPercentage: product.discountPercentage, // Adiciona a porcentagem de desconto ao produto
         },
       };
     });
@@ -130,7 +142,7 @@ exports.getProductsByMaxDiscount = async (req, res) => {
   }
 };
 
-
+// ... outros controladores
 
 
 

@@ -62,6 +62,14 @@ const productSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    previousPrice: {
+      type: Number,
+      default: null, // Você pode ajustar o valor padrão conforme necessário
+    },
+    discountPercentage: {
+      type: Number,
+      default: null, // Você pode ajustar o valor padrão conforme necessário
+    },
    
   }
 );
