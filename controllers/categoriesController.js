@@ -265,6 +265,9 @@ const getAllCategoriesWithProducts = async (req, res) => {
       {
         $match: {
           category: { $exists: true, $ne: null },
+          quantity: { $gt: 0 },
+          inStock: true, // Adicione esta condição para filtrar apenas produtos em estoque
+          discountPercentage: null, // Adicione esta condição para filtrar produtos sem desconto
         },
       },
       {
