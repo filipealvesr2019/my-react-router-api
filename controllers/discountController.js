@@ -4,7 +4,6 @@ const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
 // controllers/discountController.js
 
-// ... outras importações
 
 exports.copyAndApplyDiscount = async (req, res, next) => {
   try {
@@ -16,7 +15,7 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
     if (!originalProduct) {
       return res.status(404).json({
         success: false,
-        message: "Produto original não encontrado",
+        message: 'Produto original não encontrado',
       });
     }
 
@@ -42,14 +41,14 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
       // Salvar o produto copiado no banco de dados
       const savedProduct = await Product.create(copiedProduct);
 
-      console.log("Produto copiado salvo no banco de dados com desconto aplicado:", savedProduct);
+      console.log('Produto copiado salvo no banco de dados com desconto aplicado:', savedProduct);
 
       // Criar um desconto associado ao produto copiado
       const discount = new Discount({
         productId: savedProduct._id,
         percentage: discountPercentage,
         discountedProductDetails: {
-          ...savedProduct.toObject(),  // Adiciona todas as propriedades do produto
+          ...savedProduct.toObject(), // Adiciona todas as propriedades do produto
           previousPrice: originalProduct.price,
         },
       });
@@ -57,7 +56,11 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
       // Salvar o desconto no banco de dados
       await discount.save();
 
-      console.log("Documento de desconto salvo no banco de dados:", discount);
+      console.log('Documento de desconto salvo no banco de dados:', discount);
+
+      // Atualizar a quantidade do produto original para zero
+      originalProduct.quantity = 0;
+      await originalProduct.save();
 
       // Retornar o ID do produto copiado
       res.status(201).json({
@@ -68,17 +71,18 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
       // Se o preço não for um número válido ou menor que zero, retornar uma resposta apropriada
       return res.status(400).json({
         success: false,
-        message: "O desconto resulta em um preço inválido ou negativo.",
+        message: 'O desconto resulta em um preço inválido ou negativo.',
       });
     }
   } catch (error) {
-    console.error("Erro ao copiar o produto e aplicar desconto:", error);
+    console.error('Erro ao copiar o produto e aplicar desconto:', error);
     res.status(500).json({
       success: false,
-      message: "Erro interno do servidor",
+      message: 'Erro interno do servidor',
     });
   }
 };
+
 
 // ... outros controladores
 
