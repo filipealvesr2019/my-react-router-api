@@ -39,6 +39,9 @@ const registerUser = async (req, res, next) => {
   }
 };
 
+
+
+
 // logar usuario com JWT token
 const loginUser = async (req, res, next) => {
   const { email, password } = req.body;
@@ -78,6 +81,9 @@ const loginUser = async (req, res, next) => {
   if (user.role === "administrador") {
     // Lógica para administrador
     // Adicione aqui as ações específicas para o administrador
+  } else if (user.role === "gerente") {
+    // Lógica para gerente
+    // Adicione aqui as ações específicas para o gerente
   } else if (user.role === "funcionario") {
     // Lógica para funcionário
     // Adicione aqui as ações específicas para o funcionário
@@ -88,19 +94,6 @@ const loginUser = async (req, res, next) => {
   sendToken(user, 200, res);
 };
 
-const getUser = async (req, res) => {
-  try {
-    const userId = req.params.id;
-    const user = await User.findById(userId).exec();
-    if (!user) {
-      return res.status(404).send("Usuário não encontrado!");
-    }
-    res.status(200).json(user);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send("Erro interno do servidor ao buscar usuário!");
-  }
-};
 
 const updateUser = async (req, res) => {
   try {
@@ -120,6 +113,14 @@ const updateUser = async (req, res) => {
     res.status(400).send("Erro ao atualizar usuário!");
   }
 };
+
+
+
+
+
+
+
+
 
 const deleteUser = async (req, res) => {
   try {
