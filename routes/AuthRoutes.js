@@ -13,7 +13,7 @@ router.use(adminAuth);
 
 // All routes below this point require both authentication and admin authorization
 
-router.get("/users", getAllUsers); // Rota para buscar todos os usuários
+router.get("/users", protect, getAllUsers); // Rota para buscar todos os usuários
 router.post("/login", loginUser); // Use directly from AuthController
 
 router.post("/user", registerUser); // Use directly from AuthController
