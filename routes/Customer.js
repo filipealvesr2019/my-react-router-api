@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const { isAuthenticatedUser } = require("../middleware/auth")
-import {adminAuth} from "../middleware/adminAuth"
 const {
   registerUser,
   loginUser,
@@ -19,7 +18,7 @@ router.post('/password/forgot', forgotPassword);
 
 
 router.route("/user/:id").put(updateAdminProfile, isAuthenticatedUser);
-router.route("/users").get(allUsers, isAuthenticatedUser, adminAuth);
+router.route("/users").get(allUsers, isAuthenticatedUser);
 router.route("/user/:id")
 .get(getUserDetails, isAuthenticatedUser)
 .delete(deleteAdminProfile, isAuthenticatedUser)

@@ -1,14 +1,12 @@
 const express = require("express");
 const router = express.Router();
-const protect = require('../middleware/protect');
-const adminAuth = require('../middleware/adminAuth');
+
 const productController = require('../controllers/productController'); // Corrigir o nome do controlador
 
 const {
   getProducts,
   newProduct,
   getSingleProduct,
-  updateProduct,
   deleteProduct,
   createProductReview,
   getProductReviews,
