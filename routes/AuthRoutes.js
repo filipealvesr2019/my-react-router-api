@@ -1,21 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const protect = require("../middleware/protect");
-
-const {
-  getUser,
-  updateUser,
-  deleteUser,
-  getUserByUsername,
-  getAllUsers,
-  loginUser,
-  registerUser,
-} = require("../controllers/AuthController");
+const { getUser, updateUser, deleteUser, getUserByUsername, getAllUsers, loginUser, registerUser } = require("../controllers/AuthController");
 const { Userlogout } = require("../controllers/AuthController");
-const { isAuthenticatedUser } = require("../middleware/auth");
-const adminAuth = require("../middleware/adminAuth");
 
-router.get("/users", getAllUsers); // Rota para buscar todos os usuários
+
+// Apply the protect middleware to all routes below this point
+router.use(protect);
+
+
+
+router.get("/users", getAllUsers, isAuthenticatedUser); // Rota para buscar todos os usuários
 router.post("/login", loginUser); // Use directly from AuthController
 
 router.post("/user", registerUser); // Use directly from AuthController
