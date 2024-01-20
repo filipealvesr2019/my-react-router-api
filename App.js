@@ -1,8 +1,7 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+
 
 
 const mongoose = require('mongoose');
@@ -17,7 +16,7 @@ require('dotenv').config();
 app.use(cors({ origin: '*' }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
+app.use(bodyParser.urlencoded({ extended: true }));
 
 // Rotas
 const AuthRoutes = require('./routes/AuthRoutes');
@@ -51,7 +50,6 @@ app.use('/api', orders);
 
 
 
-app.use(bodyParser.urlencoded({extended:true}))
 
 
 app.use(express.json());
