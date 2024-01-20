@@ -266,22 +266,38 @@ exports.forgotPassword = async (req, res, next) => {
     user.resetPasswordExpire = Date.now() + 3600000; // Token expira em 1 hora
     await user.save();
 
-    
-// Configurar o transporte do e-mail
-const transport = nodemailer.createTransport({
-  host: "sandbox.smtp.mailtrap.io",
-  port: 2525,
-  auth: {
-    user: process.env.USER_MAILTRAP ,
-    pass: process.env.PASSWORD_MAILTRAP 
-  }
-});
-
-
-    res.status(200).json({
-      success: true,
-      message: 'Um e-mail de recuperação de senha foi enviado.',
+    // Configurar o transporte do e-mail
+    const transport = nodemailer.createTransport({
+      host: process.env.MAILTRAP_HOST,
+      port: process.env.MAILTRAP_PORT,
+      auth: {
+        user: process.env.MAILTRAP_USER,
+        pass: process.env.MAILTRAP_PASSWORD,
+      },
     });
+    
+
+    // Enviar e-mail
+    try {
+      await transport.sendMail({
+        from: 'seu-email@example.com',
+        to: user.email,
+        subject: 'Recuperação de Senha',
+        text: `Use o seguinte token para redefinir sua senha: ${resetToken}`,
+      });
+
+      console.log('E-mail enviado com sucesso para:', user.email);
+      res.status(200).json({
+        success: true,
+        message: 'Um e-mail de recuperação de senha foi enviado.',
+      });
+    } catch (emailError) {
+      console.error('Erro ao enviar e-mail:', emailError);
+      return res.status(500).json({
+        success: false,
+        error: 'Erro ao enviar e-mail de recuperação de senha.',
+      });
+    }
   } catch (error) {
     console.error('Erro ao solicitar recuperação de senha', error);
     res.status(500).json({
@@ -295,7 +311,3 @@ const transport = nodemailer.createTransport({
 function generateResetToken() {
   return crypto.randomBytes(20).toString('hex');
 }
-
-
-
-
