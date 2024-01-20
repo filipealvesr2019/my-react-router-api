@@ -1,12 +1,4 @@
-
 {
-  "name": "vercel-testing",
-  "version": "1.0.0",
-  "description": "node express testing",
-  "main": "index.js",
-  "engines": {
-    "node": "18.x"
-  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
@@ -28,10 +20,9 @@
     "uuid": "^9.0.1",
     "validator": "^13.11.0",
     "vercel": "^32.7.2"
-    
   },
   "scripts": {
-    "dev": "node App.js"
+    "dev": "nodemon App.js"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
