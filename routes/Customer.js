@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const { isAuthenticatedUser } = require("../middleware/auth")
-import {adminAuth, pro} from "../middleware/adminAuth"
+import {adminAuth} from "../middleware/adminAuth"
 const {
   registerUser,
   loginUser,
