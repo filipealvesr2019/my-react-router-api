@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const jwt = require('jsonwebtoken'); // Adicione esta linha
+const { isAuthenticatedUser } = require("../middleware/auth")
 
 const {
   getUser,
@@ -49,7 +50,7 @@ const authorizeAdmin = (req, res, next) => {
 };
 
 // Rotas protegidas
-router.get("/users", authenticateUser, authorizeAdmin, getAllUsers);
+router.get("/users", isAuthenticatedUser, authorizeAdmin, getAllUsers);
 router.get("/user/:id", authenticateUser, authorizeAdmin, getUser);
 router.put("/user/:id", authenticateUser, authorizeAdmin, updateUser);
 router.delete("/user/:id", authenticateUser, authorizeAdmin, deleteUser);
