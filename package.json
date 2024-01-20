@@ -22,7 +22,7 @@
     "vercel": "^32.7.2"
   },
   "scripts": {
-    "dev": "nodemon App.js"
+    "dev": "node App.js"
   },
   "devDependencies": {
     "nodemon": "^3.0.1"
