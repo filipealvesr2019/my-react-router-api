@@ -44,7 +44,7 @@ app.use('/api', subcategory)
 app.use('/api', slider)
 app.use('/api', discount);
 
-app.use('/api', AuthRoutes);
+app.use('/', AuthRoutes);
 app.use('/api', orders);
 
 
