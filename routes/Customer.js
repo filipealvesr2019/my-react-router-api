@@ -1,28 +1,26 @@
 const express = require("express");
 const router = express.Router();
-const { isAuthenticatedUser } = require("../middleware/auth")
+
 const {
-  registerUser,
+  getUser,
+  updateUser,
+  deleteUser,
+  getUserByUsername,
+  getAllUsers,
   loginUser,
-  logout,
-  allUsers,
-  getUserDetails,
-  updateAdminProfile,
-  deleteAdminProfile,
-  forgotPassword
-} = require("../controllers/CustomerController");
-router.route("/register").post(registerUser);
-router.route("/login").post(loginUser);
-router.route("/logout").get(logout);
-router.post('/password/forgot', forgotPassword);
+  registerUser,
+} = require("../controllers/AuthController");
+const { Userlogout } = require("../controllers/AuthController");
 
+router.get("/users", getAllUsers); // Rota para buscar todos os usuários
+router.post("/login", loginUser); // Use directly from AuthController
 
-router.route("/user/:id").put(updateAdminProfile, isAuthenticatedUser);
-router.route("/users").get(allUsers, isAuthenticatedUser);
-router.route("/user/:id")
-.get(getUserDetails, isAuthenticatedUser)
-.delete(deleteAdminProfile, isAuthenticatedUser)
-
-
+router.post("/user", registerUser); // Use directly from AuthController
+router.get("/user/:id", getUser); // Rota para buscar usuário por ID
+router.put("/user/:id", updateUser); // Rota para atualizar usuário por ID
+router.delete("/user/:id", deleteUser); // Rota para excluir usuário por ID
+router.get("/user", getUserByUsername); // Rota para buscar usuário por nome de usuário
+router.route("/logout").post( Userlogout);
 
 module.exports = router;
+
