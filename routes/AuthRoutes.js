@@ -11,8 +11,9 @@ const {
   registerUser,
 } = require("../controllers/AuthController");
 const { Userlogout } = require("../controllers/AuthController");
+const { isAuthenticatedUser } = require("../middleware/auth");
 
-router.get("/users", getAllUsers); // Rota para buscar todos os usuários
+router.get("/users",isAuthenticatedUser, getAllUsers); // Rota para buscar todos os usuários
 router.post("/login", loginUser); // Use directly from AuthController
 
 router.post("/user", registerUser); // Use directly from AuthController
