@@ -12,7 +12,6 @@ const {
   deleteAdminProfile,
   forgotPassword
 } = require("../controllers/CustomerController");
-const adminAuth = require("../middleware/adminAuth");
 router.route("/register").post(registerUser);
 router.route("/login").post(loginUser);
 router.route("/logout").get(logout);
