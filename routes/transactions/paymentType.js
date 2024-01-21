@@ -2,10 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const PaymentType = require('../models/paymentType'); // Supondo que você tenha um modelo PaymentType
+const PaymentType = require('../../models/transactions/paymentType'); // Supondo que você tenha um modelo PaymentType
 
 // Rota para obter todos os tipos de pagamento
-router.get('/', async (req, res) => {
+router.get('/paymentType', async (req, res) => {
   try {
     const paymentTypes = await PaymentType.find();
     res.json(paymentTypes);
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Rota para criar um novo tipo de pagamento
-router.post('/', async (req, res) => {
+router.post('/paymentType', async (req, res) => {
   const paymentType = new PaymentType({
     name: req.body.name, // Substitua com os campos necessários para o tipo de pagamento
     // Adicione outros campos conforme necessário

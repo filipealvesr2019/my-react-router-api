@@ -2,10 +2,10 @@
 
 const express = require('express');
 const router = express.Router();
-const Account = require('../models/account'); // Supondo que você tenha um modelo Account
+const Account = require('../../models/transactions/account'); // Supondo que você tenha um modelo Account
 
 // Rota para obter todas as contas
-router.get('/', async (req, res) => {
+router.get('/account', async (req, res) => {
   try {
     const accounts = await Account.find();
     res.json(accounts);
@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 });
 
 // Rota para criar uma nova conta
-router.post('/', async (req, res) => {
+router.post('/account', async (req, res) => {
   const account = new Account({
     name: req.body.name, // Substitua com os campos necessários para a conta
     // Adicione outros campos conforme necessário

@@ -32,12 +32,13 @@ const subcategory = require('./routes/Subcategory');
 
 const slider = require('./routes/Slider');
 const discount = require('./routes/discount');
-const transactionRouter = require('./routes/transactions');
-const vendor = require('./routes/vendor');
-const paymentType = require('./routes/paymentType');
-const categoryType = require('./routes/categoryType');
+const transactionRouter = require('./routes/transactions/transactions');
+const vendor = require('./routes/transactions/vendor');
+const paymentType = require('./routes/transactions/paymentType');
+const categoryType = require('./routes/transactions/categoryType');
 
-const account = require('./routes/account');
+const account = require('./routes/transactions/account');
+const expenseRouter = require('./routes/expenses/expenses');
 
 
 
@@ -58,6 +59,7 @@ app.use('/api', vendor);
 app.use('/api', paymentType);
 app.use('/api', categoryType);
 app.use('/api', account);
+app.use('/api', expenseRouter);
 
 
 
