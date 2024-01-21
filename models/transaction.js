@@ -1,11 +1,10 @@
+// models/movement.js
+
 const mongoose = require('mongoose');
 
-const transactionSchema = new mongoose.Schema({
-  description: String,
-  amount: Number,
-  category: String,
-  date: { type: Date, default: Date.now },
+const movementSchema = new mongoose.Schema({
   type: String, // 'income' or 'expense'
+  month: String, // 'YYYY-MM'
 });
 
-module.exports = mongoose.model('Transaction', transactionSchema);
+module.exports = mongoose.model('Movement', movementSchema);
