@@ -25,6 +25,11 @@ router.post('/create/expense', async (req, res) => {
     paymentType: req.body.paymentType,
     date: req.body.date,
     document: req.body.document,
+    totalAmount: req.body.totalAmount,
+    paymentDate: req.body.paymentDate,
+    paidValue: req.body.paidValue,
+
+
     // Adicione outros campos conforme necessário
   });
 

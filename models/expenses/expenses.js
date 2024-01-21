@@ -13,7 +13,8 @@ const expenseSchema = new mongoose.Schema({
   creationDate: { type: Date, default: Date.now }, // Data de Criação
   document: String, // Documento
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'CategoryType' }, // Referência ao modelo Category
-  payment: { type: Date }, // Data de Pagamento
+  totalAmount: Number, // Valor total da despesa
+  paymentDate:{ type: Date }, // Data de Pagamento
   paymentType: { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentType' }, // Referência ao modelo PaymentType
   periodicity: String, // Periodicidade
 });
