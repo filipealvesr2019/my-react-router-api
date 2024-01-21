@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Expense = require('../../models/expenses/expenses');
+const Expense = require('../../models/expense');
 
 // Rota para obter todas as despesas
 router.get('/expense', async (req, res) => {
@@ -49,33 +49,6 @@ router.post('/create/expense', async (req, res) => {
       res.status(400).json({ message: error.message });
     }
   });
-  
-  // Rota para atualizar o status das despesas vencidas
- // Rota para atualizar as despesas vencidas
-router.put('/update/overdue-expenses', async (req, res) => {
-    try {
-      // Encontre todas as despesas vencidas
-      const overdueExpenses = await Expense.find({
-        dueDate: { $lt: new Date() },
-        status: { $ne: 'overdue' },
-      });
-  
-      // Verifique se há despesas vencidas
-      if (overdueExpenses.length > 0) {
-        // Atualize o status dessas despesas para 'overdue'
-        await Expense.updateMany(
-          { _id: { $in: overdueExpenses.map(exp => exp._id) } },
-          { $set: { status: 'overdue' } }
-        );
-  
-        res.json({ message: 'Despesas vencidas atualizadas com sucesso.' });
-      } else {
-        res.json({ message: 'Não há despesas vencidas para atualizar.' });
-      }
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-  
+
   
 module.exports = router;

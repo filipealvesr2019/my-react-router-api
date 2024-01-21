@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Vendor = require('../../models/transactions/vendor'); // Supondo que você tenha um modelo Vendor
+const Vendor = require('../models/vendor'); // Supondo que você tenha um modelo Vendor
 
 // Rota para obter todos os fornecedores
 router.get('/vendor', async (req, res) => {

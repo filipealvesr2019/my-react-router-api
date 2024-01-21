@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const CategoryType = require('../../models/transactions/categoryType'); // Supondo que você tenha um modelo Category
+const CategoryType = require('../models/categoryType'); // Supondo que você tenha um modelo Category
 
 // Rota para obter todas as categorias
 router.get('/type', async (req, res) => {

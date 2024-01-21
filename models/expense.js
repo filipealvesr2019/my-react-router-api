@@ -1,5 +1,3 @@
-// models/expense.js
-
 const mongoose = require('mongoose');
 
 const expenseSchema = new mongoose.Schema({
@@ -13,11 +11,11 @@ const expenseSchema = new mongoose.Schema({
   document: String, // Documento
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'CategoryType' }, // Referência ao modelo Category
   totalAmount: Number, // Valor total da despesa
-  paymentDate:{ type: Date }, // Data de Pagamento
+  paymentDate: { type: Date }, // Data de Pagamento
   paymentType: { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentType' }, // Referência ao modelo PaymentType
-  periodicity: String, // Periodicidade,
+  periodicity: String, // Periodicidade
+  dueDate: { type: Date }, // Data de Vencimento
   status: { type: String, enum: ['pending', 'paid', 'overdue'], default: 'pending' },
-
 });
 
 module.exports = mongoose.model('Expense', expenseSchema);

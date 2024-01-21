@@ -34,14 +34,13 @@ const subcategory = require('./routes/Subcategory');
 
 const slider = require('./routes/Slider');
 const discount = require('./routes/discount');
-const transactionRouter = require('./routes/transactions/transactions');
-const vendor = require('./routes/transactions/vendor');
-const paymentType = require('./routes/transactions/paymentType');
-const categoryType = require('./routes/transactions/categoryType');
+const transactionRouter = require('./routes/transactions');
+const vendor = require('./routes/vendor');
+const paymentType = require('./routes/paymentType');
+const categoryType = require('./routes/categoryType');
 
-const account = require('./routes/transactions/account');
-const expenseRouter = require('./routes/expenses/expenses');
-const { updateOverdueExpenses } = require('./routes/expenses/expenses'); // Importe a função da rota
+const account = require('./routes/account');
+const expenseRouter = require('./routes/expense/expenses');
 
 
 
@@ -67,15 +66,30 @@ app.use('/api', expenseRouter);
 
 
 // Agende a execução da rota a cada dia às 3:00 AM
-cron.schedule('0 3 * * *', () => {
-  updateOverdueExpenses({}, { json: true }, (err, res) => {
-    if (err) {
-      console.error('Erro ao atualizar despesas vencidas:', err);
-    } else {
+cron.schedule('0 */6 * * *', async () => {
+  try {
+    console.log('Cronjob executado com sucesso.');
+    const overdueExpenses = await Expense.find({
+      dueDate: { $lt: new Date() },
+      status: { $ne: 'overdue' },
+    });
+    console.log('Despesas vencidas encontradas:', overdueExpenses);
+
+    if (overdueExpenses.length > 0) {
+      console.log('Atualizando status das despesas para "overdue".');
+      await Expense.updateMany(
+        { _id: { $in: overdueExpenses.map(exp => exp._id) } },
+        { $set: { status: 'overdue' } }
+      );
       console.log('Despesas vencidas atualizadas com sucesso.');
+    } else {
+      console.log('Não há despesas vencidas para atualizar.');
     }
-  });
+  } catch (error) {
+    console.error('Erro ao atualizar despesas vencidas:', error);
+  }
 });
+
 
 
 app.use(express.json());

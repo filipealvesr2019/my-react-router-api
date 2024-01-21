@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const PaymentType = require('../../models/transactions/paymentType'); // Supondo que você tenha um modelo PaymentType
+const PaymentType = require('../models/paymentType'); // Supondo que você tenha um modelo PaymentType
 
 // Rota para obter todos os tipos de pagamento
 router.get('/paymentType', async (req, res) => {

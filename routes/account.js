@@ -2,7 +2,7 @@
 
 const express = require('express');
 const router = express.Router();
-const Account = require('../../models/transactions/account'); // Supondo que você tenha um modelo Account
+const Account = require('../models/account'); // Supondo que você tenha um modelo Account
 
 // Rota para obter todas as contas
 router.get('/account', async (req, res) => {
