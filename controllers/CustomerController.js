@@ -281,7 +281,7 @@ exports.forgotPassword = async (req, res, next) => {
     try {
       console.log('Antes do envio de e-mail');
       await transport.sendMail({
-        from: 'seu-email@mailtrap.io', // Use o e-mail fornecido pelo Mailtrap
+        from: 'filipealvesrds2019@mailtrap.io', // Use o e-mail fornecido pelo Mailtrap
         to: user.email,
         subject: 'Recuperação de Senha',
         text: `Use o seguinte token para redefinir sua senha: ${resetToken}`,
