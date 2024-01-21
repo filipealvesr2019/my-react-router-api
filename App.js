@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
+const cron = require('node-cron');
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -39,6 +41,7 @@ const categoryType = require('./routes/transactions/categoryType');
 
 const account = require('./routes/transactions/account');
 const expenseRouter = require('./routes/expenses/expenses');
+const { updateOverdueExpenses } = require('./routes/expenses/expenses'); // Importe a função da rota
 
 
 
@@ -63,7 +66,16 @@ app.use('/api', expenseRouter);
 
 
 
-
+// Agende a execução da rota a cada dia às 3:00 AM
+cron.schedule('0 3 * * *', () => {
+  updateOverdueExpenses({}, { json: true }, (err, res) => {
+    if (err) {
+      console.error('Erro ao atualizar despesas vencidas:', err);
+    } else {
+      console.log('Despesas vencidas atualizadas com sucesso.');
+    }
+  });
+});
 
 
 app.use(express.json());
