@@ -87,5 +87,27 @@ router.get('/totalExpenses', async (req, res) => {
   }
 });
 
+// Rota para obter o total das despesas vencidas
+router.get('/total-overdue-expenses', async (req, res) => {
+  try {
+    // Encontre todas as despesas vencidas
+    const overdueExpenses = await Expense.find({
+      dueDate: { $lt: new Date() },
+      status: 'overdue',
+    });
+
+    // Calcule o total das despesas vencidas
+    const totalOverdueExpenses = overdueExpenses.reduce(
+      (total, expense) => total + expense.totalAmount,
+      0
+    );
+
+    res.json({ totalOverdueExpenses });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 
 module.exports = router;
