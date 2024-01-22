@@ -24,7 +24,7 @@ router.post('/create/expense', async (req, res) => {
     const expense = new Expense({
       description: req.body.description,
       amount: req.body.amount,
-      vendor: req.body.vendor,
+      supplier: req.body.supplier,
       account: req.body.account,
       category: req.body.category,
       paymentType: req.body.paymentType,
@@ -108,6 +108,26 @@ router.get('/total-overdue-expenses', async (req, res) => {
   }
 });
 
+// Rota para atualizar uma despesa específica
+router.put('/update-expense/:id', async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const updatedExpense = await Expense.findByIdAndUpdate(
+      id,
+      req.body, // Use o corpo da solicitação como os novos valores
+      { new: true } // Isso garante que a função retorna a despesa atualizada
+    );
+
+    if (!updatedExpense) {
+      return res.status(404).json({ message: 'Despesa não encontrada.' });
+    }
+
+    res.json(updatedExpense);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 module.exports = router;

@@ -1,29 +1,27 @@
-// routes/vendor.js
 
 const express = require('express');
 const router = express.Router();
-const Vendor = require('../models/vendor'); // Supondo que você tenha um modelo Vendor
-
+const Supplier = require('../models/supplier'); 
 // Rota para obter todos os fornecedores
-router.get('/vendor', async (req, res) => {
+router.get('/supplier', async (req, res) => {
   try {
-    const vendors = await Vendor.find();
-    res.json(vendors);
+    const suppliers = await Supplier.find();
+    res.json(suppliers);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 // Rota para criar um novo fornecedor
-router.post('/vendor', async (req, res) => {
-  const vendor = new Vendor({
+router.post('/supplier', async (req, res) => {
+  const supplier = new Supplier({
     name: req.body.name, // Substitua com os campos necessários para o fornecedor
     // Adicione outros campos conforme necessário
   });
 
   try {
-    const newVendor = await vendor.save();
-    res.status(201).json(newVendor);
+    const newSupplier= await supplier.save();
+    res.status(201).json(newSupplier);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

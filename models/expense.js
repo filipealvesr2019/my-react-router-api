@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const expenseSchema = new mongoose.Schema({
   type: { type: String, enum: ['expense'] }, // 'expense'
   month: String, // 'YYYY-MM'
-  vendor: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor' }, // Referência ao modelo Vendor
+  supplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier' }, 
   account: { type: mongoose.Schema.Types.ObjectId, ref: 'Account' }, // Referência ao modelo Account
   description: String, // Descrição
   paidValue: Number, // Valor Pago
