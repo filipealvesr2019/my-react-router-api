@@ -5,18 +5,14 @@ const router = express.Router();
 const Expense = require('../../models/expense');
 
 // Rota para obter todas as despesas
-router.get('/expense', async (req, res) => {
-    try {
-      const expenses = await Expense.find()
-        .populate('vendor account category paymentType')
-        .select('+status'); // Adicione esta linha para incluir "status" na projeção
-  
-      res.json(expenses);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
-  
+router.get('/expenses', async (req, res) => {
+  try {
+    const expenses = await Expense.find();
+    res.json(expenses);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 
@@ -51,5 +47,28 @@ router.post('/create/expense', async (req, res) => {
     }
   });
 
-  
+  // Rota para tornar as despesas "atrasadas"
+router.put('/make-expenses-overdue', async (req, res) => {
+  try {
+    const overdueExpenses = await Expense.find({
+      dueDate: { $lt: new Date() },
+      status: { $ne: 'overdue' },
+    });
+
+    if (overdueExpenses.length > 0) {
+      await Expense.updateMany(
+        { _id: { $in: overdueExpenses.map(exp => exp._id) } },
+        { $set: { status: 'overdue' } }
+      );
+
+      res.json({ message: 'Despesas atualizadas com sucesso.' });
+    } else {
+      res.json({ message: 'Não há despesas para atualizar.' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;

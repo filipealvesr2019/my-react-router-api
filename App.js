@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
+const axios = require('axios');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -63,34 +64,17 @@ app.use('/api', categoryType);
 app.use('/api', account);
 app.use('/api', expenseRouter);
 
-
-
-// Agende a execução da rota a cada dia às 3:00 AM
+// Agende a execução da rota de atualização a cada dia às 3:00 AM
+// Agende a execução da rota de atualização a cada segundo
+// Agende a execução da rota de atualização a cada segundo
 cron.schedule('0 */6 * * *', async () => {
   try {
-    console.log('Cronjob executado com sucesso.');
-    const overdueExpenses = await Expense.find({
-      dueDate: { $lt: new Date() },
-      status: { $ne: 'overdue' },
-    });
-    console.log('Despesas vencidas encontradas:', overdueExpenses);
-
-    if (overdueExpenses.length > 0) {
-      console.log('Atualizando status das despesas para "overdue".');
-      await Expense.updateMany(
-        { _id: { $in: overdueExpenses.map(exp => exp._id) } },
-        { $set: { status: 'overdue' } }
-      );
-      console.log('Despesas vencidas atualizadas com sucesso.');
-    } else {
-      console.log('Não há despesas vencidas para atualizar.');
-    }
+    await axios.put('http://localhost:3001/api/make-expenses-overdue');
+    console.log('Cronjob executado');
   } catch (error) {
-    console.error('Erro ao atualizar despesas vencidas:', error);
+    console.error('Erro ao executar o cronjob:', error);
   }
 });
-
-
 
 app.use(express.json());
 
