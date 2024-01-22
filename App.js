@@ -36,7 +36,7 @@ const subcategory = require('./routes/Subcategory');
 const slider = require('./routes/Slider');
 const discount = require('./routes/discount');
 const transactionRouter = require('./routes/transactions');
-const supplier = require('./routes/Supplier');
+const supplier = require('./routes/supplier');
 const paymentType = require('./routes/paymentType');
 const categoryType = require('./routes/categoryType');
 
