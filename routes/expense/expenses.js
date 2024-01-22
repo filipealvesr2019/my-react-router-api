@@ -71,4 +71,21 @@ router.put('/make-expenses-overdue', async (req, res) => {
 });
 
 
+
+// Rota para obter o total de despesas
+router.get('/totalExpenses', async (req, res) => {
+  try {
+    // Encontre todas as despesas
+    const expenses = await Expense.find();
+
+    // Calcule o total das despesas
+    const totalExpenses = expenses.reduce((total, expense) => total + expense.totalAmount, 0);
+
+    res.json({ totalExpenses });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;
