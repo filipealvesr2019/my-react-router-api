@@ -45,6 +45,7 @@ const categoryTypeRevenues = require('./routes/categoryTypeRevenues');
 const account = require('./routes/account');
 const expenseRouter = require('./routes/expense/expenses');
 const revenuesRouter = require('./routes/revenues/revenues');
+const transactions = require('./routes/transactions');
 
 
 
@@ -71,6 +72,7 @@ app.use('/api', categoryTypeRevenues);
 app.use('/api', account);
 app.use('/api', expenseRouter);
 app.use('/api', revenuesRouter);
+app.use('/api', transactions);
 
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
 // Agende a execução da rota de atualização a cada segundo

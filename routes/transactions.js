@@ -1,28 +1,52 @@
 const express = require('express');
 const router = express.Router();
-const Transaction = require('./transactions.js');
+const Revenues = require('../models/revenues/revenues');
+const Expense = require('../models/expense');
 
-// Route to create a new transaction
-router.post('/transactions', async (req, res) => {
+// Rota para obter o total de despesas
+router.get('/expenses/total', async (req, res) => {
   try {
-    const newTransaction = new Transaction(req.body);
-    const savedTransaction = await newTransaction.save();
-    res.status(201).json(savedTransaction);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-});
+    // Buscar o total de despesas
+    const totalExpenses = await Expense.aggregate([
+      {
+        $group: {
+          _id: '$totalAmount',  // Agrupa por totalAmount
+          total: { $sum: '$totalAmount' },
+        },
+      },
+    ]);
 
-// Route to get all transactions
-router.get('/transactions', async (req, res) => {
-  try {
-    const transactions = await Transaction.find();
-    res.json(transactions);
+    // Retornar o total de despesas como resposta
+    res.json({
+      totalExpenses: totalExpenses.reduce((acc, item) => acc + item.total, 0),
+    });
   } catch (error) {
+    // Lidar com erros durante o processo
     res.status(500).json({ message: error.message });
   }
 });
 
-// Other routes for updating and deleting transactions...
+// Rota para obter o total de receitas
+router.get('/revenues/total', async (req, res) => {
+  try {
+    // Buscar o total de receitas
+    const totalRevenues = await Revenues.aggregate([
+      {
+        $group: {
+          _id: '$totalAmount',  // Agrupa por totalAmount
+          total: { $sum: '$totalAmount' },
+        },
+      },
+    ]);
+
+    // Retornar o total de receitas como resposta
+    res.json({
+      totalRevenues: totalRevenues.reduce((acc, item) => acc + item.total, 0),
+    });
+  } catch (error) {
+    // Lidar com erros durante o processo
+    res.status(500).json({ message: error.message });
+  }
+});
 
 module.exports = router;
