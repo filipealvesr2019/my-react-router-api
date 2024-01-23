@@ -72,28 +72,31 @@ router.post('/revenues', async (req, res) => {
   }
 });
 
-// Rota para tornar as despesas "atrasadas"
+// Rota para tornar as receitas "atrasadas"
 router.put('/make-revenues-overdue', async (req, res) => {
-    try {
-      const overdueRevenues = await Revenues.find({
-        dueDate: { $lt: new Date() },
-        status: { $ne: 'overdue' },
-      });
-  
-      if (overdueRevenues.length > 0) {
-        await Expense.updateMany(
-          { _id: { $in: overdueRevenues.map(exp => exp._id) } },
-          { $set: { status: 'overdue' } }
-        );
-  
-        res.json({ message: 'Despesas atualizadas com sucesso.' });
-      } else {
-        res.json({ message: 'Não há despesas para atualizar.' });
-      }
-    } catch (error) {
-      res.status(500).json({ message: error.message });
+  try {
+    const overdueRevenues = await Revenues.find({
+      dueDate: { $lt: new Date() },
+      status: { $ne: 'overdue' },
+    });
+
+    if (overdueRevenues.length > 0) {
+      await Revenues.updateMany(
+        { _id: { $in: overdueRevenues.map(rev => rev._id) } },
+        { $set: { status: 'overdue' } }
+      );
+
+      res.json({ message: 'Receitas atualizadas com sucesso.' });
+    } else {
+      res.json({ message: 'Não há receitas para atualizar.' });
     }
-  });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
   
   
 module.exports = router;

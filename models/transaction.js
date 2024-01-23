@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Revenues = require('../../models/revenues/revenues');
-const Expense = require('../../models/expenses/expense');
+const Expense = require('../models/expense');
 
 // Rota para obter o total de despesas
 router.get('/expenses/total', async (req, res) => {
