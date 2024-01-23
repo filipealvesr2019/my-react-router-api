@@ -102,32 +102,31 @@ router.put('/make-revenues-overdue', async (req, res) => {
 
 
 
-router.get('/difference', async (req, res) => {
+
+
+router.get('/balance/:month', async (req, res) => {
   const { month } = req.params;
 
   try {
+    // Busque as receitas para o mês específico
     const revenues = await Revenues.find({ month });
+
+    // Busque as despesas para o mês específico
     const expenses = await Expense.find({ month });
 
-    let totalRevenues = 0;
-    let totalExpenses = 0;
+    // Calcule o total de receitas para o mês
+    const totalRevenues = revenues.reduce((acc, revenue) => acc + revenue.totalAmount, 0);
 
-    revenues.forEach(revenue => {
-      totalRevenues += revenue.totalAmount;
-    });
+    // Calcule o total de despesas para o mês
+    const totalExpenses = expenses.reduce((acc, expense) => acc + expense.totalAmount, 0);
 
-    expenses.forEach(expense => {
-      totalExpenses += expense.totalAmount;
-    });
+    // Calcule a diferença entre despesas e receitas
+    const diferenca = totalRevenues - totalExpenses;
 
-    const difference = totalRevenues - totalExpenses;
-
-    res.json({ difference });
+    res.json({ diferenca });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    res.status(500).json({ error: 'Erro ao calcular a diferença entre receitas e despesas.' });
   }
 });
-
-
 module.exports = router;
