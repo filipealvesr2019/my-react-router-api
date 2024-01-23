@@ -99,11 +99,67 @@ router.put('/make-revenues-overdue', async (req, res) => {
 });
 
 
+// Função para obter o total de receitas vencidas do mês atual
+async function obterTotalReceitasVencidasMesAtual() {
+  try {
+    const primeiroDiaDoMesAtual = moment().startOf('month');
+    const receitasVencidasMesAtual = await Revenues.find({
+      type: 'revenues',
+      status: 'overdue', // Receitas com status 'overdue'
+      month: primeiroDiaDoMesAtual.format('YYYY-MM')
+    });
+
+    const totalReceitasVencidasMesAtual = receitasVencidasMesAtual.reduce((total, receita) => {
+      return total + receita.totalAmount;
+    }, 0);
+
+    return totalReceitasVencidasMesAtual;
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Adicione esta rota para obter o total de receitas vencidas do mês atual
+router.get('/total-overdue-revenues', async (req, res) => {
+  try {
+    const totalReceitasVencidasMesAtual = await obterTotalReceitasVencidasMesAtual();
+    res.json({ totalReceitasVencidasMesAtual });
+  } catch (error) {
+    console.error('Erro ao obter o total de receitas vencidas do mês atual:', error);
+    res.status(500).json({ error: 'Erro ao obter o total de receitas vencidas do mês atual' });
+  }
+});
 
 
+// Função para obter o total de receitas do mês atual
+async function obterTotalReceitasMesAtual() {
+  try {
+    const primeiroDiaDoMesAtual = moment().startOf('month');
+    const receitasMesAtual = await Revenues.find({
+      type: 'revenues',
+      month: primeiroDiaDoMesAtual.format('YYYY-MM')
+    });
 
+    const totalReceitasMesAtual = receitasMesAtual.reduce((total, receita) => {
+      return total + receita.totalAmount;
+    }, 0);
 
+    return totalReceitasMesAtual;
+  } catch (error) {
+    throw error;
+  }
+}
 
+// Adicione esta rota para obter o total de receitas do mês atual
+router.get('/total-revenues', async (req, res) => {
+  try {
+    const totalReceitasMesAtual = await obterTotalReceitasMesAtual();
+    res.json({ totalReceitasMesAtual });
+  } catch (error) {
+    console.error('Erro ao obter o total de receitas do mês atual:', error);
+    res.status(500).json({ error: 'Erro ao obter o total de receitas do mês atual' });
+  }
+});
 
 
 
@@ -112,7 +168,7 @@ router.put('/make-revenues-overdue', async (req, res) => {
 
 
 // Rota para calcular e mostrar a diferença entre receitas e despesas
-router.get('/diferenca', async (req, res) => {
+router.get('/balance', async (req, res) => {
   try {
     const diferencaMesAtual = await calcularDiferencaDoMes('atual');
     const diferencaMesAnterior = await calcularDiferencaDoMes('anterior');
