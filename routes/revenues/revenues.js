@@ -144,7 +144,7 @@ function calcularDiferenca(lista) {
 }
 
 // Tarefa cron para calcular e atualizar as diferenças no início de cada mês
-cron.schedule('0 0 */25 * *', async () => {
+cron.schedule('0 0 */30 * *', async () => {
   try {
     await calcularEAtualizarDiferencas('atual');
     await calcularEAtualizarDiferencas('anterior');
