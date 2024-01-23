@@ -84,6 +84,15 @@ cron.schedule('0 */6 * * *', async () => {
   }
 });
 
+cron.schedule('0 */6 * * *', async () => {
+  try {
+    await axios.put('http://localhost:3001/api/make-revenues-overdue');
+    console.log('Cronjob executado');
+  } catch (error) {
+    console.error('Erro ao executar o cronjob:', error);
+  }
+});
+
 app.use(express.json());
 
 

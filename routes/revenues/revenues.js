@@ -72,4 +72,28 @@ router.post('/revenues', async (req, res) => {
   }
 });
 
+// Rota para tornar as despesas "atrasadas"
+router.put('/make-revenues-overdue', async (req, res) => {
+    try {
+      const overdueRevenues = await Revenues.find({
+        dueDate: { $lt: new Date() },
+        status: { $ne: 'overdue' },
+      });
+  
+      if (overdueRevenues.length > 0) {
+        await Expense.updateMany(
+          { _id: { $in: overdueRevenues.map(exp => exp._id) } },
+          { $set: { status: 'overdue' } }
+        );
+  
+        res.json({ message: 'Despesas atualizadas com sucesso.' });
+      } else {
+        res.json({ message: 'Não há despesas para atualizar.' });
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+  
+  
 module.exports = router;
