@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Revenues = require('../../models/revenues/revenues');
+const Expense = require('../../models/expense');
 
 
 
@@ -97,6 +98,54 @@ router.put('/make-revenues-overdue', async (req, res) => {
 
 
 
-  
-  
+// Rota para obter o saldo do mês atual
+router.get('/monthly-balance', async (req, res) => {
+  try {
+    // Obter o ano e mês atual
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1; // O mês no JavaScript é baseado em zero (janeiro = 0)
+
+    // Calcular a data de início do mês
+    const startOfMonth = new Date(currentYear, currentMonth - 1, 1);
+
+    // Calcular a data de término do mês
+    const endOfMonth = new Date(currentYear, currentMonth, 0);
+
+    // Encontrar todas as receitas do mês atual
+    const currentMonthRevenues = await Revenues.find({
+      paymentDate: { $gte: startOfMonth, $lt: endOfMonth },
+    });
+
+    // Encontrar todas as despesas do mês atual
+    const currentMonthExpenses = await Expense.find({
+      paymentDate: { $gte: startOfMonth, $lt: endOfMonth },
+    });
+
+    // Calcular o total das receitas do mês atual
+    const totalRevenues = currentMonthRevenues.reduce(
+      (total, revenue) => total + revenue.totalAmount,
+      0
+    );
+
+    // Calcular o total das despesas do mês atual
+    const totalExpenses = currentMonthExpenses.reduce(
+      (total, expense) => total + expense.totalAmount,
+      0
+    );
+
+    // Calcular o saldo do mês atual
+    const balance = totalRevenues - totalExpenses;
+
+    res.json({ totalRevenues, totalExpenses, balance });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
+
+
 module.exports = router;
