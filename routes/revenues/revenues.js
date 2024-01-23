@@ -114,52 +114,27 @@ router.put('/make-revenues-overdue', async (req, res) => {
 // Rota para calcular e mostrar a diferença entre receitas e despesas
 router.get('/diferenca', async (req, res) => {
   try {
-    // Obter o primeiro dia do mês atual
-    const primeiroDiaDoMesAtual = moment().startOf('month');
+    const diferencaMesAtual = await calcularDiferencaDoMes('atual');
+    const diferencaMesAnterior = await calcularDiferencaDoMes('anterior');
 
-    // Obter o primeiro dia do mês anterior
-    const primeiroDiaDoMesAnterior = moment().subtract(1, 'month').startOf('month');
-
-    // Obter todas as receitas e despesas do mês atual
-    const receitasDespesasMesAtual = await Revenues.find({
-      month: primeiroDiaDoMesAtual.format('YYYY-MM')
+    res.json({
+      diferencaMesAtual,
+      diferencaMesAnterior
     });
-
-    const despesasMesAtual = await Expense.find({
-      month: primeiroDiaDoMesAtual.format('YYYY-MM')
-    });
-
-    // Obter todas as receitas e despesas do mês anterior
-    const receitasDespesasMesAnterior = await Revenues.find({
-      month: primeiroDiaDoMesAnterior.format('YYYY-MM')
-    });
-
-    const despesasMesAnterior = await Expense.find({
-      month: primeiroDiaDoMesAnterior.format('YYYY-MM')
-    });
-
-    // Juntar receitas e despesas
-    const todasAsReceitasDespesasMesAtual = [...receitasDespesasMesAtual, ...despesasMesAtual];
-    const todasAsReceitasDespesasMesAnterior = [...receitasDespesasMesAnterior, ...despesasMesAnterior];
-
-    // Calcular a diferença entre receitas e despesas para o mês atual
-    const diferencaMesAtual = calcularDiferenca(todasAsReceitasDespesasMesAtual);
-
-    // Calcular a diferença entre receitas e despesas para o mês anterior
-    const diferencaMesAnterior = calcularDiferenca(todasAsReceitasDespesasMesAnterior);
-
-    res.send(`
-      Diferença para o Mês Atual:
-        Diferença: ${diferencaMesAtual}
-      
-      Diferença para o Mês Anterior:
-        Diferença: ${diferencaMesAnterior}
-    `);
   } catch (error) {
     console.error('Erro ao calcular a diferença:', error);
-    res.status(500).send('Erro ao calcular a diferença');
+    res.status(500).json({ error: 'Erro ao calcular a diferença' });
   }
 });
+
+// Lógica centralizada para calcular a diferença entre receitas e despesas de um mês
+async function calcularDiferencaDoMes(tipo) {
+  const primeiroDiaDoMes = tipo === 'atual' ? moment().startOf('month') : moment().subtract(1, 'month').startOf('month');
+  const receitasMes = await Revenues.find({ month: primeiroDiaDoMes.format('YYYY-MM') });
+  const despesasMes = await Expense.find({ month: primeiroDiaDoMes.format('YYYY-MM') });
+  const todasAsReceitasDespesasMes = [...receitasMes, ...despesasMes];
+  return calcularDiferenca(todasAsReceitasDespesasMes);
+}
 
 // Função para calcular a diferença entre receitas e despesas
 function calcularDiferenca(lista) {
@@ -168,6 +143,27 @@ function calcularDiferenca(lista) {
   }, 0);
 }
 
+// Tarefa cron para calcular e atualizar as diferenças no início de cada mês
+cron.schedule('* * * * * *', async () => {
+  try {
+    await calcularEAtualizarDiferencas('atual');
+    await calcularEAtualizarDiferencas('anterior');
+    console.log('Diferenças calculadas e atualizadas com sucesso.');
+  } catch (error) {
+    console.error('Erro ao calcular e atualizar as diferenças:', error);
+  }
+}, {
+  scheduled: true,
+  timezone: 'America/Sao_Paulo' // Ajuste o fuso horário conforme necessário
+});
+
+// Função para calcular e atualizar as diferenças
+async function calcularEAtualizarDiferencas(tipo) {
+  const diferenca = await calcularDiferencaDoMes(tipo);
+  // Salvar ou atualizar a diferença no banco de dados conforme necessário
+  // Substitua o trecho abaixo pelo código específico do seu modelo e esquema
+  console.log(`Diferença do mês ${tipo}: ${diferenca}`);
+}
 
 
 
