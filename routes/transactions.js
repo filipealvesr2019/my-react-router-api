@@ -49,4 +49,41 @@ router.get('/revenues/total', async (req, res) => {
   }
 });
 
+
+
+// Rota para obter a diferença entre o total de receitas e despesas
+router.get('/difference', async (req, res) => {
+  try {
+    // Buscar o total de receitas
+    const totalRevenues = await Revenues.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$paidValue' },
+        },
+      },
+    ]);
+
+    // Buscar o total de despesas
+    const totalExpenses = await Expense.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$paidValue' },
+        },
+      },
+    ]);
+
+    // Calcular a diferença entre o total de receitas e despesas
+    const difference = (totalRevenues[0]?.total || 0) - (totalExpenses[0]?.total || 0);
+
+    // Retornar a diferença como resposta
+    res.json({ difference });
+  } catch (error) {
+    // Lidar com erros durante o processo
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;
