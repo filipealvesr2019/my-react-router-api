@@ -34,6 +34,7 @@ router.post('/create/expense', async (req, res) => {
       paymentDate: req.body.paymentDate,
       paidValue: req.body.paidValue,
       dueDate: req.body.dueDate,
+      month: req.body.month,
 
       status: req.body.date < new Date() ? 'overdue' : 'pending', // Verifica se a despesa está vencida
       // Adicione outros campos conforme necessário

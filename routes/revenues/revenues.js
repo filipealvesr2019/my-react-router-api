@@ -98,54 +98,36 @@ router.put('/make-revenues-overdue', async (req, res) => {
 
 
 
-// Rota para obter o saldo do mês atual
-router.get('/monthly-balance', async (req, res) => {
+
+
+
+
+router.get('/difference', async (req, res) => {
+  const { month } = req.params;
+
   try {
-    // Obter o ano e mês atual
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    const currentMonth = currentDate.getMonth() + 1; // O mês no JavaScript é baseado em zero (janeiro = 0)
+    const revenues = await Revenues.find({ month });
+    const expenses = await Expense.find({ month });
 
-    // Calcular a data de início do mês
-    const startOfMonth = new Date(currentYear, currentMonth - 1, 1);
+    let totalRevenues = 0;
+    let totalExpenses = 0;
 
-    // Calcular a data de término do mês
-    const endOfMonth = new Date(currentYear, currentMonth, 0);
-
-    // Encontrar todas as receitas do mês atual
-    const currentMonthRevenues = await Revenues.find({
-      paymentDate: { $gte: startOfMonth, $lt: endOfMonth },
+    revenues.forEach(revenue => {
+      totalRevenues += revenue.totalAmount;
     });
 
-    // Encontrar todas as despesas do mês atual
-    const currentMonthExpenses = await Expense.find({
-      paymentDate: { $gte: startOfMonth, $lt: endOfMonth },
+    expenses.forEach(expense => {
+      totalExpenses += expense.totalAmount;
     });
 
-    // Calcular o total das receitas do mês atual
-    const totalRevenues = currentMonthRevenues.reduce(
-      (total, revenue) => total + revenue.totalAmount,
-      0
-    );
+    const difference = totalRevenues - totalExpenses;
 
-    // Calcular o total das despesas do mês atual
-    const totalExpenses = currentMonthExpenses.reduce(
-      (total, expense) => total + expense.totalAmount,
-      0
-    );
-
-    // Calcular o saldo do mês atual
-    const balance = totalRevenues - totalExpenses;
-
-    res.json({ totalRevenues, totalExpenses, balance });
+    res.json({ difference });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
-
-
-
 
 
 module.exports = router;
