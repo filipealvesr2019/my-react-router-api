@@ -131,17 +131,11 @@ router.get('/diferenca', async (req, res) => {
 
     // Obter todas as receitas e despesas do mês anterior
     const receitasDespesasMesAnterior = await Revenues.find({
-      month: {
-        $gte: primeiroDiaDoMesAnterior.format('YYYY-MM'),
-        $lt: primeiroDiaDoMesAtual.format('YYYY-MM')
-      }
+      month: primeiroDiaDoMesAnterior.format('YYYY-MM')
     });
 
     const despesasMesAnterior = await Expense.find({
-      month: {
-        $gte: primeiroDiaDoMesAnterior.format('YYYY-MM'),
-        $lt: primeiroDiaDoMesAtual.format('YYYY-MM')
-      }
+      month: primeiroDiaDoMesAnterior.format('YYYY-MM')
     });
 
     // Juntar receitas e despesas
@@ -149,14 +143,10 @@ router.get('/diferenca', async (req, res) => {
     const todasAsReceitasDespesasMesAnterior = [...receitasDespesasMesAnterior, ...despesasMesAnterior];
 
     // Calcular a diferença entre receitas e despesas para o mês atual
-    const diferencaMesAtual = todasAsReceitasDespesasMesAtual.reduce((total, item) => {
-      return item.type === 'revenues' ? total + item.totalAmount : total - item.totalAmount;
-    }, 0);
+    const diferencaMesAtual = calcularDiferenca(todasAsReceitasDespesasMesAtual);
 
     // Calcular a diferença entre receitas e despesas para o mês anterior
-    const diferencaMesAnterior = todasAsReceitasDespesasMesAnterior.reduce((total, item) => {
-      return item.type === 'revenues' ? total + item.totalAmount : total - item.totalAmount;
-    }, 0);
+    const diferencaMesAnterior = calcularDiferenca(todasAsReceitasDespesasMesAnterior);
 
     res.send(`
       Diferença para o Mês Atual:
@@ -170,4 +160,16 @@ router.get('/diferenca', async (req, res) => {
     res.status(500).send('Erro ao calcular a diferença');
   }
 });
+
+// Função para calcular a diferença entre receitas e despesas
+function calcularDiferenca(lista) {
+  return lista.reduce((total, item) => {
+    return item.type === 'revenues' ? total + item.totalAmount : total - item.totalAmount;
+  }, 0);
+}
+
+
+
+
+
 module.exports = router;
