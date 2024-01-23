@@ -5,10 +5,18 @@ const router = express.Router();
 const Expense = require('../../models/expense');
 const moment = require('moment'); // Adicione esta linha
 
-// Rota para obter todas as despesas
+// Rota para obter todas as despesas com paginação
 router.get('/expenses', async (req, res) => {
   try {
-    const expenses = await Expense.find();
+    const page = parseInt(req.query.page) || 1; // Página a ser exibida (padrão: 1)
+    const limit = parseInt(req.query.limit) || 10; // Número de documentos por página (padrão: 10)
+
+    const skip = (page - 1) * limit; // Calcular quantos documentos pular
+
+    const expenses = await Expense.find()
+      .skip(skip)
+      .limit(limit);
+
     res.json(expenses);
   } catch (error) {
     res.status(500).json({ message: error.message });

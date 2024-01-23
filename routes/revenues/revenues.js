@@ -6,17 +6,20 @@ const cron = require('node-cron');
 const moment = require('moment'); // Certifique-se de instalar o módulo moment com 'npm install moment'
 
 
-
-
+// Rota para obter todas as receitas com paginação
 router.get('/revenues', async (req, res) => {
   try {
-    // Buscar todas as receitas no banco de dados
-    const allRevenues = await Revenues.find();
-    
-    // Retornar as receitas como resposta
-    res.json(allRevenues);
+    const page = parseInt(req.query.page) || 1; // Página a ser exibida (padrão: 1)
+    const limit = parseInt(req.query.limit) || 10; // Número de documentos por página (padrão: 10)
+
+    const skip = (page - 1) * limit; // Calcular quantos documentos pular
+
+    const revenues = await Revenues.find()
+      .skip(skip)
+      .limit(limit);
+
+    res.json(revenues);
   } catch (error) {
-    // Lidar com erros durante o processo
     res.status(500).json({ message: error.message });
   }
 });
