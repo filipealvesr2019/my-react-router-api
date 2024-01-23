@@ -3,6 +3,7 @@
 const express = require('express');
 const router = express.Router();
 const Expense = require('../../models/expense');
+const moment = require('moment'); // Adicione esta linha
 
 // Rota para obter todas as despesas
 router.get('/expenses', async (req, res) => {
@@ -126,6 +127,31 @@ router.put('/update-expense/:id', async (req, res) => {
 
     res.json(updatedExpense);
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+router.get('/total-overdue-expenses-current-month', async (req, res) => {
+  try {
+    const primeiroDiaDoMesAtual = moment().startOf('month');
+    console.log('Primeiro dia do mês atual:', primeiroDiaDoMesAtual.format('YYYY-MM'));
+
+    const overdueExpensesCurrentMonth = await Expense.find({
+      dueDate: { $lt: new Date() },
+      status: 'overdue',
+      month: primeiroDiaDoMesAtual.format('YYYY-MM'),
+    });
+    console.log('Despesas vencidas do mês atual:', overdueExpensesCurrentMonth);
+
+    const totalOverdueExpensesCurrentMonth = overdueExpensesCurrentMonth.reduce(
+      (total, expense) => total + expense.totalAmount,
+      0
+    );
+
+    res.json({ totalOverdueExpensesCurrentMonth });
+  } catch (error) {
+    console.error('Erro:', error);
     res.status(500).json({ message: error.message });
   }
 });
