@@ -3,6 +3,7 @@ const router = express.Router();
 const Revenues = require('../../models/revenues/revenues');
 const Expense = require('../../models/expense');
 const cron = require('node-cron');
+const moment = require('moment'); // Certifique-se de instalar o módulo moment com 'npm install moment'
 
 
 
@@ -110,65 +111,63 @@ router.put('/make-revenues-overdue', async (req, res) => {
 
 
 
-
-
-// Rota para o saldo do mês atual
-router.get('/balance/current', async (req, res) => {
+// Rota para calcular e mostrar a diferença entre receitas e despesas
+router.get('/diferenca', async (req, res) => {
   try {
-    const currentMonth = getFormattedMonth(new Date());
-    const balance = await calculateBalance(currentMonth);
+    // Obter o primeiro dia do mês atual
+    const primeiroDiaDoMesAtual = moment().startOf('month');
 
-    res.json({
-      month: currentMonth,
-      balance: balance,
+    // Obter o primeiro dia do mês anterior
+    const primeiroDiaDoMesAnterior = moment().subtract(1, 'month').startOf('month');
+
+    // Obter todas as receitas e despesas do mês atual
+    const receitasDespesasMesAtual = await Revenues.find({
+      month: primeiroDiaDoMesAtual.format('YYYY-MM')
     });
+
+    const despesasMesAtual = await Expense.find({
+      month: primeiroDiaDoMesAtual.format('YYYY-MM')
+    });
+
+    // Obter todas as receitas e despesas do mês anterior
+    const receitasDespesasMesAnterior = await Revenues.find({
+      month: {
+        $gte: primeiroDiaDoMesAnterior.format('YYYY-MM'),
+        $lt: primeiroDiaDoMesAtual.format('YYYY-MM')
+      }
+    });
+
+    const despesasMesAnterior = await Expense.find({
+      month: {
+        $gte: primeiroDiaDoMesAnterior.format('YYYY-MM'),
+        $lt: primeiroDiaDoMesAtual.format('YYYY-MM')
+      }
+    });
+
+    // Juntar receitas e despesas
+    const todasAsReceitasDespesasMesAtual = [...receitasDespesasMesAtual, ...despesasMesAtual];
+    const todasAsReceitasDespesasMesAnterior = [...receitasDespesasMesAnterior, ...despesasMesAnterior];
+
+    // Calcular a diferença entre receitas e despesas para o mês atual
+    const diferencaMesAtual = todasAsReceitasDespesasMesAtual.reduce((total, item) => {
+      return item.type === 'revenues' ? total + item.totalAmount : total - item.totalAmount;
+    }, 0);
+
+    // Calcular a diferença entre receitas e despesas para o mês anterior
+    const diferencaMesAnterior = todasAsReceitasDespesasMesAnterior.reduce((total, item) => {
+      return item.type === 'revenues' ? total + item.totalAmount : total - item.totalAmount;
+    }, 0);
+
+    res.send(`
+      Diferença para o Mês Atual:
+        Diferença: ${diferencaMesAtual}
+      
+      Diferença para o Mês Anterior:
+        Diferença: ${diferencaMesAnterior}
+    `);
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Erro ao calcular a diferença:', error);
+    res.status(500).send('Erro ao calcular a diferença');
   }
 });
-
-// Rota para o saldo do mês anterior
-router.get('/balance/previous', async (req, res) => {
-  try {
-    const currentDate = new Date();
-    const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
-    const lastMonthFormatted = getFormattedMonth(lastMonth);
-    
-    const balance = await calculateBalance(lastMonthFormatted);
-
-    res.json({
-      month: lastMonthFormatted,
-      balance: balance,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
-
-// Atualização automática a cada segundo usando cron
-cron.schedule('* * * * * *', async () => {
-  console.log('Updating balances every second');
-  // Atualize os saldos aqui chamando a função calculateBalance e salvando os resultados.
-});
-async function calculateBalance(month) {
-  const revenues = await Revenues.find({ month });
-  const expenses = await Expense.find({ month });
-
-  const totalRevenues = revenues.reduce((acc, revenue) => acc + revenue.totalAmount, 0);
-  const totalExpenses = expenses.reduce((acc, expense) => acc + (expense.paidValue !== 0 ? expense.paidValue : expense.totalAmount), 0);
-
-  return totalRevenues - totalExpenses;
-}
-
-
-
-// Função para formatar o mês
-function getFormattedMonth(date) {
-  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
-}
-
-
-
 module.exports = router;
