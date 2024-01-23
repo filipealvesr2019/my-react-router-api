@@ -31,6 +31,7 @@ router.get('/expenses', async (req, res) => {
 // Rota para criar uma nova despesa
 router.post('/create/expense', async (req, res) => {
     const expense = new Expense({
+      type:req.body.type,
       description: req.body.description,
       amount: req.body.amount,
       supplier: req.body.supplier,
@@ -44,6 +45,7 @@ router.post('/create/expense', async (req, res) => {
       paidValue: req.body.paidValue,
       dueDate: req.body.dueDate,
       month: req.body.month,
+    
 
       status: req.body.date < new Date() ? 'overdue' : 'pending', // Verifica se a despesa está vencida
       // Adicione outros campos conforme necessário

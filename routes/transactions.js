@@ -86,4 +86,26 @@ router.get('/difference', async (req, res) => {
 });
 
 
+
+// Rota para obter todas as movimentações (receitas e despesas)
+router.get('/transactions', async (req, res) => {
+  try {
+    const revenues = await Revenues.find();
+    const expenses = await Expense.find();
+
+    // Combine as receitas e despesas em uma única lista
+    const transactions = [...revenues, ...expenses];
+
+    // Ordene a lista de transações por data (ou outro critério relevante)
+    transactions.sort((a, b) => a.date - b.date);
+
+    res.json(transactions);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
+
 module.exports = router;
