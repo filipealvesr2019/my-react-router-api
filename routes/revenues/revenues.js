@@ -171,5 +171,4 @@ function calcularDiferenca(lista) {
 
 
 
-
 module.exports = router;
