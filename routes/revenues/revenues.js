@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Revenues = require('../../models/revenues/revenues');
 const Expense = require('../../models/expense');
+const cron = require('node-cron');
 
 
 
@@ -104,29 +105,70 @@ router.put('/make-revenues-overdue', async (req, res) => {
 
 
 
-router.get('/balance/:month', async (req, res) => {
-  const { month } = req.params;
 
+
+
+
+
+
+
+// Rota para o saldo do mês atual
+router.get('/balance/current', async (req, res) => {
   try {
-    // Busque as receitas para o mês específico
-    const revenues = await Revenues.find({ month });
+    const currentMonth = getFormattedMonth(new Date());
+    const balance = await calculateBalance(currentMonth);
 
-    // Busque as despesas para o mês específico
-    const expenses = await Expense.find({ month });
-
-    // Calcule o total de receitas para o mês
-    const totalRevenues = revenues.reduce((acc, revenue) => acc + revenue.totalAmount, 0);
-
-    // Calcule o total de despesas para o mês
-    const totalExpenses = expenses.reduce((acc, expense) => acc + expense.totalAmount, 0);
-
-    // Calcule a diferença entre despesas e receitas
-    const diferenca = totalRevenues - totalExpenses;
-
-    res.json({ diferenca });
+    res.json({
+      month: currentMonth,
+      balance: balance,
+    });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Erro ao calcular a diferença entre receitas e despesas.' });
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+// Rota para o saldo do mês anterior
+router.get('/balance/previous', async (req, res) => {
+  try {
+    const currentDate = new Date();
+    const lastMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1);
+    const lastMonthFormatted = getFormattedMonth(lastMonth);
+    
+    const balance = await calculateBalance(lastMonthFormatted);
+
+    res.json({
+      month: lastMonthFormatted,
+      balance: balance,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+// Atualização automática a cada segundo usando cron
+cron.schedule('* * * * * *', async () => {
+  console.log('Updating balances every second');
+  // Atualize os saldos aqui chamando a função calculateBalance e salvando os resultados.
+});
+async function calculateBalance(month) {
+  const revenues = await Revenues.find({ month });
+  const expenses = await Expense.find({ month });
+
+  const totalRevenues = revenues.reduce((acc, revenue) => acc + revenue.totalAmount, 0);
+  const totalExpenses = expenses.reduce((acc, expense) => acc + (expense.paidValue !== 0 ? expense.paidValue : expense.totalAmount), 0);
+
+  return totalRevenues - totalExpenses;
+}
+
+
+
+// Função para formatar o mês
+function getFormattedMonth(date) {
+  return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+}
+
+
+
 module.exports = router;
