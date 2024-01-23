@@ -2,12 +2,12 @@
 
 const express = require('express');
 const router = express.Router();
-const CategoryType = require('../models/categoryType'); // Supondo que você tenha um modelo Category
+const CategoryTypeRevenues = require('../models/categoryTypeRevenues'); // Supondo que você tenha um modelo Category
 
 // Rota para obter todas as categorias
-router.get('/categoryType', async (req, res) => {
+router.get('/CategoryTypeRevenues', async (req, res) => {
   try {
-    const categories = await CategoryType.find();
+    const categories = await CategoryTypeRevenues.find();
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -15,8 +15,8 @@ router.get('/categoryType', async (req, res) => {
 });
 
 // Rota para criar uma nova categoria
-router.post('/categoryType', async (req, res) => {
-  const category = new CategoryType({
+router.post('/CategoryTypeRevenues', async (req, res) => {
+  const category = new CategoryTypeRevenues({
     name: req.body.name, // Substitua com os campos necessários para a categoria
     // Adicione outros campos conforme necessário
   });

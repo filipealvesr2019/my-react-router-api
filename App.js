@@ -37,11 +37,14 @@ const slider = require('./routes/Slider');
 const discount = require('./routes/discount');
 const transactionRouter = require('./routes/transactions');
 const supplier = require('./routes/supplier');
+const vendor = require('./routes/vendor');
 const paymentType = require('./routes/paymentType');
 const categoryType = require('./routes/categoryType');
+const categoryTypeRevenues = require('./routes/categoryTypeRevenues');
 
 const account = require('./routes/account');
 const expenseRouter = require('./routes/expense/expenses');
+const revenuesRouter = require('./routes/revenues/revenues');
 
 
 
@@ -59,10 +62,15 @@ app.use('/api', orders);
 
 app.use('/api', transactionRouter);
 app.use('/api', supplier);
+app.use('/api', vendor);
+
 app.use('/api', paymentType);
 app.use('/api', categoryType);
+app.use('/api', categoryTypeRevenues);
+
 app.use('/api', account);
 app.use('/api', expenseRouter);
+app.use('/api', revenuesRouter);
 
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
 // Agende a execução da rota de atualização a cada segundo
