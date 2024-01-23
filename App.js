@@ -78,7 +78,7 @@ app.use('/api', transactions);
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
 // Agende a execução da rota de atualização a cada segundo
 // Agende a execução da rota de atualização a cada segundo
-cron.schedule('* * * * * *', async () => {
+cron.schedule('0 */6 * * *', async () => {
   try {
     await axios.put('http://localhost:3001/api/make-expenses-overdue');
     console.log('Cronjob executado');
@@ -87,7 +87,7 @@ cron.schedule('* * * * * *', async () => {
   }
 });
 
-cron.schedule('* * * * * *', async () => {
+cron.schedule('0 */6 * * *', async () => {
   try {
     await axios.put('http://localhost:3001/api/make-revenues-overdue');
     console.log('Cronjob executado');
