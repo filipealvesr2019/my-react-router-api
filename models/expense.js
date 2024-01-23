@@ -18,4 +18,6 @@ const expenseSchema = new mongoose.Schema({
   status: { type: String, enum: ['pending', 'paid', 'overdue'], default: 'pending' },
 });
 
-module.exports = mongoose.model('Expense', expenseSchema);
+const Expense = mongoose.model('Expense', expenseSchema);
+
+module.exports = Expense;
