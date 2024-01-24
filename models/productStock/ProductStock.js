@@ -20,7 +20,7 @@ const productStockSchema = new mongoose.Schema({
   },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'CategoryStock' }, // Referência ao modelo Category
   
-  preferredSupplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Vendor'},
+  preferredSupplier: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier'},
   unitOfMeasure: { type: mongoose.Schema.Types.ObjectId, ref: 'UnitOfMeasure' },
   minQuantity: {
     type: Number,

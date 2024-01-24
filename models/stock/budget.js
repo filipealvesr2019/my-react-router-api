@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const buySchema = new mongoose.Schema({
+const budgetSchema = new mongoose.Schema({
   registrationData: [
     {
       Nature: { type: mongoose.Schema.Types.ObjectId, ref: "NatureType" },
@@ -25,7 +25,7 @@ const buySchema = new mongoose.Schema({
       // Other product fields
     },
   ],
-  supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier" },
+  vendor: { type: mongoose.Schema.Types.ObjectId, ref: "Vendor" },
   products: [
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: "ProductStock" },
@@ -40,4 +40,4 @@ const buySchema = new mongoose.Schema({
   // Other fields for representing a purchase
 });
 
-module.exports = mongoose.model("Buy", buySchema);
+module.exports = mongoose.model("Budget", budgetSchema);
