@@ -15,7 +15,8 @@ router.get('/vendor', async (req, res) => {
 // Rota para criar um novo fornecedor
 router.post('/vendor', async (req, res) => {
   const vendor = new Vendor({
-    name: req.body.name, // Substitua com os campos necessários para o fornecedor
+    name: req.body.name,
+    products: req.body.products // Substitua com os campos necessários para o fornecedor
     // Adicione outros campos conforme necessário
   });
 
