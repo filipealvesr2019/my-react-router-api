@@ -15,7 +15,8 @@ const {
 
 const { isAuthenticatedUser } = require("../middleware/auth");
 
-router.route("/products").get(isAuthenticatedUser, getProducts);
+
+router.route("/products").get( getProducts);
 router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
 router.route("/admin/product/new").post(

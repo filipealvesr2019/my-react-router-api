@@ -53,7 +53,7 @@ const account = require('./routes/account');
 const expenseRouter = require('./routes/expense/expenses');
 const revenuesRouter = require('./routes/revenues/revenues');
 const transactions = require('./routes/transactions');
-const updateBalance = require('./routes/balanceUpdater'); // Módulo contendo a lógica para atualizar o saldo
+const categoryStockRoutes = require('./routes/productStock/categoryStock'); // Nova rota para CategoryStock
 
 
 
@@ -81,6 +81,7 @@ app.use('/api', account);
 app.use('/api', expenseRouter);
 app.use('/api', revenuesRouter);
 app.use('/api', transactions);
+app.use('/api', categoryStockRoutes); // Nova rota para CategoryStock
 
 
 
