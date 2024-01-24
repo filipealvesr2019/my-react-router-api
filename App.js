@@ -57,6 +57,7 @@ const categoryStockRoutes = require('./routes/productStock/categoryStock'); // N
 const unitOfMeasure = require('./routes/productStock/unitOfMeasure'); // Nova rota para CategoryStock
 const productStock = require('./routes/productStock/productStock'); // Nova rota para CategoryStock
 const nutureRoutes = require('./routes/NatureType'); // Nova rota para CategoryStock
+const buyRoutes = require('./routes/stock/buy'); // Nova rota para CategoryStock
 
 
 
@@ -90,6 +91,7 @@ app.use('/api', unitOfMeasure); // Nova rota para CategoryStock
 app.use('/api', productStock); // Nova rota para CategoryStock
 
 app.use('/api', nutureRoutes); // Nova rota para CategoryStock
+app.use('/api', buyRoutes); // Nova rota para CategoryStock
 
 
 
