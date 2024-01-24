@@ -17,7 +17,8 @@ router.get('/account', async (req, res) => {
 // Rota para criar uma nova conta
 router.post('/account', async (req, res) => {
   const account = new Account({
-    name: req.body.name, // Substitua com os campos necessários para a conta
+    name: req.body.name,
+    price: req.body.price // Substitua com os campos necessários para a conta
     // Adicione outros campos conforme necessário
   });
 

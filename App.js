@@ -54,6 +54,7 @@ const expenseRouter = require('./routes/expense/expenses');
 const revenuesRouter = require('./routes/revenues/revenues');
 const transactions = require('./routes/transactions');
 const categoryStockRoutes = require('./routes/productStock/categoryStock'); // Nova rota para CategoryStock
+const unitOfMeasure = require('./routes/productStock/unitOfMeasure'); // Nova rota para CategoryStock
 
 
 
@@ -83,6 +84,7 @@ app.use('/api', revenuesRouter);
 app.use('/api', transactions);
 app.use('/api', categoryStockRoutes); // Nova rota para CategoryStock
 
+app.use('/api', unitOfMeasure); // Nova rota para CategoryStock
 
 
 
