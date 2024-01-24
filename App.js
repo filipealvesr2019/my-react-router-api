@@ -60,7 +60,8 @@ const nutureRoutes = require('./routes/NatureType'); // Nova rota para CategoryS
 const buyRoutes = require('./routes/stock/buy'); // Nova rota para CategoryStock
 const budgetRoutes = require('./routes/stock/budget'); // Nova rota para CategoryStock
 
-
+const purchaseOrder = require('./routes/stock/salesOrders'); // Nova rota para CategoryStock
+const salesOrders = require('./routes/stock/salesOrders'); // 
 
 
 app.use('/api', products)
@@ -95,7 +96,8 @@ app.use('/api', nutureRoutes); // Nova rota para CategoryStock
 app.use('/api', buyRoutes); // Nova rota para CategoryStock
 app.use('/api', budgetRoutes); // Nova rota para CategoryStock
 
-
+app.use('/api', salesOrders); // Nova rota para CategoryStock
+app.use('/api', purchaseOrder); 
 
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
 // Agende a execução da rota de atualização a cada segundo
