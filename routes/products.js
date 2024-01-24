@@ -14,9 +14,8 @@ const {
 } = require("../controllers/productController");
 
 const { isAuthenticatedUser } = require("../middleware/auth");
-const checkAdminOrManager = require("../middleware/checkAdminOrManager");
 
-router.route("/products").get(getProducts);
+router.route("/products").get(isAuthenticatedUser, getProducts);
 router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
 router.route("/admin/product/new").post(
@@ -24,8 +23,10 @@ router.route("/admin/product/new").post(
   newProduct
 );
 
+
+
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(checkAdminOrManager, deleteProduct);
+router.route("/admin/product/:id").delete( deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);

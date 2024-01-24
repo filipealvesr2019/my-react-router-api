@@ -121,8 +121,7 @@ exports.deleteProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
     const deletedProduct = await Product.findByIdAndRemove(productId);
-    console.log('ID do usuário:', req.user._id);
-    console.log('Função do usuário:', req.user.role);
+
     if (!deletedProduct) {
       return res.status(400).json({
         success: false,
