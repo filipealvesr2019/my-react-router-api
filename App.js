@@ -60,7 +60,7 @@ const nutureRoutes = require('./routes/NatureType'); // Nova rota para CategoryS
 const buyRoutes = require('./routes/stock/buy'); // Nova rota para CategoryStock
 const budgetRoutes = require('./routes/stock/budget'); // Nova rota para CategoryStock
 
-const purchaseOrder = require('./routes/stock/salesOrders'); // Nova rota para CategoryStock
+const purchaseOrder = require('./routes/stock/purchaseOrder'); // Nova rota para CategoryStock
 const salesOrders = require('./routes/stock/salesOrders'); // 
 
 
