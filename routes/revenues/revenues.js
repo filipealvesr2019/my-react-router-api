@@ -102,6 +102,12 @@ router.put('/make-revenues-overdue', async (req, res) => {
 });
 
 
+
+
+
+
+
+
 // Função para obter o total de receitas vencidas do mês atual
 async function obterTotalReceitasVencidasMesAtual() {
   try {
