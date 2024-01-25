@@ -46,10 +46,41 @@ const productStockSchema = new mongoose.Schema({
   grossProfitPercentage: {
     type: Number,
   },
+  totalProfit: Number,
   observations: {
     type: String,
   },
 });
+
+// Método para calcular o lucro por porcentagem
+productStockSchema.methods.calculateGrossProfitPercentage = function() {
+  // Certifique-se de que tanto o preço quanto o custo estão definidos
+  if (this.price !== undefined && this.cost !== undefined) {
+    // Calcular o lucro por porcentagem corrigindo a fórmula
+    const grossProfitPercentage = ((this.price - this.cost) / this.price) * 100;
+    // Atribuir o resultado à propriedade grossProfitPercentage
+    this.grossProfitPercentage = grossProfitPercentage;
+  } else {
+    // Se preço ou custo não estão definidos, retornar uma mensagem de erro ou um valor padrão
+    return 'Preço ou custo não definidos';
+  }
+};
+
+
+// Método para calcular o lucro previsto
+productStockSchema.methods.calculateExpectedProfit = function() {
+  // Certifique-se de que tanto o preço quanto o custo e a quantidade estão definidos
+  if (this.price !== undefined && this.cost !== undefined && this.quantity !== undefined) {
+    // Calcular o lucro previsto corrigindo a fórmula
+    const expectedProfit = (this.price - this.cost) * this.quantity;
+    // Atribuir o resultado à propriedade totalProfit
+    this.totalProfit = expectedProfit;
+    return expectedProfit;
+  } else {
+    // Se preço, custo, quantidade ou porcentagem de lucro não estão definidos, retornar uma mensagem de erro ou um valor padrão
+    return 'Preço, custo, quantidade ou porcentagem de lucro não definidos';
+  }
+};
 
 const ProductStock = mongoose.model('ProductStock', productStockSchema);
 

@@ -14,6 +14,7 @@ router.get('/productStock', async (req, res) => {
 });
 
 // Rota para criar um novo produto no estoque
+// Rota para criar um novo produto no estoque
 router.post('/productStock', async (req, res) => {
   try {
     const {
@@ -32,9 +33,11 @@ router.post('/productStock', async (req, res) => {
       grossWeight,
       netWeight,
       grossProfitPercentage,
+      totalProfit,
       observations,
     } = req.body;
 
+    // Criar o produto
     const newProduct = await ProductStock.create({
       name,
       quantity,
@@ -51,14 +54,23 @@ router.post('/productStock', async (req, res) => {
       grossWeight,
       netWeight,
       grossProfitPercentage,
+      totalProfit,
       observations,
     });
+
+    // Chamar os métodos de cálculo
+    newProduct.calculateGrossProfitPercentage();
+    newProduct.calculateExpectedProfit();
+
+    // Salvar as alterações no banco de dados
+    await newProduct.save();
 
     res.json(newProduct);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
+
 
 // Outras rotas relacionadas a ProductStock
 
