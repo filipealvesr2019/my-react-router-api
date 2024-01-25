@@ -39,4 +39,16 @@ const purchaseOrder = new mongoose.Schema({
   // Other fields for representing a purchase
 });
 
+
+
+// Adicionando um gancho (hook) para calcular o total antes de salvar o documento
+purchaseOrder.pre("save", function (next) {
+  this.products.forEach((product) => {
+    // Calcula o total considerando a quantidade, preço por unidade e desconto
+    product.total = product.quantity * product.pricePerUnit * (1 - product.discount / 100);
+  });
+
+  next();
+});
+
 module.exports = mongoose.model("PurchaseOrder", purchaseOrder);
