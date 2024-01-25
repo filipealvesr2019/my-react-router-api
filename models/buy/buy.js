@@ -30,8 +30,7 @@ const buySchema = new mongoose.Schema({
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: "ProductStock" },
       quantity: Number,
-      unit: Number,
-      price: Number,
+      pricePerUnit: Number,
       discount:Number,
       total: Number,
       // Other product fields
