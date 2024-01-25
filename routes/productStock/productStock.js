@@ -20,8 +20,8 @@ router.post('/productStock', async (req, res) => {
     const {
       name,
       quantity,
-      price,
-      cost,
+      pricePerPiece,
+      costPerPiece,
       category,
       preferredSupplier,
       unitOfMeasure,
@@ -41,8 +41,8 @@ router.post('/productStock', async (req, res) => {
     const newProduct = await ProductStock.create({
       name,
       quantity,
-      price,
-      cost,
+      pricePerPiece,
+      costPerPiece,
       category,
       preferredSupplier,
       unitOfMeasure,

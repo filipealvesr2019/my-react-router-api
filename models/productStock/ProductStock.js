@@ -10,11 +10,11 @@ const productStockSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  price: {
+  pricePerPiece: {
     type: Number,
     required: true,
   },
-  cost: {
+  costPerPiece: {
     type: Number,
     required: true,
   },
@@ -55,9 +55,9 @@ const productStockSchema = new mongoose.Schema({
 // Método para calcular o lucro por porcentagem
 productStockSchema.methods.calculateGrossProfitPercentage = function() {
   // Certifique-se de que tanto o preço quanto o custo estão definidos
-  if (this.price !== undefined && this.cost !== undefined) {
+  if (this.pricePerPiece !== undefined && this.costPerPiece !== undefined) {
     // Calcular o lucro por porcentagem corrigindo a fórmula
-    const grossProfitPercentage = ((this.price - this.cost) / this.price) * 100;
+    const grossProfitPercentage = ((this.pricePerPiece - this.costPerPiece) / this.pricePerPiece) * 100;
     // Atribuir o resultado à propriedade grossProfitPercentage
     this.grossProfitPercentage = grossProfitPercentage;
   } else {
@@ -70,9 +70,9 @@ productStockSchema.methods.calculateGrossProfitPercentage = function() {
 // Método para calcular o lucro previsto
 productStockSchema.methods.calculateExpectedProfit = function() {
   // Certifique-se de que tanto o preço quanto o custo e a quantidade estão definidos
-  if (this.price !== undefined && this.cost !== undefined && this.quantity !== undefined) {
+  if (this.pricePerPiece !== undefined && this.costPerPiece !== undefined && this.quantity !== undefined) {
     // Calcular o lucro previsto corrigindo a fórmula
-    const expectedProfit = (this.price - this.cost) * this.quantity;
+    const expectedProfit = (this.pricePerPiece - this.costPerPiece) * this.quantity;
     // Atribuir o resultado à propriedade totalProfit
     this.totalProfit = expectedProfit;
     return expectedProfit;
