@@ -12,12 +12,6 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
-const corsOptions = {
-  origin: ['http://localhost:3000', 'https://my-react-router-app.vercel.app'],
-  credentials: true,
-};
-app.use(cors(corsOptions));
-
 
 
 
