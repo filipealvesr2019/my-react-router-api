@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 
 const vendorSchema = new mongoose.Schema({
   name: String,
-  TaxpayerIDNumber: Number,
+  TaxpayerIDNumber: String,
   email: String,
   phoneNumber: Number,
 
