@@ -30,7 +30,10 @@ router.get('/vendor', async (req, res) => {
 // Rota para criar um novo fornecedor
 router.post('/vendor', async (req, res) => {
   const vendor = new Vendor({
-    name: req.body.name
+    name: req.body.name,
+    TaxpayerIDNumber: req.body.TaxpayerIDNumber,
+    email: req.body.email,
+    phoneNumber: req.body.phoneNumber
     // Adicione outros campos conforme necessário
   });
 
@@ -89,7 +92,7 @@ router.put('/vendor/:id', async (req, res) => {
 
     // Atualize os campos do fornecedor com base nos dados fornecidos no corpo da solicitação
     existingVendor.name = req.body.name; // Atualize conforme necessário
-
+    
     // Salve as alterações no banco de dados
     const updatedVendor = await existingVendor.save();
 
