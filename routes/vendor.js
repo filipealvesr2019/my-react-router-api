@@ -66,10 +66,10 @@ router.delete("/vendor/:id", async (req, res) => {
     const deletedVendor = await Vendor.findByIdAndDelete(vendorId);
 
     if (!deletedVendor) {
-      return res.status(404).json({ message: "Fornecedor não encontrado." });
+      return res.status(404).json({ message: "Cliente não encontrado." });
     }
 
-    res.json({ message: "Fornecedor excluído com sucesso." });
+    res.json({ message: "Cliente excluído com sucesso." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -83,7 +83,7 @@ router.put("/vendor/:id", async (req, res) => {
     // Verifique se o fornecedor existe
     const existingVendor = await Vendor.findById(vendorId);
     if (!existingVendor) {
-      return res.status(404).json({ message: "Fornecedor não encontrado." });
+      return res.status(404).json({ message: "Cliente não encontrado." });
     }
 
     // Atualize os campos do fornecedor com base nos dados fornecidos no corpo da solicitação
