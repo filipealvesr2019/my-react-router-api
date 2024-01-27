@@ -2,15 +2,30 @@
 const express = require('express');
 const router = express.Router();
 const Supplier = require('../models/supplier'); 
-// Rota para obter todos os fornecedores
-router.get('/supplier', async (req, res) => {
+
+// Rota para obter todos os fornecedores com paginação
+router.get("/supplier", async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Número da página (padrão: 1)
+  const limit = parseInt(req.query.limit) || 10; // Tamanho da página (padrão: 10)
+
   try {
-    const suppliers = await Supplier.find();
-    res.json(suppliers);
+    const skip = (page - 1) * limit;
+    const suppliers = await Supplier.find().skip(skip).limit(limit);
+    const totalSuppliers = await Supplier.countDocuments();
+
+    const totalPages = Math.ceil(totalSuppliers / limit);
+
+    res.json({
+      suppliers,
+      page,
+      totalPages,
+      totalSuppliers,
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // Rota para criar um novo fornecedor
 router.post('/supplier', async (req, res) => {
@@ -77,4 +92,25 @@ router.put("/supplier/:id", async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
+
+
+
+
+
+
+router.get("/supplier/search", async (req, res) => {
+  const searchName = req.query.name;
+
+  try {
+    const supplier = await Supplier.find({
+      name: { $regex: new RegExp(searchName, "i") },
+    });
+    res.json(supplier);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

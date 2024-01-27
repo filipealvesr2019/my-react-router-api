@@ -26,7 +26,7 @@ router.get("/vendor", async (req, res) => {
   }
 });
 
-// Rota para criar um novo fornecedor
+// Rota para criar um novo clientes
 router.post("/vendor", async (req, res) => {
   const vendor = new Vendor({
     name: req.body.name,
@@ -44,7 +44,7 @@ router.post("/vendor", async (req, res) => {
   }
 });
 
-// Rota para pesquisar fornecedores por nome
+// Rota para pesquisar clientes por nome
 router.get("/vendor/search", async (req, res) => {
   const searchName = req.query.name;
 
@@ -58,7 +58,7 @@ router.get("/vendor/search", async (req, res) => {
   }
 });
 
-// Rota para excluir um fornecedor por ID
+// Rota para excluir um clientes por ID
 router.delete("/vendor/:id", async (req, res) => {
   const vendorId = req.params.id;
 
@@ -75,7 +75,7 @@ router.delete("/vendor/:id", async (req, res) => {
   }
 });
 
-// Rota para editar um fornecedor por ID
+// Rota para editar um clientes por ID
 router.put("/vendor/:id", async (req, res) => {
   const vendorId = req.params.id;
 
@@ -86,8 +86,7 @@ router.put("/vendor/:id", async (req, res) => {
       return res.status(404).json({ message: "Cliente não encontrado." });
     }
 
-    // Atualize os campos do fornecedor com base nos dados fornecidos no corpo da solicitação
-    // Atualize os campos do fornecedor com base nos dados fornecidos no corpo da solicitação
+    // Atualize os campos do clientes com base nos dados fornecidos no corpo da solicitação
     existingVendor.name = req.body.name;
     existingVendor.TaxpayerIDNumber = req.body.TaxpayerIDNumber;
     existingVendor.email = req.body.email;
