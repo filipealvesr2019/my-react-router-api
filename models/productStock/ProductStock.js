@@ -8,7 +8,7 @@ const productStockSchema = new mongoose.Schema({
   },
   quantity: {
     type: Number,
-    required: true,
+ 
   },
   pricePerPiece: {
     type: Number,

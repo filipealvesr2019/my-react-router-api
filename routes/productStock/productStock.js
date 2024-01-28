@@ -112,6 +112,79 @@ router.post('/productStock', async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+// Rota para excluir um clientes por ID
+router.delete("/productStock/:id", async (req, res) => {
+  const productId = req.params.id;
+
+  try {
+    const deletedVendor = await ProductStock.findByIdAndDelete(productId);
+
+    if (!deletedVendor) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    res.json({ message: "produto excluído com sucesso." });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Rota para editar um clientes por ID
+router.put("/productStock/:id", async (req, res) => {
+  const productId = req.params.id;
+
+  try {
+    // Verifique se o fornecedor existe
+    const existingProduct = await ProductStock.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    // Atualize os campos do clientes com base nos dados fornecidos no corpo da solicitação
+    existingProduct.name = req.body.name;
+    existingProduct.quantity = req.body.quantity;
+    existingProduct.pricePerPiece = req.body.pricePerPiece;
+    existingProduct.costPerPiece = req.body.costPerPiece;
+    existingProduct.category = req.body.category;
+    existingProduct.preferredSupplier = req.body.preferredSupplier;
+    existingProduct.unitOfMeasure = req.body.unitOfMeasure;
+    existingProduct.minQuantity = req.body.minQuantity;
+    existingProduct.reference = req.body.reference;
+    existingProduct.barcode = req.body.barcode;
+    existingProduct.grossWeight = req.body.grossWeight;
+    existingProduct.netWeight = req.body.netWeight;
+    existingProduct.observations = req.body.observations;
+
+    // Verifique se os campos necessários estão definidos
+    if (existingProduct.quantity !== undefined && existingProduct.costPerPiece !== undefined) {
+      existingProduct.calculateTotalCost();
+    } else {
+      // Lide com isso conforme necessário, como retornar uma mensagem de erro ou definir um valor padrão
+      existingProduct.totalCost = 0;
+    }
+
+    
+    existingProduct.calculateGrossProfitPercentage();
+    existingProduct.calculateGrossProfitPerPiece();
+    existingProduct.calculateExpectedProfit();
+    existingProduct.calculateTotalCost();
+    // Salve as alterações no banco de dados
+    const updatedProduct = await existingProduct.save();
+
+    res.json(updatedProduct);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 // Outras rotas relacionadas a ProductStock
 
 module.exports = router;
