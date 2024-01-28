@@ -46,7 +46,7 @@ salesOrders.pre("save", function (next) {
     // Calcula o total considerando a quantidade, preço por unidade e desconto
     product.total = product.quantity * product.pricePerUnit * (1 - product.discount / 100);
   });
-
+ 
   next();
 });
 
