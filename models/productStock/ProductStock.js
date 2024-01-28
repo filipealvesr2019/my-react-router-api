@@ -50,6 +50,10 @@ const productStockSchema = new mongoose.Schema({
   grossProfitPercentage: {
     type: Number,
   },
+  totalCost: {
+    type: Number,
+    default: 0,
+  },
   totalProfit: Number,
   observations: {
     type: String,
@@ -104,6 +108,22 @@ productStockSchema.methods.calculateExpectedProfit = function() {
     return 'Preço, custo, quantidade ou porcentagem de lucro não definidos';
   }
 };
+
+
+// Método para calcular o custo total
+productStockSchema.methods.calculateTotalCost = function() {
+  // Certifique-se de que tanto a quantidade quanto o custo estão definidos
+  if (this.quantity !== undefined && this.costPerPiece !== undefined) {
+    // Calcular o custo total
+    this.totalCost = this.quantity * this.costPerPiece;
+  } else {
+    // Se quantidade ou custo não estão definidos, lidar com isso conforme necessário
+    // Pode retornar uma mensagem de erro ou definir o valor padrão
+    this.totalCost = 0; // Defina como 0 por padrão, ajuste conforme necessário
+  }
+};
+
+
 
 const ProductStock = mongoose.model('ProductStock', productStockSchema);
 

@@ -97,8 +97,10 @@ router.post('/productStock', async (req, res) => {
 
     // Chamar os métodos de cálculo
     newProduct.calculateGrossProfitPercentage();
-    newProduct.calculateExpectedProfit();
+ 
     newProduct.calculateGrossProfitPerPiece(); // Adicionando a chamada para o novo método
+    newProduct.calculateExpectedProfit();
+    newProduct.calculateTotalCost(); // Adicionando a chamada para o novo método
 
     // Salvar as alterações no banco de dados
     await newProduct.save();
