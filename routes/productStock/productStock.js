@@ -3,15 +3,52 @@ const express = require('express');
 const router = express.Router();
 const ProductStock = require('../../models/productStock/ProductStock');
 
-// Rota para obter todos os produtos no estoque
-router.get('/productStock', async (req, res) => {
+
+
+
+
+
+// Rota para obter todos os fornecedores com paginação
+router.get("/productStock", async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Número da página (padrão: 1)
+  const limit = parseInt(req.query.limit) || 10; // Tamanho da página (padrão: 10)
+
   try {
-    const products = await ProductStock.find({}, { _id: 0, __v: 0 });
-    res.json(products);
+    const skip = (page - 1) * limit;
+    const products = await ProductStock.find().skip(skip).limit(limit);
+    const totalProducts = await ProductStock.countDocuments();
+
+    const totalPages = Math.ceil(totalProducts / limit);
+
+    res.json({
+      products,
+      page,
+      totalPages,
+      totalProducts,
+    });
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
+
+
+
+
+router.get("/productStock/search", async (req, res) => {
+  const searchName = req.query.name;
+
+  try {
+    const product = await ProductStock.find({
+      name: { $regex: new RegExp(searchName, "i") },
+    });
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+
 
 // Rota para criar um novo produto no estoque
 // Rota para criar um novo produto no estoque
