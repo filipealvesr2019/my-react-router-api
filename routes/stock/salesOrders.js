@@ -25,21 +25,13 @@ router.post('/salesOrders', async (req, res) => {
     }
   });
   
-  // GET route to retrieve information about a specific buy
-  router.get('/salesOrders/:id', async (req, res) => {
-    try {
-      const salesOrders = await SalesOrders.findById(req.params.id)
-        .populate('vendor')
-        .populate('products.product');
   
-      if (!salesOrders) {
-        return res.status(404).json({ message: 'Buy not found' });
-      }
+
+
+
+
+
+
   
-      res.json(salesOrders);
-    } catch (error) {
-      res.status(500).json({ message: error.message });
-    }
-  });
 
 module.exports = router;

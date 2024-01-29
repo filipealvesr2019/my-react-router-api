@@ -29,7 +29,7 @@ router.post('/purchaseOrder', async (req, res) => {
   router.get('/purchaseOrder/:id', async (req, res) => {
     try {
       const purchaseOrder = await PurchaseOrder.findById(req.params.id)
-        .populate('vendor')
+        .populate('supplier')
         .populate('products.product');
   
       if (!purchaseOrder) {
@@ -41,5 +41,8 @@ router.post('/purchaseOrder', async (req, res) => {
       res.status(500).json({ message: error.message });
     }
   });
+
+
+  
 
 module.exports = router;

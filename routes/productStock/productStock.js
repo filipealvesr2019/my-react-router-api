@@ -2,6 +2,8 @@
 const express = require('express');
 const router = express.Router();
 const ProductStock = require('../../models/productStock/ProductStock');
+const PurchaseOrder = require('../../models/stock/PurchaseOrder');
+const SalesOrders = require('../../models/stock/SalesOrders');
 
 
 
@@ -184,6 +186,43 @@ router.put("/productStock/:id", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+// Rota para obter todas as entradas de estoque para um produto específico
+router.get('/productStock/entries/:productId', async (req, res) => {
+  try {
+    const entries = await PurchaseOrder.find({
+      'products.product': req.params.productId,
+    })
+      .populate('supplier')
+      .populate('products.product');
+
+    res.json(entries);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Rota para obter todas as saídas de estoque para um produto específico
+router.get('/productStock/exits/:productId', async (req, res) => {
+  try {
+    const exits = await SalesOrders.find({
+      'products.product': req.params.productId,
+    })
+      .populate('vendor')
+      .populate('products.product');
+
+    res.json(exits);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 
 module.exports = router;

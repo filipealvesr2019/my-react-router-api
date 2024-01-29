@@ -23,11 +23,24 @@ router.route("/admin/product/new").post(
 
   newProduct
 );
+// Middleware para verificar permissões
+const checkPermissions = (allowedRoles) => {
+  return (req, res, next) => {
+    const userRole = req.user ? req.user.role : null; // Verifique se req.user está definido antes de acessar a propriedade role
+
+    if (allowedRoles.includes(userRole)) {
+      next();
+    } else {
+      return res.status(403).json({ message: "Permissão negada." });
+    }
+  };
+};
+
 
 
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete( deleteProduct);
+router.route("/admin/product/:id").delete(  checkPermissions(["administrador"]), deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
