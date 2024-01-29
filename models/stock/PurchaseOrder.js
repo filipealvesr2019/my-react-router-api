@@ -1,34 +1,12 @@
 const mongoose = require("mongoose");
 const ProductStock = require("../../models/productStock/ProductStock")
 const purchaseOrder = new mongoose.Schema({
-  registrationData: [
-    {
-      Nature: { type: mongoose.Schema.Types.ObjectId, ref: "NatureType" },
-      CFOP: Number,
-      Number: Number,
-      EntryDate: {
-        type: Date,
-        default: Date.now, // Set default value as the current date
-      },
-      Buyer: Number,
-      Series: Number,
-      Model: Number,
-      IssueDate: {
-        type: Date,
-        default: Date.now, // Set default value as the current date
-      },
-      conversionOperator: {
-        type: String,
-        required: true,
-        enum: ["Multiplicação", "Divisão"],
-      },
-      // Other product fields
-    },
-  ],
+
   supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier" },
   products: [
     {
       product: { type: mongoose.Schema.Types.ObjectId, ref: "ProductStock" },
+      Nome: String,
       quantity: Number,
       pricePerUnit: Number,
       discount:Number,
@@ -82,30 +60,6 @@ purchaseOrder.pre("save", async function (next) {
 
 
 
-// Adicionando um gancho (hook) para criar uma despesa correspondente antes de salvar a ordem de compra
-purchaseOrder.pre('save', async function (next) {
-  try {
-    const Expense = mongoose.model('Expense'); // Certifique-se de ter o modelo Expense definido
-
-    // Criar uma despesa correspondente
-    const expense = new Expense({
-      type: 'expense',
-      description: `Compra - Ordem ${this._id}`, // Adapte conforme necessário
-      totalAmount: this.totalAmount, // Suponho que você tenha um campo totalAmount na ordem de compra
-      // Outros campos de despesa que você deseja preencher
-    });
-
-    // Salvar a despesa
-    await expense.save();
-
-    // Adicionar uma referência à despesa na ordem de compra
-    this.expense = expense._id;
-
-    next();
-  } catch (error) {
-    next(error);
-  }
-});
 
 
 
