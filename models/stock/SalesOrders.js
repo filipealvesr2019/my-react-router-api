@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const ProductStock = require("../productStock/ProductStock");
 
 const salesOrders = new mongoose.Schema({
   registrationData: [
@@ -49,5 +50,30 @@ salesOrders.pre("save", function (next) {
  
   next();
 });
+
+
+
+
+// Adicionando um gancho (hook) para atualizar o estoque ao salvar a ordem de vendas
+salesOrders.pre("save", async function (next) {
+  try {
+    for (const product of this.products) {
+      const stockProduct = await ProductStock.findById(product.product);
+
+      if (!stockProduct) {
+        throw new Error(`Produto não encontrado no estoque: ${product.product}`);
+      }
+
+      stockProduct.quantity -= product.quantity;
+
+      await stockProduct.save();
+    }
+
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
+
 
 module.exports = mongoose.model("SalesOrders", salesOrders);

@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const productStockSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true,
+  
   },
   quantity: {
     type: Number,
@@ -12,11 +12,11 @@ const productStockSchema = new mongoose.Schema({
   },
   pricePerPiece: {
     type: Number,
-    required: true,
+
   },
   costPerPiece: {
     type: Number,
-    required: true,
+  
   },
   category: { type: mongoose.Schema.Types.ObjectId, ref: 'CategoryStock' }, // Referência ao modelo Category
   
