@@ -11,6 +11,8 @@ const purchaseOrder = new mongoose.Schema({
       pricePerUnit: Number,
       discount:Number,
       total: Number,
+      timestamp: { type: Date, default: Date.now },
+
       // Other product fields
     },
   ],

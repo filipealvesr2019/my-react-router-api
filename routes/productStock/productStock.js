@@ -185,6 +185,5 @@ router.put("/productStock/:id", async (req, res) => {
 });
 
 
-// Outras rotas relacionadas a ProductStock
 
 module.exports = router;

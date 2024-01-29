@@ -80,12 +80,18 @@ productStockSchema.methods.calculateGrossProfitPercentage = function() {
 
 // ...
 // Método para calcular o lucro por peça
+// Método para calcular o lucro por peça
 productStockSchema.methods.calculateGrossProfitPerPiece = function() {
   // Certifique-se de que tanto o preço quanto o custo estão definidos
   if (this.pricePerPiece !== undefined && this.costPerPiece !== undefined) {
     // Calcular o lucro por peça
-    this.grossProfitPerPiece = this.pricePerPiece - this.costPerPiece;
-    // Não precisa retornar, pois o valor já foi atribuído
+    let grossProfit = this.pricePerPiece - this.costPerPiece;
+
+    // Formatar para mostrar apenas os últimos quatro dígitos
+    const formattedGrossProfit = parseFloat(grossProfit.toPrecision(6));
+
+    // Atribuir o resultado à propriedade grossProfitPerPiece
+    this.grossProfitPerPiece = formattedGrossProfit;
   } else {
     // Se preço ou custo não estão definidos, lidar com isso conforme necessário
     // Pode retornar uma mensagem de erro ou definir o valor padrão
