@@ -74,18 +74,21 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
-// Rota para pesquisar produtos
+// Rota para pesquisa de produtos
 router.get('/search/product', async (req, res) => {
   try {
-    const { searchQuery } = req.query;
+    const { searchQuery, page = 1, pageSize = 10 } = req.query;
+
+    const skip = (page - 1) * pageSize;
 
     let query = {};
     if (searchQuery) {
       query = { name: new RegExp(searchQuery, 'i') };
     }
 
-    const products = await Product.find(query);
+    const products = await Product.find(query)
+      .skip(skip)
+      .limit(parseInt(pageSize));
 
     res.json(products);
   } catch (error) {
@@ -94,26 +97,23 @@ router.get('/search/product', async (req, res) => {
   }
 });
 
-// Rota para obter produtos com paginação
+// Rota para paginação de produtos
 router.get('/products/pagination', async (req, res) => {
   try {
     const { page = 1, pageSize = 10 } = req.query;
 
     const skip = (page - 1) * pageSize;
 
-    const products = await Product.find()
+    const products = await Product.find({})
       .skip(skip)
       .limit(parseInt(pageSize));
 
     res.json(products);
   } catch (error) {
-    console.error('Erro ao obter produtos com paginação:', error);
+    console.error('Erro na paginação de produtos:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
-
-
 
 
 
