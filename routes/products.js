@@ -75,14 +75,20 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
   }
 });
 
-
-
 router.get('/search/product', async (req, res) => {
   try {
-    const { searchQuery } = req.query;
+    const { searchQuery, page = 1, pageSize = 10 } = req.query;
 
-    // Use uma expressão regular para fazer uma pesquisa insensível a maiúsculas e minúsculas
-    const products = await Product.find({ name: { $regex: new RegExp(searchQuery, 'i') } });
+    const skip = (page - 1) * pageSize;
+
+    let query = {};
+    if (searchQuery) {
+      query = { name: new RegExp(searchQuery, 'i') };
+    }
+
+    const products = await Product.find(query)
+      .skip(skip)
+      .limit(parseInt(pageSize));
 
     res.json(products);
   } catch (error) {
@@ -90,6 +96,7 @@ router.get('/search/product', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
 
 
 
