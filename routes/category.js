@@ -13,13 +13,14 @@ router.put('/admin/categories/:categoryId', categoriesController.editCategory);
 
 // Rota para obter imagens de uma categoria
 
-router.get('/categories/:categoryId/images', categoriesController.getImagesByCategory);
+router.get('/category/:categoryId/images', categoriesController.getImagesByCategory);
 
 // Rota para atualizar uma imagem em uma categoria
 router.put('/category/updateImageURL', categoriesController.updateImageURL);
 
 // Rota para excluir uma imagem de uma categoria
 router.delete('/categories/:categoryId/images/:imageIndex', categoriesController.deleteImage);
+ 
 
 router.post('/categories/:categoryId/images', categoriesController.addImageToCategory);
 
@@ -28,8 +29,6 @@ router.delete('/admin/categories/:categoryId', categoriesController.deleteCatego
 
 
 router.get('/allCategories', categoriesController.getAllCategoriesWithProducts);
-
-
 
 
 
