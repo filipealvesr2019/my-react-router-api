@@ -193,36 +193,14 @@ router.put("/productStock/:id", async (req, res) => {
 
 
 
-
-// Rota para obter todas as entradas de estoque para um produto específico
-router.get('/productStock/entries/:productId', async (req, res) => {
+// Rota para obter a lista de produtos
+router.get('/products/stock', async (req, res) => {
   try {
-    const entries = await PurchaseOrder.find({
-      'products.product': req.params.productId,
-    })
-      .populate('supplier')
-      .populate('products.product');
-
-    res.json(entries);
+    const products = await ProductStock.find({}, 'name');
+    res.json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-
-// Rota para obter todas as saídas de estoque para um produto específico
-router.get('/productStock/exits/:productId', async (req, res) => {
-  try {
-    const exits = await SalesOrders.find({
-      'products.product': req.params.productId,
-    })
-      .populate('vendor')
-      .populate('products.product');
-
-    res.json(exits);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
 
 module.exports = router;

@@ -584,3 +584,32 @@ exports.getProductsByFilter = async (req, res) => {
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
+
+
+// Controller para obter subcategorias com base na categoria
+exports.getSubcategoriesByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    // Certifique-se de que a categoria seja fornecida
+    if (!category) {
+      return res.status(400).json({ error: 'Parâmetro de categoria ausente' });
+    }
+
+    // Filtrar subcategorias com base na categoria
+    const subcategories = await Product.distinct('subcategory', {
+      category: new RegExp(`\\b${category}\\b`, 'i'), // 'i' torna a busca case-insensitive
+    });
+
+    res.json(subcategories);
+  } catch (error) {
+    console.error('Erro ao obter subcategorias:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+
+
+
+
+

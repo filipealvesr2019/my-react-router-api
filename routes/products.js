@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-
+const Product = require("../models/product")
 const productController = require('../controllers/productController'); // Corrigir o nome do controlador
 
 const {
@@ -60,7 +60,20 @@ router.delete('/product/:productId/color/:color', productController.deleteColorF
 router.get('/products/new-arrivals', productController.listNewArrivals);
 
 router.get("/productsFilter", productController.getProductsByFilter);
+router.get('/subcategories/:category', productController.getSubcategoriesByCategory);
+// Modifique a rota para tratar produtos com base na categoria e subcategoria
+router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) => {
+  try {
+    const { category, subcategory } = req.params;
 
+    const products = await Product.find({ category, subcategory });
+
+    res.json(products);
+  } catch (error) {
+    console.error('Erro ao obter produtos da subcategoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
 // ... (outras rotas)
 
 module.exports = router;

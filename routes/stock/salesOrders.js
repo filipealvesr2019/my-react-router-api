@@ -25,7 +25,22 @@ router.post('/salesOrders', async (req, res) => {
     }
   });
   
+  // GET route to retrieve information about a specific buy
   
+router.get('/sales/:productId', async (req, res) => {
+  try {
+    const sales = await SalesOrders.find({
+      'products.product': req.params.productId,
+    })
+      .populate('vendor')
+      .populate('products.product');
+
+    res.json(sales);
+  } catch (error) {
+    console.error('Error fetching sales:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
 
 
 
