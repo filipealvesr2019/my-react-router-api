@@ -537,6 +537,20 @@ exports.listNewArrivals = async (req, res) => {
   }
 };
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 exports.getProductsByFilter = async (req, res) => {
@@ -584,6 +598,18 @@ exports.getProductsByFilter = async (req, res) => {
     res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // Controller para obter subcategorias com base na categoria

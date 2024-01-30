@@ -74,6 +74,28 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+
+
+router.get('/search/product', async (req, res) => {
+  try {
+    const { searchQuery } = req.query;
+
+    // Use uma expressão regular para fazer uma pesquisa insensível a maiúsculas e minúsculas
+    const products = await Product.find({ name: { $regex: new RegExp(searchQuery, 'i') } });
+
+    res.json(products);
+  } catch (error) {
+    console.error('Erro ao pesquisar produtos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+
+
+
+
 // ... (outras rotas)
 
 module.exports = router;
