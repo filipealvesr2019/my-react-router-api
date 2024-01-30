@@ -74,7 +74,13 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-// Rota para pesquisa de produtos
+
+
+
+
+
+
+// Altere a rota para incluir os parâmetros de paginação
 router.get('/search/product', async (req, res) => {
   try {
     const { searchQuery, page = 1, pageSize = 10 } = req.query;
@@ -90,7 +96,9 @@ router.get('/search/product', async (req, res) => {
       .skip(skip)
       .limit(parseInt(pageSize));
 
-    res.json(products);
+    const totalProducts = await Product.countDocuments(query);
+
+    res.json({ products, totalProducts });
   } catch (error) {
     console.error('Erro ao pesquisar produtos:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
