@@ -214,7 +214,7 @@ const getImagesByCategory = async (req, res) => {
     }
 
     const images = category.images;
-    res.status(200).json({ images });
+    res.status(200).json({ category, images });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error getting images by category.' });
