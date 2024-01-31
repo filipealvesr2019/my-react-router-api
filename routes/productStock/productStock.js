@@ -4,6 +4,7 @@ const router = express.Router();
 const ProductStock = require('../../models/productStock/ProductStock');
 const PurchaseOrder = require('../../models/stock/PurchaseOrder');
 const SalesOrders = require('../../models/stock/SalesOrders');
+const Entrada = require('../../models/Entrada');
 
 
 
@@ -202,5 +203,95 @@ router.get('/products/stock', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
+
+
+
+// Rota para adicionar uma entrada de produto
+router.post('/entrada/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { quantity } = req.body;
+
+    // Verifique se quantity é um número válido
+    if (isNaN(parseFloat(quantity)) || !isFinite(quantity)) {
+      return res.status(400).json({ error: 'A quantidade deve ser um número válido' });
+    }
+
+    const product = await ProductStock.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    const entrada = new Entrada({
+      product: productId,
+      quantity: parseFloat(quantity), // Converta para número
+    });
+
+    await entrada.save();
+
+    // Atualizar a quantidade no estoque do produto
+    product.quantity += parseFloat(quantity);
+    await product.save();
+
+    res.json(entrada);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Rota para adicionar uma saída de produto
+router.post('/saida/:productId', async (req, res) => {
+  try {
+    const { productId } = req.params;
+    const { quantity } = req.body;
+
+    const product = await ProductStock.findById(productId);
+
+    if (!product) {
+      return res.status(404).json({ error: 'Produto não encontrado' });
+    }
+
+    // Verificar se há quantidade suficiente no estoque
+    if (product.quantity < quantity) {
+      return res.status(400).json({ error: 'Quantidade insuficiente em estoque' });
+    }
+
+    const saida = new Saida({
+      product: productId,
+      quantity,
+    });
+
+    await saida.save();
+
+    // Atualizar a quantidade no estoque do produto
+    product.quantity -= quantity;
+    await product.save();
+
+    res.json(saida);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Rota para obter o histórico de estoque de um produto
+router.get('/products/:productId/stock-history', async (req, res) => {
+  try {
+    const { productId } = req.params;
+
+    // Consulte o banco de dados para obter o histórico de estoque do produto com o ID fornecido
+    const stockHistory = await Entrada.find({ product: productId }).sort({ date: 'desc' });
+
+    res.json(stockHistory);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
 
 module.exports = router;

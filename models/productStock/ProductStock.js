@@ -8,7 +8,7 @@ const productStockSchema = new mongoose.Schema({
   },
   quantity: {
     type: Number,
- 
+    default: 0, // Defina um valor padrão se apropriado
   },
   pricePerPiece: {
     type: Number,
@@ -129,6 +129,18 @@ productStockSchema.methods.calculateTotalCost = function() {
   }
 };
 
+// Adicione as seguintes linhas no seu modelo existente
+productStockSchema.virtual('entradas', {
+  ref: 'Entrada',
+  localField: '_id',
+  foreignField: 'product',
+});
+
+productStockSchema.virtual('saidas', {
+  ref: 'Saida',
+  localField: '_id',
+  foreignField: 'product',
+});
 
 
 const ProductStock = mongoose.model('ProductStock', productStockSchema);
