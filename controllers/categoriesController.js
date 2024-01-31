@@ -212,7 +212,7 @@ const getImagesByCategory = async (req, res) => {
     if (!category) {
       return res.status(404).json({ message: 'Category not found.' });
     }
-
+    
     const images = category.images;
     res.status(200).json({ category, images });
   } catch (error) {
@@ -312,7 +312,32 @@ const getAllCategoriesWithProducts = async (req, res) => {
 
 
 
+const getAllCategoryNames = async (req, res) => {
+  try {
+    const categories = await Category.find();
+    const categoryNames = categories.map(category => category.name);
+    res.json({ success: true, categoryNames });
+  } catch (error) {
+    console.error('Error getting all category names:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
 
+
+const getProductNamesByCategoryId = async (req, res) => {
+  try {
+    const categoryId = req.params.categoryId;
+    const products = await Product.find({ category: categoryId });
+
+    const productNames = products.map(product => product.name);
+    res.status(200).json({ success: true, productNames });
+  } catch (error) {
+    console.error('Error getting product names by category ID:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// Rota no arquivo de roteamento
 
   module.exports = {
     newCategory,
@@ -327,8 +352,8 @@ const getAllCategoriesWithProducts = async (req, res) => {
     getImagesByCategory,
     updateImageURL,
     getAllCategoriesWithProducts,
- 
-
+    getAllCategoryNames,
+    getProductNamesByCategoryId
 
 
   };

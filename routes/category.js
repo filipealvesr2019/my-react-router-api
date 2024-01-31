@@ -29,7 +29,9 @@ router.delete('/admin/categories/:categoryId', categoriesController.deleteCatego
 
 
 router.get('/allCategories', categoriesController.getAllCategoriesWithProducts);
+// Rota no arquivo de roteamento
+router.get('/categoryNames', categoriesController.getAllCategoryNames);
 
-
+router.get('/categories/:categoryId/productNames', categoriesController.getProductNamesByCategoryId);
 
 module.exports = router;
