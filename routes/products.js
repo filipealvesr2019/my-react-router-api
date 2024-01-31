@@ -26,15 +26,21 @@ router.route("/admin/product/new").post(
 // Middleware para verificar permissões
 const checkPermissions = (allowedRoles) => {
   return (req, res, next) => {
-    const userRole = req.user ? req.user.role : null; // Verifique se req.user está definido antes de acessar a propriedade role
+    const userRole = req.user ? req.user.role : null;
+
+    console.log('Papel do usuário:', userRole);
+    console.log('Papéis permitidos:', allowedRoles);
 
     if (allowedRoles.includes(userRole)) {
+      console.log('Permissão concedida. Continuando para a próxima função.');
       next();
     } else {
+      console.log('Permissão negada. Papel do usuário não autorizado.');
       return res.status(403).json({ message: "Permissão negada." });
     }
   };
 };
+
 
 
 

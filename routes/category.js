@@ -2,6 +2,9 @@
 const express = require('express');
 const router = express.Router();
 const categoriesController = require('../controllers/categoriesController'); // Substitua pelo caminho real do seu controlador
+const Subcategory = require('../models/Subcategory');
+const Product = require('../models/product');
+const Category = require('../models/category');
 
 // Rota para adicionar nova categoria
 router.post('/admin/category/new', categoriesController.newCategory);
@@ -30,8 +33,14 @@ router.delete('/admin/categories/:categoryId', categoriesController.deleteCatego
 
 router.get('/allCategories', categoriesController.getAllCategoriesWithProducts);
 // Rota no arquivo de roteamento
-router.get('/categoryNames', categoriesController.getAllCategoryNames);
 
-router.get('/categories/:categoryId/productNames', categoriesController.getProductNamesByCategoryId);
+
+router.get('/categories/:category/mixedProducts', categoriesController.getMixedProductsByCategory);
+
+  
+
+
+
+
 
 module.exports = router;

@@ -310,32 +310,22 @@ const getAllCategoriesWithProducts = async (req, res) => {
 
 
 
-
-
-const getAllCategoryNames = async (req, res) => {
+const getMixedProductsByCategory = async (req, res) => {
   try {
-    const categories = await Category.find();
-    const categoryNames = categories.map(category => category.name);
-    res.json({ success: true, categoryNames });
+    const { category } = req.params;
+
+    // Encontrar todos os produtos com a categoria específica
+    const products = await Product.find({ category });
+
+    // Você pode adicionar condições adicionais se necessário, como inStock, quantity, etc.
+
+    res.json({ success: true, mixedProducts: products });
   } catch (error) {
-    console.error('Error getting all category names:', error);
+    console.error('Error in getMixedProductsByCategory:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 
-
-const getProductNamesByCategoryId = async (req, res) => {
-  try {
-    const categoryId = req.params.categoryId;
-    const products = await Product.find({ category: categoryId });
-
-    const productNames = products.map(product => product.name);
-    res.status(200).json({ success: true, productNames });
-  } catch (error) {
-    console.error('Error getting product names by category ID:', error);
-    res.status(500).json({ success: false, message: 'Internal Server Error' });
-  }
-};
 
 // Rota no arquivo de roteamento
 
@@ -352,8 +342,7 @@ const getProductNamesByCategoryId = async (req, res) => {
     getImagesByCategory,
     updateImageURL,
     getAllCategoriesWithProducts,
-    getAllCategoryNames,
-    getProductNamesByCategoryId
+    getMixedProductsByCategory
 
 
   };
