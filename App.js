@@ -120,7 +120,8 @@ app.use(express.json());
 const uri = process.env.MONGODB_URI;
 
 // Configurações e middlewares
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "*",
+methods:["GET", "POST" ]}));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
