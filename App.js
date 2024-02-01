@@ -123,19 +123,8 @@ app.use(express.json());
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
 
-// Configuração de middleware para habilitar CORS
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', 'https://my-react-router-app.vercel.app');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
-  next();
-});
 
-// Resto da configuração do seu servidor
 
-app.listen(5174, () => {
-  console.log('Servidor está escutando na porta 5174');
-});
 // Conexão com o banco de dados
 mongoose.connect(uri, {
   useNewUrlParser: true,
@@ -147,6 +136,10 @@ mongoose.connect(uri, {
 });
 
 // Iniciar o servidor
+const port = 3001;
+app.listen(port, () => {
+  console.log(`Servidor em execução na porta http://localhost:${port}`);
+});
 
 
 
