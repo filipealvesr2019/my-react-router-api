@@ -326,11 +326,25 @@ const getMixedProductsByCategory = async (req, res) => {
       filter.size = new RegExp(`\\b${size}\\b`);
     }
 
+    
     if (priceRange) {
-      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
-      filter.price = { $gte: minPrice, $lte: maxPrice };
+      const [minPriceStr, maxPriceStr] = priceRange.split(" - ");
+      
+      // Remover o "R$" e converter para números
+      const minPrice = parseFloat(minPriceStr.replace('R$', '').replace(',', '.'));
+      const maxPrice = parseFloat(maxPriceStr.replace('R$', '').replace(',', '.'));
+    
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        filter.price = { $gte: minPrice, $lte: maxPrice };
+      } else {
+        // Lógica para lidar com valores inválidos
+        console.error('Invalid priceRange values:', minPrice, maxPrice, 'Original:', priceRange);
+        res.status(400).json({ success: false, message: 'Invalid priceRange values' });
+        return; // Encerrar a execução da função
+      }
     }
-
+    
+    
     // Calcular o número total de produtos com base nas opções de filtro
     const totalProducts = await Product.countDocuments(filter);
 

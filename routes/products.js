@@ -156,6 +156,63 @@ router.get('/products/pagination', async (req, res) => {
 
 
 
+// Rota para obter cores dinamicamente
+router.get('/colors', async (req, res) => {
+  try {
+    const colors = await Product.distinct('variations.color');
+    res.json(colors);
+  } catch (error) {
+    console.error('Erro ao obter cores:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Rota para obter tamanhos dinamicamente
+router.get('/sizes', async (req, res) => {
+  try {
+    const sizes = await Product.distinct('size');
+    res.json(sizes);
+  } catch (error) {
+    console.error('Erro ao obter tamanhos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+
+
+
+
+
+router.get('/priceRanges', async (req, res) => {
+  try {
+    const minMaxPrices = await Product.aggregate([
+      { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } },
+    ]);
+
+    const minPrice = minMaxPrices.length > 0 ? minMaxPrices[0].minPrice : 0;
+    const maxPrice = minMaxPrices.length > 0 ? minMaxPrices[0].maxPrice : 0;
+
+    const priceRanges = generatePriceRanges(minPrice, maxPrice);
+    res.json(priceRanges);
+  } catch (error) {
+    console.error('Erro ao obter faixas de preço:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+// Função para gerar faixas de preço com base no mínimo e máximo
+function generatePriceRanges(min, max) {
+  const ranges = [];
+  const step = 50; // Ajuste conforme necessário
+
+  for (let i = min; i <= max; i += step) {
+    const range = `R$ ${i} - R$ ${i + step - 1}`;
+    ranges.push(range);
+  }
+
+  return ranges;
+}
 
 
 

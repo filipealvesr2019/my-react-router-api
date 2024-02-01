@@ -548,9 +548,6 @@ exports.listNewArrivals = async (req, res) => {
 
 
 
-
-
-
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 exports.getProductsByFilter = async (req, res) => {
