@@ -307,25 +307,50 @@ const getAllCategoriesWithProducts = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
-
-
 const getMixedProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
+    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
+    const pageSize = 10; // Número de produtos por página
 
-    // Encontrar todos os produtos com a categoria específica
-    const products = await Product.find({ category });
+    // Opções de filtro
+    const { color, size, priceRange } = req.query;
+    const filter = { category };
 
-    // Você pode adicionar condições adicionais se necessário, como inStock, quantity, etc.
+    // Adicionar opções de filtro se fornecidas
+    if (color) {
+      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+    }
 
-    res.json({ success: true, mixedProducts: products });
+    if (size) {
+      filter.size = new RegExp(`\\b${size}\\b`);
+    }
+
+    if (priceRange) {
+      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
+      filter.price = { $gte: minPrice, $lte: maxPrice };
+    }
+
+    // Calcular o número total de produtos com base nas opções de filtro
+    const totalProducts = await Product.countDocuments(filter);
+
+    // Calcular o número total de páginas
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    // Calcular o índice de início dos documentos (página atual - 1 * produtos por página)
+    const startIndex = (page - 1) * pageSize;
+
+    // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
+    const products = await Product.find(filter)
+      .skip(startIndex)
+      .limit(pageSize);
+
+    res.json({ success: true, mixedProducts: products, totalPages });
   } catch (error) {
     console.error('Error in getMixedProductsByCategory:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
-
 
 // Rota no arquivo de roteamento
 

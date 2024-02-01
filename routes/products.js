@@ -23,13 +23,20 @@ router.route("/admin/product/new").post(
 
   newProduct
 );
-// Middleware para verificar permissões
+
+
+
 const checkPermissions = (allowedRoles) => {
   return (req, res, next) => {
     const userRole = req.user ? req.user.role : null;
 
     console.log('Papel do usuário:', userRole);
     console.log('Papéis permitidos:', allowedRoles);
+
+    if (!userRole) {
+      console.log('Token inválido ou ausente. Permissão negada.');
+      return res.status(401).json({ message: "Token inválido ou ausente." });
+    }
 
     if (allowedRoles.includes(userRole)) {
       console.log('Permissão concedida. Continuando para a próxima função.');
@@ -44,9 +51,26 @@ const checkPermissions = (allowedRoles) => {
 
 
 
+// Função para verificar o token
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
+
+  if (!token) {
+    return res.status(401).json({ message: 'Token ausente. Acesso não autorizado.' });
+  }
+
+  try {
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decodedToken; // Adiciona as informações do usuário ao objeto de solicitação (req)
+    next();
+  } catch (error) {
+    return res.status(403).json({ message: 'Token inválido. Acesso não autorizado.' });
+  }
+};
+
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(  checkPermissions(["administrador"]), deleteProduct);
+router.route("/admin/product/:id").delete(verifyToken,  checkPermissions(["administrador"]), deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
@@ -128,6 +152,17 @@ router.get('/products/pagination', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+
+
+
+
+
+
+
+router.get('/products/category/:categoryName', productController.getProductsByCategory);
+
+
 
 
 

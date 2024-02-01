@@ -639,3 +639,60 @@ exports.getSubcategoriesByCategory = async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
+// No controlador (controller)
+exports.getProductsByCategory = async (req, res) => {
+  try {
+    const { categoryName } = req.params;
+    const { size, subcategory, color, priceRange } = req.query;
+
+    console.log("Categoria Nome:", categoryName);
+    console.log("Tamanhos:", size);
+    console.log("Subcategoria:", subcategory);
+    console.log("Cor:", color);
+    console.log("Faixa de Preço:", priceRange);
+
+    const filter = { quantity: { $gt: 0 } };
+
+    if (size) {
+      filter.size = new RegExp(`\\b${size}\\b`, 'i');
+    }
+
+    if (priceRange) {
+      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
+      filter.price = { $gte: minPrice, $lte: maxPrice };
+    }
+
+    if (color) {
+      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+    }
+
+    if (subcategory) {
+      const cleanedSubcategory = subcategory.trim();
+      filter.category = categoryName;
+      filter.subcategory = new RegExp(`\\b${cleanedSubcategory}\\b`, 'i');
+    } else {
+      filter.category = categoryName;
+    }
+
+    console.log("Filtro aplicado:", filter);
+
+    const products = await Product.find(filter);
+
+    console.log("Produtos encontrados:", products);
+
+    res.json(products);
+  } catch (error) {
+    console.error("Erro ao obter produtos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
+  }
+};
+
