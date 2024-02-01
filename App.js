@@ -17,10 +17,7 @@ const cookieParser = require('cookie-parser');
 
 require('dotenv').config();
 
-// Configurações e middlewares
-app.use(cors({ origin: "http://localhost:5173/" }));
-app.use(bodyParser.json());
-app.use(cookieParser());
+
 
 
 // Rotas
@@ -122,7 +119,10 @@ app.use(express.json());
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
 
-
+// Configurações e middlewares
+app.use(cors({ origin: "http://localhost:5173/" }));
+app.use(bodyParser.json());
+app.use(cookieParser());
 
 // Conexão com o banco de dados
 mongoose.connect(uri, {
