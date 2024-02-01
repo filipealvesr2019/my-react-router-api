@@ -13,13 +13,12 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 
 
-app.use(cors({ credentials: true, origin: 'http://localhost:5174' }));
 
 
 require('dotenv').config();
 
 // Configurações e middlewares
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: "http://localhost:5173/" }));
 app.use(bodyParser.json());
 app.use(cookieParser());
 
