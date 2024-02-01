@@ -11,6 +11,11 @@ app.use(bodyParser.urlencoded({ extended: true }));
 const mongoose = require('mongoose');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
+app.use(bodyParser.json());
+app.use(cookieParser());
+// Configurações e middlewares
+app.use(cors({ origin: "*",
+methods:["GET", "POST" ]}));
 
 
 
@@ -119,11 +124,6 @@ app.use(express.json());
 // Acesso à variável de ambiente MONGODB_URI do arquivo .env
 const uri = process.env.MONGODB_URI;
 
-// Configurações e middlewares
-app.use(cors({ origin: "*",
-methods:["GET", "POST" ]}));
-app.use(bodyParser.json());
-app.use(cookieParser());
 
 // Conexão com o banco de dados
 mongoose.connect(uri, {
