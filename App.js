@@ -15,7 +15,7 @@ app.use(bodyParser.json());
 app.use(cookieParser());
 // Configurações e middlewares
 app.use(cors({ origin: "*",
-methods:["GET", "POST" ]}));
+methods:["GET", "POST", "DELETE" ]}));
 
 
 
