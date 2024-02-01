@@ -124,6 +124,14 @@ app.use(express.json());
 const uri = process.env.MONGODB_URI;
 
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', 'http://localhost:7000');
+  // Adicione outros cabeçalhos CORS, se necessário
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+  res.setHeader('Access-Control-Allow-Credentials', true);
+  next();
+});
 
 // Conexão com o banco de dados
 mongoose.connect(uri, {

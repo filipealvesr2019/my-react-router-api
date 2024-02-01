@@ -326,7 +326,7 @@ const getMixedProductsByCategory = async (req, res) => {
       filter.size = new RegExp(`\\b${size}\\b`);
     }
 
-    
+  
     if (priceRange) {
       const [minPriceStr, maxPriceStr] = priceRange.split(" - ");
       

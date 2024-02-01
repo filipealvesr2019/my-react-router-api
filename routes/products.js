@@ -14,6 +14,7 @@ const {
 } = require("../controllers/productController");
 
 const { isAuthenticatedUser } = require("../middleware/auth");
+const { auth } = require("firebase-admin");
 
 
 router.route("/products").get( getProducts);
@@ -70,7 +71,7 @@ const verifyToken = (req, res, next) => {
 
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(verifyToken,  checkPermissions(["administrador"]), deleteProduct);
+router.route("/admin/product/:id").delete(isAuthenticatedUser, deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
@@ -110,10 +111,27 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
 
 
 
-// Altere a rota para incluir os parâmetros de paginação
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.get('/search/product', async (req, res) => {
   try {
-    const { searchQuery, page = 1, pageSize = 10 } = req.query;
+    const { searchQuery, page = 1, pageSize = 10, color, size, priceRange } = req.query;
 
     const skip = (page - 1) * pageSize;
 
@@ -122,18 +140,52 @@ router.get('/search/product', async (req, res) => {
       query = { name: new RegExp(searchQuery, 'i') };
     }
 
+    if (color) {
+      query['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+    }
+
+    if (size) {
+      query.size = new RegExp(`\\b${size}\\b`);
+    }
+
+    if (priceRange) {
+      const [minPrice, maxPrice] = priceRange.split("-").map(parseFloat);
+      query.price = { $gte: minPrice, $lte: maxPrice };
+    }
+
     const products = await Product.find(query)
       .skip(skip)
       .limit(parseInt(pageSize));
 
     const totalProducts = await Product.countDocuments(query);
 
-    res.json({ products, totalProducts });
+    // Obtenha opções de filtro diretamente da base de dados
+    const uniqueColors = await Product.distinct('variations.color');
+    const uniqueSizes = await Product.distinct('size');
+    const priceRanges = await Product.aggregate([
+      {
+        $group: {
+          _id: null,
+          minPrice: { $min: '$price' },
+          maxPrice: { $max: '$price' },
+        },
+      },
+    ]);
+    const uniquePriceRange = priceRanges[0];
+
+    const filterOptions = {
+      colors: uniqueColors,
+      sizes: uniqueSizes,
+      priceRanges: uniquePriceRange,
+    };
+
+    res.json({ products, totalProducts, filterOptions });
   } catch (error) {
     console.error('Erro ao pesquisar produtos:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
 
 // Rota para paginação de produtos
 router.get('/products/pagination', async (req, res) => {
