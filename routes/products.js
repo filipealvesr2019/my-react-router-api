@@ -261,16 +261,13 @@ router.get('/priceRanges/:category', async (req, res) => {
 
 
 
-
-
-
 // Função para gerar faixas de preço com base no mínimo e máximo
 function generatePriceRanges(min, max) {
   const ranges = [];
   const step = 50; // Ajuste conforme necessário
 
   for (let i = min; i <= max; i += step) {
-    const range = `R$ ${i} - R$ ${i + step - 1}`;
+    const range = `R$ ${Math.floor(i)} - R$ ${Math.floor(i + step - 1)}`;
     ranges.push(range);
   }
 
