@@ -206,12 +206,14 @@ router.get('/products/pagination', async (req, res) => {
 });
 
 
-
-
 // Rota para obter cores dinamicamente
-router.get('/colors', async (req, res) => {
+router.get('/colors/:category', async (req, res) => {
   try {
-    const colors = await Product.distinct('variations.color');
+    const { category } = req.params;
+    
+    console.log('Categoria recebida:', category);
+
+    const colors = await Product.distinct('variations.color', { category });
     res.json(colors);
   } catch (error) {
     console.error('Erro ao obter cores:', error);
@@ -220,9 +222,13 @@ router.get('/colors', async (req, res) => {
 });
 
 // Rota para obter tamanhos dinamicamente
-router.get('/sizes', async (req, res) => {
+router.get('/sizes/:category', async (req, res) => {
   try {
-    const sizes = await Product.distinct('size');
+    const { category } = req.params;
+    
+    console.log('Categoria recebida:', category);
+
+    const sizes = await Product.distinct('size', { category });
     res.json(sizes);
   } catch (error) {
     console.error('Erro ao obter tamanhos:', error);
@@ -230,15 +236,15 @@ router.get('/sizes', async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-router.get('/priceRanges', async (req, res) => {
+// Rota para obter faixas de preço dinamicamente
+router.get('/priceRanges/:category', async (req, res) => {
   try {
+    const { category } = req.params;
+
+    console.log('Categoria recebida:', category);
+
     const minMaxPrices = await Product.aggregate([
+      { $match: { category } }, // Adiciona o filtro por categoria
       { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } },
     ]);
 
@@ -252,6 +258,11 @@ router.get('/priceRanges', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+
+
+
+
 
 // Função para gerar faixas de preço com base no mínimo e máximo
 function generatePriceRanges(min, max) {
@@ -269,8 +280,19 @@ function generatePriceRanges(min, max) {
 
 
 
+
+
+
+
+
+
+
 router.get('/products/category/:categoryName', productController.getProductsByCategory);
 
+
+router.get('/api/categories/:category/colors', productController.getColorsByCategory);
+router.get('/api/categories/:category/sizes', productController.getSizesByCategory);
+router.get('/api/categories/:category/priceRanges', productController.getPriceRangesByCategory);
 
 
 

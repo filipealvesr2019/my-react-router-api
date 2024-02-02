@@ -691,5 +691,95 @@ exports.getProductsByCategory = async (req, res) => {
     console.error("Erro ao obter produtos:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
+};exports.getColorsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    
+    console.log('Categoria recebida:', category);
+
+    const colors = await Product.distinct('variations.color', { category: category });
+
+    console.log('Cores encontradas:', colors);
+
+    res.json(colors);
+  } catch (error) {
+    console.error('Erro ao obter cores por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
 };
 
+
+exports.getSizesByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const sizes = await Product.distinct('size', { category });
+    res.json(sizes);
+  } catch (error) {
+    console.error('Erro ao obter tamanhos por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+// Função para obter faixas de preço com base no mínimo e máximo
+function generatePriceRanges(min, max, step) {
+  const ranges = [];
+
+  for (let i = min; i <= max; i += step) {
+    const nextStep = i + step - 0.01; // Ajuste para evitar problemas com ponto flutuante
+    const range = `R$ ${i.toFixed(2)} - R$ ${nextStep.toFixed(2)}`;
+    ranges.push(range);
+  }
+
+  return ranges;
+}
+
+// Função para obter faixas de preço com base na categoria
+exports.getPriceRangesByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    // Modificamos a consulta para incluir apenas produtos da categoria específica
+    const products = await Product.find({ category });
+
+    console.log('Products for category:', products);
+
+    // Verificar se há produtos
+    if (products.length === 0) {
+      console.log('Não há produtos para a categoria específica.');
+      // Lide com o caso em que não há produtos para a categoria específica.
+      // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas.
+      const defaultMinPrice = 0;
+      const defaultMaxPrice = 100;
+      const step = 50;
+      const priceRanges = generatePriceRanges(defaultMinPrice, defaultMaxPrice, step);
+      console.log('Price Ranges:', priceRanges);
+      res.json(priceRanges);
+      return;
+    }
+
+    // Encontrar valores mínimo e máximo dos preços dos produtos
+    const minPrice = Math.floor(Math.min(...products.map(product => product.price)));
+    const maxPrice = Math.ceil(Math.max(...products.map(product => product.price)));
+    console.log('Min Price:', minPrice);
+    console.log('Max Price:', maxPrice);
+
+    // Verificar se há produtos em cada faixa de preço
+    const step = 50; // Ajuste conforme necessário
+    const priceRanges = generatePriceRanges(minPrice, maxPrice, step);
+    console.log('Generated Price Ranges:', priceRanges);
+
+    res.json(priceRanges);
+  } catch (error) {
+    console.error('Erro ao obter faixas de preço por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
