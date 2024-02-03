@@ -79,7 +79,8 @@ const verifyToken = (req, res, next) => {
 
 
 // router.route("/admin/product/:id").delete(  checkPermissions(["administrador"]), deleteProduct);
-// router.route("/admin/product/:id").delete(verifyToken,  checkPermissions(["administrador"]), deleteProduct);
+// router.route("/admin/product/:id").delete(isAuthorizedToDeleteProduct, isAuthenticatedUser,  deleteProduct);
+
 
 router.put('/update/product/:productId', productController.updateProduct);
 router.route("/admin/product/:id").delete(isAuthorizedToDeleteProduct, isAuthenticatedUser,  deleteProduct);
