@@ -83,7 +83,7 @@ const verifyToken = (req, res, next) => {
 
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(isAuthorizedToDeleteProduct, isAuthenticatedUser,  deleteProduct);
+router.route("/admin/product/:id").delete(  deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
