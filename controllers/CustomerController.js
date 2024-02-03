@@ -5,7 +5,7 @@ const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 
 // cadastro de usuarios => /api/v1/register
-exports.registerUser = async (req, res, next) => {
+exports.registerCustumers = async (req, res, next) => {
   const { name, email, password } = req.body;
   if (!password) {
     return res.status(400).json({
@@ -67,8 +67,8 @@ exports.registerUser = async (req, res, next) => {
 };
 
 // logar usuario com JWT token
-exports.loginUser = async (req, res, next) => {
-  const { email, password } = req.body;
+exports.loginCustumer = async (req, res, next) => {
+  const {  email, password } = req.body;
   
   
   // verifica se o usuario esta logado com email e senha
@@ -127,7 +127,7 @@ exports.loginUser = async (req, res, next) => {
 };
 
 // deslogar um usuario api/v1/logout
-exports.logout = async (req, res, next) => {
+exports.Custumerlogout = async (req, res, next) => {
   res.cookie("token", null, {
     expires: new Date(Date.now()),
     httpOnly: true,
@@ -145,7 +145,7 @@ function calculateRemainingLockTime(lockUntil) {
 }
 
 // get all users => /api/v1/admin/users
-exports.allUsers = async (req, res, next) => {
+exports.getAllCustumers = async (req, res, next) => {
      
     const users = await User.find();
 
@@ -156,7 +156,7 @@ exports.allUsers = async (req, res, next) => {
 }
 
 
-exports.getUserDetails = async (req, res, next) => {
+exports.getCustumerDetails = async (req, res, next) => {
     const user =  await User.findById(req.params.id);
 
     if(!user){
@@ -178,7 +178,7 @@ exports.getUserDetails = async (req, res, next) => {
 
 
 // update admin
-exports.updateAdminProfile = async (req, res, next) => {
+exports.updateCustumer = async (req, res, next) => {
     const newUserData  = {
         name:req.body.name,
         email:req.body.email,
@@ -198,7 +198,7 @@ exports.updateAdminProfile = async (req, res, next) => {
 }
 
 
-exports.deleteAdminProfile = async (req, res, next) => {
+exports.deleteCustumer = async (req, res, next) => {
     const user =  await User.findById(req.params.id);
 
     if(!user){
@@ -221,7 +221,7 @@ exports.deleteAdminProfile = async (req, res, next) => {
 
 
 // Middleware para verificar se o usuário está autenticado
-exports.AuthenticatedUser = async (req, res, next) => {
+exports.AuthenticatedCustumer = async (req, res, next) => {
   const { token } = req.cookies;
 
   if (!token) {
@@ -242,10 +242,6 @@ exports.AuthenticatedUser = async (req, res, next) => {
       });
   }
 };
-
-const nodemailer = require('nodemailer');
-const crypto = require('crypto');
-const User = require('../models/User'); // Substitua pelo caminho real do modelo User
 
 exports.forgotPassword = async (req, res, next) => {
   const { email } = req.body;
@@ -306,6 +302,51 @@ exports.forgotPassword = async (req, res, next) => {
       success: false,
       error: 'Erro interno do servidor.',
     });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+exports.getCustumerByUsername = async (req, res) => {
+  try {
+    const username = req.query.username; // Obtendo o nome de usuário do query parameters
+    const user = await User.findOne({ username: username }).exec();
+    if (!user) {
+      return res.status(404).send("Usuário não encontrado!");
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(400).send("Erro ao buscar usuário especifico!");
+  }
+};
+
+
+
+
+
+
+
+
+
+exports.getCustumer = async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await User.findById(userId).exec();
+    if (!user) {
+      return res.status(404).send("Usuário não encontrado!");
+    }
+    res.status(200).json(user);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Erro interno do servidor ao buscar usuário!");
   }
 };
 
