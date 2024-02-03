@@ -15,6 +15,7 @@ const {
 
 const { isAuthenticatedUser } = require("../middleware/auth");
 const { auth } = require("firebase-admin");
+const { isAuthorizedToDeleteProduct } = require("../middleware/middleware");
 
 
 router.route("/products").get( getProducts);
@@ -70,11 +71,18 @@ const verifyToken = (req, res, next) => {
 };
 
 
+
+
+
+
+
+
+
 // router.route("/admin/product/:id").delete(  checkPermissions(["administrador"]), deleteProduct);
 // router.route("/admin/product/:id").delete(verifyToken,  checkPermissions(["administrador"]), deleteProduct);
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(  deleteProduct);
+router.route("/admin/product/:id").delete(isAuthorizedToDeleteProduct, isAuthenticatedUser,  deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
