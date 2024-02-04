@@ -14,8 +14,7 @@ const cookieParser = require('cookie-parser');
 app.use(bodyParser.json());
 app.use(cookieParser());
 // Configurações e middlewares
-app.use(cors({ origin: "*",
-methods:["GET", "POST", "DELETE" ]}));
+app.use(cors({ origin: "*"}));
 
 
 

@@ -691,7 +691,15 @@ exports.getProductsByCategory = async (req, res) => {
     console.error("Erro ao obter produtos:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
-};exports.getColorsByCategory = async (req, res) => {
+};
+
+
+
+
+
+
+
+exports.getColorsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
     
@@ -782,4 +790,136 @@ exports.getPriceRangesByCategory = async (req, res) => {
     console.error('Erro ao obter faixas de preço por categoria:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.getFilterOptionsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    const colors = await Product.distinct('variations.color', { category });
+    const sizes = await Product.distinct('size', { category });
+
+    const minMaxPrices = await Product.aggregate([
+      { $match: { category } },
+      { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } },
+    ]);
+
+    const minPrice = minMaxPrices.length > 0 ? minMaxPrices[0].minPrice : 0;
+    const maxPrice = minMaxPrices.length > 0 ? minMaxPrices[0].maxPrice : 0;
+
+    const priceRanges = generatePriceRanges(minPrice, maxPrice);
+
+    const filterOptions = {
+      colors,
+      sizes,
+      priceRanges,
+    };
+
+    res.json(filterOptions);
+  } catch (error) {
+    console.error('Erro ao obter opções de filtro por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+exports.generatePriceRanges = (min, max) => {
+  const ranges = [];
+  const step = 50;
+
+  for (let i = min; i <= max; i += step) {
+    const range = `R$ ${i} - R$ ${i + step - 1}`;
+    ranges.push(range);
+  }
+
+  return ranges;
+};
+
+
+
+
+
+
+
+
+
+exports.getColorsByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    const colors = await Product.distinct('variations.color', { category });
+
+    res.json(colors);
+  } catch (error) {
+    console.error('Erro ao obter cores por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+exports.getSizesByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    const sizes = await Product.distinct('size', { category });
+
+    res.json(sizes);
+  } catch (error) {
+    console.error('Erro ao obter tamanhos por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+
+
+
+exports.getPriceRangesByCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+
+    const minMaxPrices = await Product.aggregate([
+      { $match: { category } },
+      { $group: { _id: null, minPrice: { $min: '$price' }, maxPrice: { $max: '$price' } } },
+    ]);
+
+    const minPrice = minMaxPrices.length > 0 ? minMaxPrices[0].minPrice : 0;
+    const maxPrice = minMaxPrices.length > 0 ? minMaxPrices[0].maxPrice : 0;
+
+    const priceRanges = generatePriceRanges(minPrice, maxPrice);
+
+    res.json(priceRanges);
+  } catch (error) {
+    console.error('Erro ao obter faixas de preço por categoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+exports.generatePriceRanges = (min, max) => {
+  const ranges = [];
+  const step = 50;
+
+  for (let i = min; i <= max; i += step) {
+    const range = `R$ ${i} - R$ ${i + step - 1}`;
+    ranges.push(range);
+  }
+
+  return ranges;
 };

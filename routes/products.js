@@ -304,7 +304,17 @@ router.get('/api/categories/:category/sizes', productController.getSizesByCatego
 router.get('/api/categories/:category/priceRanges', productController.getPriceRangesByCategory);
 
 
+// Rota para obter opções de filtro por categoria
+router.get('/api/categories/:category/filterOptions', productController.getFilterOptionsByCategory);
 
+// Rota para obter cores por categoria
+router.get('/api/categories/:category/colors', productController.getColorsByCategory);
+
+// Rota para obter tamanhos por categoria
+router.get('/api/categories/:category/sizes', productController.getSizesByCategory);
+
+// Rota para obter faixas de preço por categoria
+router.get('/api/categories/:category/priceRanges', productController.getPriceRangesByCategory);
 
 // ... (outras rotas)
 
