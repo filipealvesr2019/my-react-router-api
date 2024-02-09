@@ -2,8 +2,9 @@
 const Product = require('../models/product');
 const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
+const Banner = require('../models/Banner');
 // controllers/discountController.js
-
+// No arquivo de controlador (por exemplo, controllers/bannerController.js)
 
 exports.copyAndApplyDiscount = async (req, res, next) => {
   try {
@@ -245,6 +246,142 @@ exports.getProductsBySpecificDiscount = async (req, res) => {
     });
   } catch (error) {
     console.error('Erro ao obter produtos com desconto específico:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+
+exports.createBanner = async (req, res) => {
+  try {
+    // Extrair os dados da requisição
+    const { image, discount } = req.body;
+
+    // Criar um novo banner com os dados fornecidos
+    const newBanner = new Banner({
+      image: image,
+      discount: discount,
+    });
+
+    // Salvar o novo banner no banco de dados
+    await newBanner.save();
+
+    // Responder com sucesso
+    res.status(201).json({
+      success: true,
+      message: 'Banner criado com sucesso',
+      banner: newBanner,
+    });
+  } catch (error) {
+    console.error('Erro ao criar o banner:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+// Função para buscar banners por desconto específico
+exports.getBannersByDiscount = async (req, res) => {
+  try {
+    // Extrair o desconto da requisição
+    const { discount } = req.params;
+
+    // Buscar banners com o desconto especificado no banco de dados
+    const banners = await Banner.find({ discount: parseInt(discount) });
+
+    // Verificar se foram encontrados banners
+    if (!banners || banners.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum banner com ${discount}% de desconto encontrado`,
+      });
+    }
+
+    // Responder com os banners encontrados
+    res.status(200).json({
+      success: true,
+      banners: banners,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar banners por desconto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+  
+
+};
+
+
+
+
+
+
+
+
+// Função para buscar todos os descontos
+exports.getAllDiscounts = async (req, res) => {
+  try {
+    // Buscar todos os descontos no banco de dados
+    const discounts = await Discount.find();
+
+    // Verificar se foram encontrados descontos
+    if (!discounts || discounts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nenhum desconto encontrado',
+      });
+    }
+
+    // Responder com os descontos encontrados
+    res.status(200).json({
+      success: true,
+      discounts: discounts,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar todos os descontos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+
+
+
+
+exports.getProductsByDiscountPercentage = async (req, res) => {
+  try {
+    const { percentage } = req.params;
+
+    // Encontrar todos os descontos com a porcentagem fornecida
+    const discounts = await Discount.find({ percentage });
+
+    // Se não houver descontos com essa porcentagem, retornar uma resposta vazia
+    if (discounts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum produto com ${percentage}% de desconto encontrado`,
+      });
+    }
+
+    // Extrair os IDs dos produtos com desconto
+    const productIds = discounts.map(discount => discount.productId);
+
+    // Encontrar os produtos com base nos IDs extraídos
+    const productsWithDiscount = await Product.find({ _id: { $in: productIds } });
+
+    res.status(200).json({
+      success: true,
+      productsWithDiscount,
+    });
+  } catch (error) {
+    console.error('Erro ao obter produtos com desconto por porcentagem:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',
