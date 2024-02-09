@@ -3,6 +3,7 @@ const Product = require('../models/product');
 const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
 const Banner = require('../models/Banner');
+const BannerByCategory = require('../models/bannerByCategory');
 // controllers/discountController.js
 // No arquivo de controlador (por exemplo, controllers/bannerController.js)
 
@@ -254,6 +255,94 @@ exports.getProductsBySpecificDiscount = async (req, res) => {
 };
 
 
+
+
+
+// Função para buscar todos os descontos
+exports.getAllDiscounts = async (req, res) => {
+  try {
+    // Buscar todos os descontos no banco de dados
+    const discounts = await Discount.find();
+
+    // Verificar se foram encontrados descontos
+    if (!discounts || discounts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: 'Nenhum desconto encontrado',
+      });
+    }
+
+    // Responder com os descontos encontrados
+    res.status(200).json({
+      success: true,
+      discounts: discounts,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar todos os descontos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+
+
+
+
+exports.getProductsByDiscountPercentage = async (req, res) => {
+  try {
+    const { percentage } = req.params;
+
+    // Encontrar todos os descontos com a porcentagem fornecida
+    const discounts = await Discount.find({ percentage });
+
+    // Se não houver descontos com essa porcentagem, retornar uma resposta vazia
+    if (discounts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum produto com ${percentage}% de desconto encontrado`,
+      });
+    }
+
+    // Extrair os IDs dos produtos com desconto
+    const productIds = discounts.map(discount => discount.productId);
+
+    // Encontrar os produtos com base nos IDs extraídos
+    const productsWithDiscount = await Product.find({ _id: { $in: productIds } });
+
+    res.status(200).json({
+      success: true,
+      productsWithDiscount,
+    });
+  } catch (error) {
+    console.error('Erro ao obter produtos com desconto por porcentagem:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 exports.createBanner = async (req, res) => {
   try {
     // Extrair os dados da requisição
@@ -323,68 +412,11 @@ exports.getBannersByDiscount = async (req, res) => {
 
 
 
-// Função para buscar todos os descontos
-exports.getAllDiscounts = async (req, res) => {
-  try {
-    // Buscar todos os descontos no banco de dados
-    const discounts = await Discount.find();
-
-    // Verificar se foram encontrados descontos
-    if (!discounts || discounts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Nenhum desconto encontrado',
-      });
-    }
-
-    // Responder com os descontos encontrados
-    res.status(200).json({
-      success: true,
-      discounts: discounts,
-    });
-  } catch (error) {
-    console.error('Erro ao buscar todos os descontos:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor',
-    });
-  }
-};
 
 
 
 
 
-exports.getProductsByDiscountPercentage = async (req, res) => {
-  try {
-    const { percentage } = req.params;
 
-    // Encontrar todos os descontos com a porcentagem fornecida
-    const discounts = await Discount.find({ percentage });
 
-    // Se não houver descontos com essa porcentagem, retornar uma resposta vazia
-    if (discounts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: `Nenhum produto com ${percentage}% de desconto encontrado`,
-      });
-    }
 
-    // Extrair os IDs dos produtos com desconto
-    const productIds = discounts.map(discount => discount.productId);
-
-    // Encontrar os produtos com base nos IDs extraídos
-    const productsWithDiscount = await Product.find({ _id: { $in: productIds } });
-
-    res.status(200).json({
-      success: true,
-      productsWithDiscount,
-    });
-  } catch (error) {
-    console.error('Erro ao obter produtos com desconto por porcentagem:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor',
-    });
-  }
-};

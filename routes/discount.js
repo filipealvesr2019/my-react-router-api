@@ -16,5 +16,4 @@ router.get('/bannerByDiscount/:discount', discountController.getBannersByDiscoun
 router.get('/all/discounts', discountController.getAllDiscounts);
 router.get('/productsByDiscountPercentage/:percentage', discountController.getProductsByDiscountPercentage);
 
-
 module.exports = router;
