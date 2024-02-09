@@ -290,9 +290,9 @@ function generatePriceRanges(min, max) {
 router.get('/products/category/:categoryName', productController.getProductsByCategory);
 
 
-router.get('/api/categories/:category/colors', productController.getColorsByCategory);
-router.get('/api/categories/:category/sizes', productController.getSizesByCategory);
-router.get('/api/categories/:category/priceRanges', productController.getPriceRangesByCategory);
+router.get('/categories/:category/colors', productController.getColorsByCategory);
+router.get('/categories/:category/sizes', productController.getSizesByCategory);
+router.get('/categories/:category/priceRanges', productController.getPriceRangesByCategory);
 
 
 

@@ -188,3 +188,22 @@ exports.deleteDiscountedProduct = async (req, res, next) => {
     });
   }
 };
+
+
+
+
+
+// Função para obter produtos com desconto por subcategoria
+exports.getDiscountedProductsBySubcategory = async (req, res) => {
+  try {
+    const { subcategoryName } = req.query;
+
+    // Consultar o banco de dados para encontrar produtos com desconto para a subcategoria especificada
+    const discountedProducts = await Product.find({ subcategory: subcategoryName, discountPercentage: { $gt: 0 } });
+
+    res.json(discountedProducts);
+  } catch (error) {
+    console.error('Erro ao obter produtos com desconto por subcategoria:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
