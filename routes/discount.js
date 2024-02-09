@@ -10,5 +10,6 @@ router.post('/copyProduct', discountController.copyAndApplyDiscount);
 router.get('/maxDiscount', discountController.getProductsByMaxDiscount);
 router.delete('/delete/productOffer/:productId', discountController.deleteDiscountedProduct);
 router.get('/discountedProductsBySubcategory', discountController.getDiscountedProductsBySubcategory);
+router.get('/specificDiscount/:percentage', discountController.getProductsBySpecificDiscount);
 
 module.exports = router;

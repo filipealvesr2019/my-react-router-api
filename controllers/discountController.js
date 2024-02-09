@@ -120,23 +120,31 @@ exports.getProductsByMaxDiscount = async (req, res) => {
     });
 
     // Mapear os descontos correspondentes aos produtos
-    const productsWithDiscountDetails = sortedProductsWithMaxDiscount.map(product => {
+    const productsWithDiscountDetails = await Promise.all(sortedProductsWithMaxDiscount.map(async (product) => {
       const discount = discounts.find(d => d.productId.equals(product._id));
-
-      return {
+      const previousPrice = discount.discountedProductDetails.previousPrice;
+    
+      // Calcular a porcentagem de desconto
+      const discountPercentage = ((product.price - previousPrice) / product.price) * 100;
+    
+      // Adicionar os detalhes do desconto ao produto
+      const productWithDiscount = {
         ...product.toObject(),
         discountDetails: {
           percentage: discount.percentage,
-          previousPrice: discount.discountedProductDetails.previousPrice,
-          discountPercentage: product.discountPercentage, // Adiciona a porcentagem de desconto ao produto
+          previousPrice: previousPrice,
+          discountPercentage: discountPercentage,
         },
       };
-    });
-
+    
+      return productWithDiscount;
+    }));
+    
     res.status(200).json({
       success: true,
       productsWithMaxDiscount: productsWithDiscountDetails,
     });
+    
   } catch (error) {
     console.error('Erro ao obter produtos com maiores descontos:', error);
     res.status(500).json({
@@ -205,5 +213,41 @@ exports.getDiscountedProductsBySubcategory = async (req, res) => {
   } catch (error) {
     console.error('Erro ao obter produtos com desconto por subcategoria:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+};
+
+
+
+
+// Outras importações...
+
+exports.getProductsBySpecificDiscount = async (req, res) => {
+  try {
+    const { percentage } = req.params;
+
+    const discounts = await Discount.find({ percentage: parseInt(percentage) })
+      .sort({ percentage: -1 });
+
+    if (discounts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum produto com ${percentage}% de desconto encontrado`,
+      });
+    }
+
+    const productIds = discounts.map(discount => discount.productId);
+
+    const productsWithSpecificDiscount = await Product.find({ _id: { $in: productIds } });
+
+    res.status(200).json({
+      success: true,
+      productsWithSpecificDiscount,
+    });
+  } catch (error) {
+    console.error('Erro ao obter produtos com desconto específico:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
   }
 };
