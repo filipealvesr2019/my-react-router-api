@@ -255,13 +255,19 @@ exports.getProductsBySpecificDiscount = async (req, res) => {
 
 
 
-
-
-// Função para buscar todos os descontos
+// Função para buscar todos os descontos com paginação
 exports.getAllDiscounts = async (req, res) => {
   try {
+    // Parâmetros de consulta para controle de paginação
+    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1 se não fornecido
+    const limit = parseInt(req.query.limit) || 10; // Número de descontos por página, padrão é 10 se não fornecido
+
+    // Calcular o índice de início e fim dos descontos com base na página e no limite
+    const startIndex = (page - 1) * limit;
+    const endIndex = page * limit;
+
     // Buscar todos os descontos no banco de dados
-    const discounts = await Discount.find();
+    const discounts = await Discount.find().skip(startIndex).limit(limit);
 
     // Verificar se foram encontrados descontos
     if (!discounts || discounts.length === 0) {
@@ -271,9 +277,11 @@ exports.getAllDiscounts = async (req, res) => {
       });
     }
 
-    // Responder com os descontos encontrados
+    // Responder com os descontos encontrados e informações de paginação
     res.status(200).json({
       success: true,
+      currentPage: page,
+      totalPages: Math.ceil(discounts.length / limit),
       discounts: discounts,
     });
   } catch (error) {

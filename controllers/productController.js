@@ -527,17 +527,30 @@ exports.deleteUrlFromColor = async (req, res, next) => {
 
 
 exports.listNewArrivals = async (req, res) => {
+  const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
+  const perPage = 5; // Número de produtos por página
+  const startIndex = (page - 1) * perPage; // Índice inicial do produto
   try {
-    // Find the latest added products
-    const newArrivals = await Product.find().sort('-createdAt').limit(5); // Limiting to 5 for example, adjust as needed
-    res.json(newArrivals);
+    // Contar o total de produtos
+    const totalProducts = await Product.countDocuments();
+    
+    // Encontrar os produtos da página atual
+    const newArrivals = await Product.find()
+      .sort('-createdAt')
+      .skip(startIndex)
+      .limit(perPage);
+
+    res.json({
+      totalProducts,
+      currentPage: page,
+      totalPages: Math.ceil(totalProducts / perPage),
+      newArrivals
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Error fetching new arrivals' });
   }
 };
-
-
 
 
 
