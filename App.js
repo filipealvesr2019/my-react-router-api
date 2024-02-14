@@ -100,7 +100,7 @@ app.use('/api', purchaseOrder);
 // Rota para lidar com o callback do Auth0
 app.get('/callback', (req, res) => {
   // Lógica para lidar com o callback, se necessário
-  res.sendFile('dist/index.html', { root: __dirname });
+  res.sendFile('src/index.html', { root: __dirname });
 });
 
 // Configuração para lidar com todas as outras rotas e redirecionar para o aplicativo React
