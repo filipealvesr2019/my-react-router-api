@@ -3,6 +3,7 @@ const Product = require('../models/product');
 const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
 const Banner = require('../models/Banner');
+const Subcategory = require('../models/Subcategory');
 // controllers/discountController.js
 // No arquivo de controlador (por exemplo, controllers/bannerController.js)
 

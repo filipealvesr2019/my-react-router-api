@@ -95,6 +95,23 @@ app.use('/api', budgetRoutes); // Nova rota para CategoryStock
 app.use('/api', salesOrders); // Nova rota para CategoryStock
 app.use('/api', purchaseOrder); 
 
+
+
+// Rota para lidar com o callback do Auth0
+app.get('/callback', (req, res) => {
+  // Lógica para lidar com o callback, se necessário
+  res.sendFile('dist/index.html', { root: __dirname });
+});
+
+// Configuração para lidar com todas as outras rotas e redirecionar para o aplicativo React
+app.get('*', (req, res) => {
+  res.sendFile('src/index.html', { root: __dirname });
+});
+
+
+
+
+
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
 // Agende a execução da rota de atualização a cada segundo
 // Agende a execução da rota de atualização a cada segundo
