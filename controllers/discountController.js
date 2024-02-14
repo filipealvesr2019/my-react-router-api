@@ -317,4 +317,47 @@ exports.getBannersByDiscount = async (req, res) => {
 
 
 
+exports.createSubcategoryAndDiscountedProduct = async (req, res) => {
+  try {
+    const { categoryName, subcategoryName, productName, discountPercentage } = req.body;
+
+    // Verificar se a subcategoria já existe
+    let subcategory = await Subcategory.findOne({ categoryName, subcategoryName });
+
+    if (!subcategory) {
+      // Se não existir, criar a subcategoria
+      subcategory = new Subcategory({ categoryName, subcategoryName });
+      await subcategory.save();
+    }
+
+    // Criar o produto com desconto associado
+    const newProduct = new Product({ subcategory: subcategoryName, name: productName, discountPercentage });
+    await newProduct.save();
+
+    // Criar o desconto associado ao produto
+    const newDiscount = new Discount({
+      productId: newProduct._id,
+      percentage: discountPercentage,
+      discountedProductDetails: {
+        ...newProduct.toObject(),
+        previousPrice: newProduct.price,
+      },
+    });
+    await newDiscount.save();
+
+    res.status(201).json({
+      success: true,
+      message: 'Subcategoria e produto com desconto criados com sucesso',
+      subcategory,
+      product: newProduct,
+      discount: newDiscount,
+    });
+  } catch (error) {
+    console.error('Erro ao criar subcategoria e produto com desconto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
 
