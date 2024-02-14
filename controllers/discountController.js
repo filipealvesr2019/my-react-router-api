@@ -90,75 +90,6 @@ exports.copyAndApplyDiscount = async (req, res, next) => {
 
 
 
-// controllers/discountController.js
-
-// ... outras importações
-
-exports.getProductsByMaxDiscount = async (req, res) => {
-  try {
-    const discounts = await Discount.find({ percentage: { $gt: 0 } })
-      .sort({ percentage: -1 })
-      .limit(5);
-
-    if (discounts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Nenhum produto com desconto encontrado',
-      });
-    }
-
-    const productIds = discounts.map(discount => discount.productId);
-
-    // Buscar produtos com desconto
-    const productsWithMaxDiscount = await Product.find({ _id: { $in: productIds } });
-
-    // Ordenar produtos com base nos descontos correspondentes
-    const sortedProductsWithMaxDiscount = productsWithMaxDiscount.sort((a, b) => {
-      const discountA = discounts.find(d => d.productId.equals(a._id));
-      const discountB = discounts.find(d => d.productId.equals(b._id));
-
-      return discountB.percentage - discountA.percentage; // Ordenar do maior para o menor desconto
-    });
-
-    // Mapear os descontos correspondentes aos produtos
-    const productsWithDiscountDetails = await Promise.all(sortedProductsWithMaxDiscount.map(async (product) => {
-      const discount = discounts.find(d => d.productId.equals(product._id));
-      const previousPrice = discount.discountedProductDetails.previousPrice;
-    
-      // Calcular a porcentagem de desconto
-      const discountPercentage = ((product.price - previousPrice) / product.price) * 100;
-    
-      // Adicionar os detalhes do desconto ao produto
-      const productWithDiscount = {
-        ...product.toObject(),
-        discountDetails: {
-          percentage: discount.percentage,
-          previousPrice: previousPrice,
-          discountPercentage: discountPercentage,
-        },
-      };
-    
-      return productWithDiscount;
-    }));
-    
-    res.status(200).json({
-      success: true,
-      productsWithMaxDiscount: productsWithDiscountDetails,
-    });
-    
-  } catch (error) {
-    console.error('Erro ao obter produtos com maiores descontos:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor',
-    });
-  }
-};
-
-// ... outros controladores
-
-
-
 
 
 
@@ -246,46 +177,6 @@ exports.getProductsBySpecificDiscount = async (req, res) => {
     });
   } catch (error) {
     console.error('Erro ao obter produtos com desconto específico:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor',
-    });
-  }
-};
-
-
-
-// Função para buscar todos os descontos com paginação
-exports.getAllDiscounts = async (req, res) => {
-  try {
-    // Parâmetros de consulta para controle de paginação
-    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1 se não fornecido
-    const limit = parseInt(req.query.limit) || 10; // Número de descontos por página, padrão é 10 se não fornecido
-
-    // Calcular o índice de início e fim dos descontos com base na página e no limite
-    const startIndex = (page - 1) * limit;
-    const endIndex = page * limit;
-
-    // Buscar todos os descontos no banco de dados
-    const discounts = await Discount.find().skip(startIndex).limit(limit);
-
-    // Verificar se foram encontrados descontos
-    if (!discounts || discounts.length === 0) {
-      return res.status(404).json({
-        success: false,
-        message: 'Nenhum desconto encontrado',
-      });
-    }
-
-    // Responder com os descontos encontrados e informações de paginação
-    res.status(200).json({
-      success: true,
-      currentPage: page,
-      totalPages: Math.ceil(discounts.length / limit),
-      discounts: discounts,
-    });
-  } catch (error) {
-    console.error('Erro ao buscar todos os descontos:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',

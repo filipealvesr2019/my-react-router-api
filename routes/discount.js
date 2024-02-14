@@ -7,13 +7,11 @@ const router = express.Router();
 // Rota para copiar um produto
 router.post('/copyProduct', discountController.copyAndApplyDiscount);
 // Rota para obter produtos com desconto
-router.get('/maxDiscount', discountController.getProductsByMaxDiscount);
 router.delete('/delete/productOffer/:productId', discountController.deleteDiscountedProduct);
 router.get('/discountedProductsBySubcategory', discountController.getDiscountedProductsBySubcategory);
 router.get('/specificDiscount/:percentage', discountController.getProductsBySpecificDiscount);
 router.post('/banner', discountController.createBanner);
 router.get('/bannerByDiscount/:discount', discountController.getBannersByDiscount);
-router.get('/all/discounts', discountController.getAllDiscounts);
 router.get('/productsByDiscountPercentage/:percentage', discountController.getProductsByDiscountPercentage);
 
 module.exports = router;
