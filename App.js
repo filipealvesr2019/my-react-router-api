@@ -3,6 +3,7 @@ const app = express();
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const axios = require('axios');
+const session = require('express-session');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -31,7 +32,7 @@ const orders = require('./routes/order');
 
 
 const products = require('./routes/products')
-const auth = require('./routes/Customer')
+const authCustomer = require('./routes/Customer')
 const order = require('./routes/order')
 const category = require('./routes/category');
 const subcategory = require('./routes/Subcategory');
@@ -60,8 +61,9 @@ const purchaseOrder = require('./routes/stock/purchaseOrder'); // Nova rota para
 const salesOrders = require('./routes/stock/salesOrders'); // 
 
 
+
 app.use('/api', products)
-app.use('/api', auth)
+app.use('/api', authCustomer)
 app.use('/api', order)
 app.use('/api', category)
 app.use('/api', subcategory)
@@ -97,20 +99,86 @@ app.use('/api', purchaseOrder);
 
 
 
-// Rota para lidar com o callback do Auth0
-app.get('/callback', (req, res) => {
-  // Lógica para lidar com o callback, se necessário
-  res.sendFile('src/index.html', { root: __dirname });
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+passport.use(new GoogleStrategy({
+  clientID: '379126267894-7kuo4ag9ae8sa2qf9de0a1bmj61vn88k.apps.googleusercontent.com',
+  clientSecret: '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',
+  callbackURL: 'http://localhost:3001/auth/google/callback',
+  scope: ['profile', 'email'], // Escopos necessários
+
+},
+(accessToken, refreshToken, profile, done) => {
+  // Lógica de autenticação
+  return done(null, profile);
+}));
+const generateSessionSecret = () => {
+  // Lógica para gerar dinamicamente o segredo da sessão
+  return process.env.SECRET_SESSION || 'seu-segredo-padrao';
+};
+
+// Configuração da sessão
+app.use(session({
+  secret:' generateSessionSecret()',
+  resave: true,
+  saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+
+
+app.get('/auth/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+app.get('/auth/google/callback',
+  passport.authenticate('google', { failureRedirect: '/' }),
+  (req, res) => {
+    // Redirecionar ou lidar com a autenticação bem-sucedida
+    res.redirect('/');
+  }
+
+);
+
+passport.serializeUser((user, done) => {
+  done(null, user);
 });
 
-// Configuração para lidar com todas as outras rotas e redirecionar para o aplicativo React
-app.get('*', (req, res) => {
-  res.sendFile('src/index.html', { root: __dirname });
+passport.deserializeUser((obj, done) => {
+  done(null, obj);
 });
 
 
+app.use(require('express-session')({ secret: 'seu-segredo', resave: true, saveUninitialized: true }));
 
 
+function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/login'); // Redireciona para a página de login
+}
+
+app.get('/login', (req, res) => {
+  // Lógica para renderizar a página de login
+  res.send('Esta é a página de login!');
+});
+
+app.get('/profile', (req, res) => {
+  // Lógica para obter os dados do perfil do usuário
+  // Substitua isso com a lógica real para obter os dados do usuário do seu sistema de autenticação
+  const userProfileData = {
+    displayName: 'Nome do Usuário',
+    // Adicione mais informações do perfil conforme necessário
+  };
+
+  res.json(userProfileData);
+});
+
+// Exemplo de uso: app.get('/perfil', ensureAuthenticated, (req, res) => { ... });
 
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
 // Agende a execução da rota de atualização a cada segundo
