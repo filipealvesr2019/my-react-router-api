@@ -103,8 +103,8 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 passport.use(new GoogleStrategy({
-  clientID: '379126267894-7kuo4ag9ae8sa2qf9de0a1bmj61vn88k.apps.googleusercontent.com',
-  clientSecret: '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',
+  clientID: process.env.clientID,
+  clientSecret: process.env.clientSecret,
   callbackURL: 'http://localhost:3001/auth/google/callback',
   scope: ['profile', 'email'], // Escopos necessários
 
