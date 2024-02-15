@@ -3,7 +3,6 @@ const Product = require('../models/product');
 const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
 const Banner = require('../models/Banner');
-const Subcategory = require('../models/Subcategory');
 // controllers/discountController.js
 // No arquivo de controlador (por exemplo, controllers/bannerController.js)
 
@@ -225,8 +224,50 @@ exports.getProductsByDiscountPercentage = async (req, res) => {
 
 
 
+exports.getProductsByDiscountAndCategory = async (req, res) => {
+  try {
+    const { percentage, category } = req.params;
 
+    // Encontrar todos os descontos com a porcentagem fornecida
+    const discounts = await Discount.find({ percentage });
 
+    // Se não houver descontos com essa porcentagem, retornar uma resposta vazia
+    if (discounts.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum produto com ${percentage}% de desconto encontrado`,
+      });
+    }
+
+    // Extrair os IDs dos produtos com desconto
+    const productIds = discounts.map(discount => discount.productId);
+
+    // Encontrar os produtos com base nos IDs extraídos e na categoria fornecida
+    const productsWithDiscountAndCategory = await Product.find({
+      _id: { $in: productIds },
+      category: category, // Considerando que o campo de categoria no modelo seja chamado "category"
+    });
+
+    // Se não houver produtos com a categoria especificada, retornar uma resposta vazia
+    if (productsWithDiscountAndCategory.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum produto com ${percentage}% de desconto na categoria '${category}' encontrado`,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      productsWithDiscountAndCategory,
+    });
+  } catch (error) {
+    console.error('Erro ao obter produtos com desconto por porcentagem e categoria:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
 
 
 
@@ -308,57 +349,4 @@ exports.getBannersByDiscount = async (req, res) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-exports.createSubcategoryAndDiscountedProduct = async (req, res) => {
-  try {
-    const { categoryName, subcategoryName, productName, discountPercentage } = req.body;
-
-    // Verificar se a subcategoria já existe
-    let subcategory = await Subcategory.findOne({ categoryName, subcategoryName });
-
-    if (!subcategory) {
-      // Se não existir, criar a subcategoria
-      subcategory = new Subcategory({ categoryName, subcategoryName });
-      await subcategory.save();
-    }
-
-    // Criar o produto com desconto associado
-    const newProduct = new Product({ subcategory: subcategoryName, name: productName, discountPercentage });
-    await newProduct.save();
-
-    // Criar o desconto associado ao produto
-    const newDiscount = new Discount({
-      productId: newProduct._id,
-      percentage: discountPercentage,
-      discountedProductDetails: {
-        ...newProduct.toObject(),
-        previousPrice: newProduct.price,
-      },
-    });
-    await newDiscount.save();
-
-    res.status(201).json({
-      success: true,
-      message: 'Subcategoria e produto com desconto criados com sucesso',
-      subcategory,
-      product: newProduct,
-      discount: newDiscount,
-    });
-  } catch (error) {
-    console.error('Erro ao criar subcategoria e produto com desconto:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Erro interno do servidor',
-    });
-  }
-};
 
