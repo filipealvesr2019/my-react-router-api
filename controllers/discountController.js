@@ -384,11 +384,11 @@ exports.createSlider = async (req, res) => {
     // Responder com sucesso
     res.status(201).json({
       success: true,
-      message: 'Banner criado com sucesso',
-      slider: newSlider,
+      message: 'slider criado com sucesso',
+      sliders: newSlider,
     });
   } catch (error) {
-    console.error('Erro ao criar o banner:', error);
+    console.error('Erro ao criar o slider:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',
@@ -409,7 +409,7 @@ exports.getSliderByDiscount = async (req, res) => {
     if (!sliders || sliders.length === 0) {
       return res.status(404).json({
         success: false,
-        message: `Nenhum banner com ${discount}% de desconto encontrado`,
+        message: `Nenhum slider com ${discount}% de desconto encontrado`,
       });
     }
     
@@ -417,10 +417,10 @@ exports.getSliderByDiscount = async (req, res) => {
     // Responder com os banners encontrados
     res.status(200).json({
       success: true,
-      banners: sliders,
+      sliders: sliders,
     });
   } catch (error) {
-    console.error('Erro ao buscar banners por desconto:', error);
+    console.error('Erro ao buscar sliders por desconto:', error);
     res.status(500).json({
       success: false,
       message: 'Erro interno do servidor',
