@@ -6,12 +6,7 @@ const validator = require("validator");
 const Customer = new mongoose.Schema({
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
-    email: {
-        type: String,
-        required: [true, "Digite o seu email."],
-        unique: true,
-        validate: [validator.isEmail, "Digite um endereço de email válido"],
-    },
+ 
  
     orders: [
         {
@@ -20,6 +15,7 @@ const Customer = new mongoose.Schema({
         },
       ],
     
+
   email: { type: String, required: true, unique: true },
   telephone: { type: String, required: true },
   postcode: { type: String, required: true },
