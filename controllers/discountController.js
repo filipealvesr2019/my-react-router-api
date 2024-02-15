@@ -3,6 +3,7 @@ const Product = require('../models/product');
 const Discount = require('../models/discount');
 const cloneDeep = require('lodash/cloneDeep');
 const Banner = require('../models/Banner');
+const Slider = require('../models/Slider');
 // controllers/discountController.js
 // No arquivo de controlador (por exemplo, controllers/bannerController.js)
 
@@ -333,6 +334,90 @@ exports.getBannersByDiscount = async (req, res) => {
     res.status(200).json({
       success: true,
       banners: banners,
+    });
+  } catch (error) {
+    console.error('Erro ao buscar banners por desconto:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+  
+
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+exports.createSlider = async (req, res) => {
+  try {
+    // Extrair os dados da requisição
+    const { image, discount } = req.body;
+
+    // Criar um novo banner com os dados fornecidos
+    const newSlider = new Slider({
+      image: image,
+      discount: discount,
+    });
+
+    // Salvar o novo banner no banco de dados
+    await newSlider.save();
+
+    // Responder com sucesso
+    res.status(201).json({
+      success: true,
+      message: 'Banner criado com sucesso',
+      slider: newSlider,
+    });
+  } catch (error) {
+    console.error('Erro ao criar o banner:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Erro interno do servidor',
+    });
+  }
+};
+
+// Função para buscar banners por desconto específico
+exports.getSliderByDiscount = async (req, res) => {
+  try {
+    // Extrair o desconto da requisição
+    const { discount } = req.params;
+
+    // Buscar banners com o desconto especificado no banco de dados
+    const sliders = await Slider.find({ discount: parseInt(discount) });
+
+    // Verificar se foram encontrados banners
+    if (!sliders || sliders.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: `Nenhum banner com ${discount}% de desconto encontrado`,
+      });
+    }
+    
+
+    // Responder com os banners encontrados
+    res.status(200).json({
+      success: true,
+      banners: sliders,
     });
   } catch (error) {
     console.error('Erro ao buscar banners por desconto:', error);

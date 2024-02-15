@@ -1,20 +1,18 @@
-// models/Slider.js
 const mongoose = require('mongoose');
 
-const imageSchema = new mongoose.Schema({
-  imageUrl: {
-    type: String,
-    required: true,
-  },
-});
-
+// Definindo o esquema do banner
 const sliderSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
+  image: {
+    type: String, // Aqui você pode definir o tipo do campo para armazenar o caminho da imagem do banner
+    required: true
   },
-  images: [imageSchema],
+  discount: {
+    type: Number, // Aqui você pode definir o tipo do campo para armazenar o desconto do banner
+    required: true
+  }
 });
 
-module.exports = mongoose.model('Slider', sliderSchema);
+// Criando o modelo do banner a partir do esquema
+const Slider = mongoose.model('Slider', sliderSchema);
+// Exportando o modelo do banner
+module.exports = Slider;

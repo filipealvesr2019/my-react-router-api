@@ -14,5 +14,6 @@ router.post('/banner', discountController.createBanner);
 router.get('/bannerByDiscount/:discount', discountController.getBannersByDiscount);
 router.get('/productsByDiscountPercentage/:percentage', discountController.getProductsByDiscountPercentage);
 router.get('/products/discount/:percentage/category/:category', discountController.getProductsByDiscountAndCategory);
-
+router.post('/slider', discountController.createSlider);
+router.get('/sliderByDiscount/:discount', discountController.getSliderByDiscount);
 module.exports = router;
