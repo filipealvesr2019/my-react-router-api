@@ -96,11 +96,18 @@ router.get('/products/new-arrivals', productController.listNewArrivals);
 router.get("/productsFilter", productController.getProductsByFilter);
 router.get('/subcategories/:category', productController.getSubcategoriesByCategory);
 // Modifique a rota para tratar produtos com base na categoria e subcategoria
+
+const ITEMS_PER_PAGE = 10; // Número de produtos por página
+
 router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) => {
   try {
     const { category, subcategory } = req.params;
+    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
+    const skip = (page - 1) * ITEMS_PER_PAGE; // Quantidade de documentos para pular
 
-    const products = await Product.find({ category, subcategory });
+    const products = await Product.find({ category, subcategory })
+      .skip(skip)
+      .limit(ITEMS_PER_PAGE);
 
     res.json(products);
   } catch (error) {
@@ -108,7 +115,6 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
 
 
 
