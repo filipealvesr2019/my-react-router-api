@@ -1,5 +1,7 @@
 {
   "dependencies": {
+    "@clerk/clerk-react": "^4.30.5",
+    "@clerk/clerk-sdk-node": "^4.13.9",
     "auth0-js": "^9.24.1",
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",

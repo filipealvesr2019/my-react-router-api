@@ -3,7 +3,6 @@ const app = express();
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const axios = require('axios');
-const session = require('express-session');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -99,84 +98,6 @@ app.use('/api', purchaseOrder);
 
 
 
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-passport.use(new GoogleStrategy({
-  clientID: process.env.clientID,
-  clientSecret: process.env.clientSecret,
-  callbackURL: 'http://localhost:3001/auth/google/callback',
-  scope: ['profile', 'email'], // Escopos necessários
-
-},
-(accessToken, refreshToken, profile, done) => {
-  // Lógica de autenticação
-  return done(null, profile);
-}));
-const generateSessionSecret = () => {
-  // Lógica para gerar dinamicamente o segredo da sessão
-  return process.env.SECRET_SESSION || 'seu-segredo-padrao';
-};
-
-// Configuração da sessão
-app.use(session({
-  secret:' generateSessionSecret()',
-  resave: true,
-  saveUninitialized: true
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-
-app.get('/auth/google',
-  passport.authenticate('google', { scope: ['profile', 'email'] })
-);
-
-app.get('/auth/google/callback',
-  passport.authenticate('google', { failureRedirect: '/' }),
-  (req, res) => {
-    // Redirecionar ou lidar com a autenticação bem-sucedida
-    res.redirect('/');
-  }
-
-);
-
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((obj, done) => {
-  done(null, obj);
-});
-
-
-app.use(require('express-session')({ secret: 'seu-segredo', resave: true, saveUninitialized: true }));
-
-
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/login'); // Redireciona para a página de login
-}
-
-app.get('/login', (req, res) => {
-  // Lógica para renderizar a página de login
-  res.send('Esta é a página de login!');
-});
-
-app.get('/profile', (req, res) => {
-  // Lógica para obter os dados do perfil do usuário
-  // Substitua isso com a lógica real para obter os dados do usuário do seu sistema de autenticação
-  const userProfileData = {
-    displayName: 'Nome do Usuário',
-    // Adicione mais informações do perfil conforme necessário
-  };
-
-  res.json(userProfileData);
-});
 
 // Exemplo de uso: app.get('/perfil', ensureAuthenticated, (req, res) => { ... });
 
