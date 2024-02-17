@@ -6,7 +6,7 @@ const Product = require('../models/product')
 // Rota para criar um novo usuário
 
 // Rota para criar um novo usuário
-router.post('/api/signup', async (req, res) => {
+router.post('/signup', async (req, res) => {
   try {
     // Extrair dados do corpo da solicitação
     const {
@@ -21,7 +21,6 @@ router.post('/api/signup', async (req, res) => {
       address_street_district,
       address_city,
       address_state,
-      ipAddress,
     } = req.body;
 
     // Verificar se o usuário já existe pelo email
@@ -43,7 +42,6 @@ router.post('/api/signup', async (req, res) => {
       address_street_district,
       address_city,
       address_state,
-      ipAddress,
     });
 
     // Salvar o novo usuário no banco de dados

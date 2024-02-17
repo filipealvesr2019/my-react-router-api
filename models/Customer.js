@@ -12,7 +12,6 @@ const customerSchema = new mongoose.Schema({
   address_street_district: { type: String, required: true },
   address_city: { type: String, required: true },
   address_state: { type: String, required: true },
-  ipAddress:{type: String, required: true},
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'
