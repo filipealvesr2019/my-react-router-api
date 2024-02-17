@@ -88,6 +88,8 @@ router.get('/favorites/:userId', async (req, res) => {
   }
 });
 
+
+
 // Rota para adicionar ou remover um produto dos favoritos do usuário
 router.post('/favorites', async (req, res) => {
   try {
@@ -103,38 +105,31 @@ router.post('/favorites', async (req, res) => {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
 
-    // Verificar se o produto existe pelo ID
-    const existingProduct = await Product.findById(productId);
-    if (!existingProduct) {
+    // Encontrar o produto pelo ID
+    const product = await Product.findById(productId);
+    if (!product) {
       return res.status(404).json({ message: 'Produto não encontrado.' });
     }
 
     // Verificar se o produto já está nos favoritos do usuário
-    const isProductInFavorites = existingUser.favorites.includes(productId);
-
-    // Adicionar ou remover o produto dos favoritos do usuário
+    const isProductInFavorites = existingUser.favorites.map(favorite => favorite._id.toString()).includes(productId);
     if (isProductInFavorites) {
       // Remover o produto dos favoritos do usuário
-      existingUser.favorites = existingUser.favorites.filter((id) => id !== productId);
+      existingUser.favorites = existingUser.favorites.filter((favProduct) => favProduct._id.toString() !== productId);
     } else {
       // Adicionar o produto aos favoritos do usuário
-      existingUser.favorites.push(productId);
+      existingUser.favorites.push(product);
     }
 
     // Salvar o usuário atualizado no banco de dados
     const updatedUser = await existingUser.save();
 
-    res.status(200).json({ user: updatedUser, message: 'Produto adicionado dos favoritos com sucesso.' });
+    res.status(200).json({ user: updatedUser, message: 'Produto adicionado/removido dos favoritos com sucesso.' });
   } catch (error) {
-    console.error('Erro ao adicionar produto dos favoritos:', error);
+    console.error('Erro ao adicionar/remover produto dos favoritos:', error);
     res.status(500).json({ message: 'Erro interno do servidor ao adicionar/remover produto dos favoritos.' });
   }
 });
-
-
-
-
-
 
 // Rota para remover um produto dos favoritos do usuário
 router.delete('/favorites/:userId/:productId', async (req, res) => {
