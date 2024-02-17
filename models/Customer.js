@@ -1,20 +1,22 @@
 const mongoose = require("mongoose");
-const validator = require("validator");
 
-
-const Customer = new mongoose.Schema({
-    firstname: { type: String, required: true },
-    lastname: { type: String, required: true },
-     // Outros campos do usuário...
+const customerSchema = new mongoose.Schema({
+  firstname: { type: String, required: true },
+  lastname: { type: String, required: true },
+  telephone: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  postcode: { type: String, required: true },
+  address_street: { type: String, required: true },
+  address_street_number: { type: String, required: true },
+  address_street_complement: { type: String },
+  address_street_district: { type: String, required: true },
+  address_city: { type: String, required: true },
+  address_state: { type: String, required: true },
+  ipAddress:{type: String, required: true},
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'
   }]
-  
-
- 
-   
- 
 });
 
-module.exports = mongoose.model("Customer", Customer);
+module.exports = mongoose.model("Customer", customerSchema);
