@@ -38,7 +38,7 @@ router.post('/signup', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'Email já cadastrado. Faça login ou utilize outro email.' });
     }
-
+    
     // Criar novo usuário
     const newUser = new Customer({
       clerkUserId,
