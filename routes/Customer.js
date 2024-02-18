@@ -4,12 +4,22 @@ const router = express.Router();
 const Customer = require('../models/Customer'); // Importe o modelo do Customer
 const Product = require('../models/product')
 // Rota para criar um novo usuário
+const axios = require("axios")
+
+
+
+
+
+
+
+
 
 // Rota para criar um novo usuário
 router.post('/signup', async (req, res) => {
   try {
     // Extrair dados do corpo da solicitação
     const {
+      clerkUserId,
       firstname,
       lastname,
       telephone,
@@ -31,6 +41,7 @@ router.post('/signup', async (req, res) => {
 
     // Criar novo usuário
     const newUser = new Customer({
+      clerkUserId,
       firstname,
       lastname,
       telephone,
@@ -63,16 +74,16 @@ router.post('/signup', async (req, res) => {
 
 
 
-
-
-// Rota para visualizar os produtos favoritos do usuário
 router.get('/favorites/:userId', async (req, res) => {
   try {
     // Extrair ID do usuário do parâmetro da rota
     const { userId } = req.params;
 
+    // Converter o ID do usuário para um ObjectId válido
+    const userIdObjectId = mongoose.Types.ObjectId(userId);
+
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findById(userId);
+    const existingUser = await Customer.findById(userIdObjectId);
     if (!existingUser) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
@@ -87,9 +98,6 @@ router.get('/favorites/:userId', async (req, res) => {
   }
 });
 
-
-
-// Rota para adicionar ou remover um produto dos favoritos do usuário
 router.post('/favorites', async (req, res) => {
   try {
     // Extrair ID do usuário do corpo da solicitação
@@ -111,13 +119,13 @@ router.post('/favorites', async (req, res) => {
     }
 
     // Verificar se o produto já está nos favoritos do usuário
-    const isProductInFavorites = existingUser.favorites.map(favorite => favorite._id.toString()).includes(productId);
+    const isProductInFavorites = existingUser.favorites.map(favorite => favorite.toString()).includes(productId);
     if (isProductInFavorites) {
       // Remover o produto dos favoritos do usuário
-      existingUser.favorites = existingUser.favorites.filter((favProduct) => favProduct._id.toString() !== productId);
+      existingUser.favorites = existingUser.favorites.filter((favProduct) => favProduct.toString() !== productId);
     } else {
       // Adicionar o produto aos favoritos do usuário
-      existingUser.favorites.push(product);
+      existingUser.favorites.push(product._id);
     }
 
     // Salvar o usuário atualizado no banco de dados
@@ -129,6 +137,9 @@ router.post('/favorites', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor ao adicionar/remover produto dos favoritos.' });
   }
 });
+
+
+
 
 // Rota para remover um produto dos favoritos do usuário
 router.delete('/favorites/:userId/:productId', async (req, res) => {
@@ -166,6 +177,14 @@ router.delete('/favorites/:userId/:productId', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor ao remover produto dos favoritos.' });
   }
 });
+
+
+
+
+
+
+
+
 
 
 

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const customerSchema = new mongoose.Schema({
+    clerkUserId:{ type: String, required: true },
   firstname: { type: String, required: true },
   lastname: { type: String, required: true },
   telephone: { type: String, required: true },

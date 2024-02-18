@@ -98,6 +98,24 @@ app.use('/api', purchaseOrder);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // Exemplo de uso: app.get('/perfil', ensureAuthenticated, (req, res) => { ... });
 
 // Agende a execução da rota de atualização a cada dia às 3:00 AM
