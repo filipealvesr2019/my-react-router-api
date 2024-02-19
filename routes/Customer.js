@@ -133,24 +133,15 @@ router.post('/favorites', async (req, res) => {
   }
 });
 
-
-
-// Rota para remover um produto dos favoritos do usuário
-router.delete('/favorites/:userId/:productId', async (req, res) => {
+router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
   try {
     // Extrair ID do usuário e do produto dos parâmetros da solicitação
-    const { userId, productId } = req.params;
+    const { clerkUserId, productId } = req.params;
 
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findById(userId);
+    const existingUser = await Customer.findOne({ clerkUserId });
     if (!existingUser) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
-    }
-
-    // Verificar se o produto existe pelo ID
-    const existingProduct = await Product.findById(productId);
-    if (!existingProduct) {
-      return res.status(404).json({ message: 'Produto não encontrado.' });
     }
 
     // Verificar se o produto está nos favoritos do usuário
@@ -171,9 +162,6 @@ router.delete('/favorites/:userId/:productId', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor ao remover produto dos favoritos.' });
   }
 });
-
-
-
 
 
 
