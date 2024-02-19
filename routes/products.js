@@ -14,17 +14,15 @@ const {
 } = require("../controllers/productController");
 
 const { isAuthenticatedUser } = require("../middleware/auth");
-const { auth } = require("firebase-admin");
+const { isAdmin } = require("../middleware/clerkAuth");
 
 
 router.route("/products").get( getProducts);
 router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
-router.route("/admin/product/new").post(
 
-  newProduct
-);
 
+router.post("/admin/product/new", productController.newProduct);
 
 
 const checkPermissions = (allowedRoles) => {

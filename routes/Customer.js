@@ -72,18 +72,13 @@ router.post('/signup', async (req, res) => {
 
 
 
-
-
-router.get('/favorites/:userId', async (req, res) => {
+router.get('/favorites/:clerkUserId', async (req, res) => {
   try {
     // Extrair ID do usuário do parâmetro da rota
-    const { userId } = req.params;
-
-    // Converter o ID do usuário para um ObjectId válido
-    const userIdObjectId = mongoose.Types.ObjectId(userId);
+    const { clerkUserId } = req.params;
 
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findById(userIdObjectId);
+    const existingUser = await Customer.findOne({ clerkUserId });
     if (!existingUser) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
@@ -101,13 +96,13 @@ router.get('/favorites/:userId', async (req, res) => {
 router.post('/favorites', async (req, res) => {
   try {
     // Extrair ID do usuário do corpo da solicitação
-    const { userId } = req.body;
+    const { clerkUserId } = req.body;
 
     // Extrair ID do produto do corpo da solicitação
     const { productId } = req.body;
 
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findById(userId);
+    const existingUser = await Customer.findOne({ clerkUserId });
     if (!existingUser) {
       return res.status(404).json({ message: 'Usuário não encontrado.' });
     }
@@ -137,7 +132,6 @@ router.post('/favorites', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor ao adicionar/remover produto dos favoritos.' });
   }
 });
-
 
 
 
