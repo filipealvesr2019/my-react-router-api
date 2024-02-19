@@ -72,6 +72,7 @@ router.post('/signup', async (req, res) => {
 
 
 
+
 router.get('/favorites/:clerkUserId', async (req, res) => {
   try {
     // Extrair ID do usuário do parâmetro da rota
@@ -132,6 +133,7 @@ router.post('/favorites', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor ao adicionar/remover produto dos favoritos.' });
   }
 });
+
 
 router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
   try {
