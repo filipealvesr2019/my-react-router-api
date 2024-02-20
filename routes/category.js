@@ -2,17 +2,16 @@
 const express = require('express');
 const router = express.Router();
 const categoriesController = require('../controllers/categoriesController'); // Substitua pelo caminho real do seu controlador
-const Subcategory = require('../models/Subcategory');
-const Product = require('../models/product');
-const Category = require('../models/category');
+const { addUserDataToRequest, checkPermissions } = require('../middleware/middleware');
+
 
 // Rota para adicionar nova categoria
-router.post('/admin/category/new', categoriesController.newCategory);
+router.post('/admin/category/new', addUserDataToRequest, checkPermissions(["administrador", "Gerente"]), categoriesController.newCategory);
 router.get('/categories', categoriesController.getAllCategories);
 router.get('/categories/:categoryId', categoriesController.getCategoryById);
 router.post('/categories/:categoryId/subcategories', categoriesController.createSubcategory);
 router.post('/categories/:categoryName/subcategories', categoriesController.addSubcategoryToCategory);
-router.put('/admin/categories/:categoryId', categoriesController.editCategory);
+router.put('/admin/categories/:categoryId', addUserDataToRequest, checkPermissions(["administrador", "Gerente"]), categoriesController.editCategory);
 
 // Rota para obter imagens de uma categoria
 
@@ -28,7 +27,7 @@ router.delete('/categories/:categoryId/images/:imageIndex', categoriesController
 router.post('/categories/:categoryId/images', categoriesController.addImageToCategory);
 
 // Rota para excluir uma categoria
-router.delete('/admin/categories/:categoryId', categoriesController.deleteCategory);
+router.delete('/admin/categories/:categoryId', addUserDataToRequest, checkPermissions(["administrador", "Gerente"]), categoriesController.deleteCategory);
 
 
 router.get('/allCategories', categoriesController.getAllCategoriesWithProducts);
