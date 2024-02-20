@@ -154,7 +154,6 @@ router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
 
     // Remover o produto dos favoritos do usuário
     existingUser.favorites = existingUser.favorites.filter((id) => id.toString() !== productId);
-
     // Salvar o usuário atualizado no banco de dados
     const updatedUser = await existingUser.save();
 
@@ -163,6 +162,7 @@ router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
     console.error('Erro ao remover produto dos favoritos:', error);
     res.status(500).json({ message: 'Erro interno do servidor ao remover produto dos favoritos.' });
   }
+  
 });
 
 
