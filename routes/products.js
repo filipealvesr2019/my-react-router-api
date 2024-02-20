@@ -23,6 +23,16 @@ router.route("/product/:id").get(getSingleProduct);
 
 
 router.post("/admin/product/new", productController.newProduct);
+const addUserDataToRequest = (req, res, next) => {
+  // Aqui você pode adicionar as informações do usuário ao objeto req
+  // Por exemplo, você pode adicionar o papel do usuário ao objeto req.user
+  req.user = {
+    role: 'administrador', // Adicione o papel do usuário aqui
+  };
+
+  // Chame o próximo middleware na cadeia
+  next();
+};
 
 
 const checkPermissions = (allowedRoles) => {
@@ -50,29 +60,13 @@ const checkPermissions = (allowedRoles) => {
 
 
 
-// Função para verificar o token
-const verifyToken = (req, res, next) => {
-  const token = req.headers.authorization;
-
-  if (!token) {
-    return res.status(401).json({ message: 'Token ausente. Acesso não autorizado.' });
-  }
-
-  try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decodedToken; // Adiciona as informações do usuário ao objeto de solicitação (req)
-    next();
-  } catch (error) {
-    return res.status(403).json({ message: 'Token inválido. Acesso não autorizado.' });
-  }
-};
 
 
 // router.route("/admin/product/:id").delete(  checkPermissions(["administrador"]), deleteProduct);
 // router.route("/admin/product/:id").delete(verifyToken,  checkPermissions(["administrador"]), deleteProduct);
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(  deleteProduct);
+router.route("/admin/product/:id").delete(addUserDataToRequest, checkPermissions(["administrador"]), deleteProduct);
 router.route("/review").put(isAuthenticatedUser, createProductReview);
 router.get("/reviews", isAuthenticatedUser, getProductReviews);
 router.route("/review").delete(isAuthenticatedUser, deleteReview);
