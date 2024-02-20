@@ -4,7 +4,7 @@ const cron = require('node-cron');
 const APIFeatures = require("../utils/APIFeatures");
 
 // Controlador para criar um novo produto
-exports.newProduct = async (req, res, next, isAdmin) => {
+exports.newProduct = async (req, res, next,) => {
   try {
     // Cria uma instância do modelo com os dados recebidos
     const product = new Product(req.body);

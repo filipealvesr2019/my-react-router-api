@@ -22,7 +22,7 @@ router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
 
 
-router.post("/admin/product/new",addUserDataToRequest, checkPermissions(["administrador"]),  productController.newProduct);
+router.post("/admin/product/new", addUserDataToRequest, checkPermissions(["administrador"]),  productController.newProduct);
 
 
 
