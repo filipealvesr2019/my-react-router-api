@@ -13,8 +13,7 @@ const addUserDataToRequest = (req, res, next) => {
     return (req, res, next) => {
       const userRole = req.user ? req.user.role : null;
   
-      console.log('Papel do usuário:', userRole);
-      console.log('Papéis permitidos:', allowedRoles);
+   
   
       if (!userRole) {
         console.log('Token inválido ou ausente. Permissão negada.');
