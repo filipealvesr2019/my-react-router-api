@@ -1,23 +1,24 @@
 const mongoose = require("mongoose");
 
 const customerSchema = new mongoose.Schema({
-    clerkUserId:{ type: String, required: true },
-  firstname: { type: String, required: true },
-  lastname: { type: String, required: true },
-  telephone: { type: String, required: true },
+  clerkUserId:{ type: String, required: true },
+  name: { type: String, required: true },
+  cpfCnpj: { type: Number, required: true },
+  mobilePhone: { type: String, required: true },
   email: { type: String, required: true, unique: true },
-  postcode: { type: String, required: true },
-  address_street: { type: String, required: true },
-  address_street_number: { type: String, required: true },
-  address_street_complement: { type: String },
-  address_street_district: { type: String, required: true },
-  address_city: { type: String, required: true },
-  address_state: { type: String, required: true },
+  postalCode: { type: String, required: true },
+  address: { type: String, required: true },
+  addressNumber: { type: String, required: true },
+  complement: { type: String },
+  province: { type: String, required: true },
+  city: { type: String, required: true },
+  state: { type: String, required: true },
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'
   }]
 });
+
 
 
 module.exports = mongoose.model("Customer", customerSchema);

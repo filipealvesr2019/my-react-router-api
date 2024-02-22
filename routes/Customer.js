@@ -7,30 +7,23 @@ const Product = require('../models/product')
 const axios = require("axios")
 
 
-
-
-
-
-
-
-
-// Rota para criar um novo usuário
 router.post('/signup', async (req, res) => {
   try {
     // Extrair dados do corpo da solicitação
     const {
       clerkUserId,
-      firstname,
-      lastname,
-      telephone,
+      name,
+      cpfCnpj,
+      mobilePhone,
       email,
-      postcode,
-      address_street,
-      address_street_number,
-      address_street_complement,
-      address_street_district,
-      address_city,
-      address_state,
+      postalCode,
+      address,
+      addressNumber,
+      complement,
+      province,
+      city,
+      state,
+  
     } = req.body;
 
     // Verificar se o usuário já existe pelo email
@@ -38,27 +31,56 @@ router.post('/signup', async (req, res) => {
     if (existingUser) {
       return res.status(400).json({ message: 'Email já cadastrado. Faça login ou utilize outro email.' });
     }
-    
+
     // Criar novo usuário
     const newUser = new Customer({
       clerkUserId,
-      firstname,
-      lastname,
-      telephone,
+      name,
+      cpfCnpj,
+      mobilePhone,
       email,
-      postcode,
-      address_street,
-      address_street_number,
-      address_street_complement,
-      address_street_district,
-      address_city,
-      address_state,
+      postalCode,
+      address,
+      addressNumber,
+      complement,
+      province,
+      city,
+      state,
     });
 
     // Salvar o novo usuário no banco de dados
     const savedUser = await newUser.save();
 
-    res.status(201).json({ user: savedUser, message: 'Usuário criado com sucesso.' });
+    // Enviar os dados do cliente para a rota https://sandbox.asaas.com/api/v3/customers com o token de acesso
+    const token = process.env.ACCESS_TOKEN;
+    const url = 'https://sandbox.asaas.com/api/v3/customers';
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        access_token: token
+      },
+      
+      body: JSON.stringify({
+        name,
+        cpfCnpj,
+        mobilePhone,
+        email,
+        postalCode,
+        address,
+        addressNumber,
+        complement,
+        province,
+        city,
+        state,
+      })
+    };
+
+    const response = await fetch(url, options);
+    const responseData = await response.json();
+
+    res.status(201).json({ user: savedUser, message: 'Usuário criado com sucesso.', responseData });
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
     res.status(500).json({ message: 'Erro interno do servidor ao criar usuário.' });
@@ -70,6 +92,35 @@ router.post('/signup', async (req, res) => {
 
 
 
+
+
+
+
+
+router.get('/customers', async (req, res) => {
+  try {
+    const customers = await Customer.find();
+    res.status(200).json({ customers });
+  } catch (error) {
+    console.error('Erro ao pegar clientes:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao pegar clientes.' });
+  }
+});
+
+
+router.get('/user/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const user = await Customer.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+    res.status(200).json({ user });
+  } catch (error) {
+    console.error('Erro ao pegar usuário:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao pegar usuário.' });
+  }
+});
 
 
 
