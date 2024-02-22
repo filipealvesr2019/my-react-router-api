@@ -90,6 +90,35 @@ router.post('/signup', async (req, res) => {
 
 
 
+router.get('/customers', async (req, res) => {
+  try {
+    const token = process.env.ACCESS_TOKEN;
+    const url = 'https://sandbox.asaas.com/api/v3/customers';
+    const options = {
+      method: 'GET',
+      headers: {
+        accept: 'application/json',
+        access_token: token
+      }
+    };
+
+    const response = await fetch(url, options);
+    const responseData = await response.json();
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    console.error('Erro ao pegar clientes:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao pegar clientes.' });
+  }
+});
+
+
+
+
+
+
+
+
 
 
 
