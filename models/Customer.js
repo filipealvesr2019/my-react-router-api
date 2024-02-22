@@ -13,6 +13,7 @@ const customerSchema = new mongoose.Schema({
   province: { type: String, required: true },
   city: { type: String, required: true },
   state: { type: String, required: true },
+  asaasCustomerId: { type: String },
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'

@@ -6,10 +6,8 @@ const Product = require('../models/product')
 // Rota para criar um novo usuário
 const axios = require("axios")
 
-
 router.post('/signup', async (req, res) => {
   try {
-    // Extrair dados do corpo da solicitação
     const {
       clerkUserId,
       name,
@@ -23,16 +21,14 @@ router.post('/signup', async (req, res) => {
       province,
       city,
       state,
-  
+      asaasCustomerId
     } = req.body;
 
-    // Verificar se o usuário já existe pelo email
     const existingUser = await Customer.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ message: 'Email já cadastrado. Faça login ou utilize outro email.' });
     }
 
-    // Criar novo usuário
     const newUser = new Customer({
       clerkUserId,
       name,
@@ -46,12 +42,11 @@ router.post('/signup', async (req, res) => {
       province,
       city,
       state,
+      asaasCustomerId
     });
 
-    // Salvar o novo usuário no banco de dados
     const savedUser = await newUser.save();
 
-    // Enviar os dados do cliente para a rota https://sandbox.asaas.com/api/v3/customers com o token de acesso
     const token = process.env.ACCESS_TOKEN;
     const url = 'https://sandbox.asaas.com/api/v3/customers';
     const options = {
@@ -61,7 +56,6 @@ router.post('/signup', async (req, res) => {
         'content-type': 'application/json',
         access_token: token
       },
-      
       body: JSON.stringify({
         name,
         cpfCnpj,
@@ -80,14 +74,16 @@ router.post('/signup', async (req, res) => {
     const response = await fetch(url, options);
     const responseData = await response.json();
 
+    // Salva o ID do cliente retornado pelo Asaas no novo campo
+    savedUser.asaasCustomerId = responseData.id;
+    await savedUser.save();
+
     res.status(201).json({ user: savedUser, message: 'Usuário criado com sucesso.', responseData });
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
     res.status(500).json({ message: 'Erro interno do servidor ao criar usuário.' });
   }
 });
-
-
 
 
 router.get('/customers', async (req, res) => {
