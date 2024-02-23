@@ -96,6 +96,10 @@ router.post('/signup', async (req, res) => {
 
 
 
+
+
+
+
 router.put('/update/:clerkUserId', async (req, res) => {
   try {
     const { clerkUserId } = req.params;
@@ -174,7 +178,13 @@ router.put('/update/:clerkUserId', async (req, res) => {
 
 
 
-router.get('/customers', async (req, res) => {
+
+
+
+
+
+
+router.get('/customersByAsaas', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = 'https://sandbox.asaas.com/api/v3/customers';

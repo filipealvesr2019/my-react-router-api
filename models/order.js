@@ -13,7 +13,16 @@ const orderSchema = mongoose.Schema({
       required: true,
       ref: "Product"
     },
-    total:{type:Number,  required: true},
+    // Forma de pagamento
+    billingType: {type:String,    enum: ['BOLETO', 'CREDIT_CARD', 'PIX'],
+    required: true},
+    // total a pagar
+    value:{type:Number,  required: true},
+    dueDate: {
+      type: Date,
+      required: true,
+      default: Date.now,
+    },
     quantity: {
       type: Number,
       required: true
