@@ -406,4 +406,79 @@ router.get('/cart/:clerkUserId', async (req, res) => {
 
 
 
+
+
+// Rota para atualizar a quantidade de um produto no carrinho de um cliente
+router.put('/update-quantity/:clerkUserId/:productId', async (req, res) => {
+  try {
+      const clerkUserId = req.params.clerkUserId;
+      const productId = req.params.productId;
+      const { quantity } = req.body;
+
+      // Encontra o cliente associado ao atendente
+      const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+      if (!customer) {
+          return res.status(404).json({ message: 'Cliente não encontrado.' });
+      }
+
+      // Encontra o carrinho do cliente
+      let cart = await Cart.findOne({ customer: customer._id });
+
+      if (!cart) {
+          return res.status(404).json({ message: 'Carrinho não encontrado.' });
+      }
+
+      // Encontra o produto no carrinho
+      const productIndex = cart.products.findIndex(product => product.productId.toString() === productId);
+
+      if (productIndex === -1) {
+          return res.status(404).json({ message: 'Produto não encontrado no carrinho.' });
+      }
+
+      // Atualiza a quantidade do produto no carrinho
+      cart.products[productIndex].quantity = quantity;
+      await cart.save();
+
+      // Retorna informações sobre o produto atualizado
+      const updatedProduct = await Product.findById(productId);
+      res.status(200).json({ cart: cart, updatedProductId: updatedProduct._id, message: 'Quantidade do produto atualizada no carrinho com sucesso.' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao atualizar quantidade do produto no carrinho.' });
+  }
+});
+
+
+
+// Rota para mostrar o total do preço dos produtos no carrinho
+router.get('/cart/:clerkUserId/total-price', async (req, res) => {
+  try {
+      const clerkUserId = req.params.clerkUserId;
+
+      // Encontra o cliente associado ao atendente
+      const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+      if (!customer) {
+          return res.status(404).json({ message: 'Cliente não encontrado.' });
+      }
+
+      // Encontra o carrinho do cliente
+      const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
+
+      if (!cart) {
+          return res.status(404).json({ message: 'Carrinho não encontrado.' });
+      }
+
+      // Calcula o total do preço dos produtos no carrinho
+      const totalPrice = cart.products.reduce((total, product) => total + (product.productId.price * product.quantity), 0);
+
+      // Retorna o total do preço dos produtos no carrinho
+      res.status(200).json({ totalPrice, message: 'Total do preço dos produtos no carrinho.' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao calcular o total do preço dos produtos no carrinho.' });
+  }
+});
+
 module.exports = router;
