@@ -86,6 +86,94 @@ router.post('/signup', async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+router.put('/update/:clerkUserId', async (req, res) => {
+  try {
+    const { clerkUserId } = req.params;
+    const {
+      name,
+      cpfCnpj,
+      mobilePhone,
+      email,
+      postalCode,
+      address,
+      addressNumber,
+      complement,
+      province,
+      city,
+      state,
+      asaasCustomerId
+    } = req.body;
+
+    // Encontra o usuário com base no clerkUserId
+    const existingUser = await Customer.findOne({ clerkUserId });
+
+    // Verifica se o usuário existe
+    if (!existingUser) {
+      return res.status(404).json({ message: 'Usuário não encontrado.' });
+    }
+
+    // Atualiza os campos do usuário
+    if (name) existingUser.name = name;
+    if (cpfCnpj) existingUser.cpfCnpj = cpfCnpj;
+    if (mobilePhone) existingUser.mobilePhone = mobilePhone;
+    if (email) existingUser.email = email;
+    if (postalCode) existingUser.postalCode = postalCode;
+    if (address) existingUser.address = address;
+    if (addressNumber) existingUser.addressNumber = addressNumber;
+    if (complement) existingUser.complement = complement;
+    if (province) existingUser.province = province;
+    if (city) existingUser.city = city;
+    if (state) existingUser.state = state;
+    if (asaasCustomerId) existingUser.asaasCustomerId = asaasCustomerId;
+
+    // Salva as alterações no banco de dados
+    const savedUser = await existingUser.save();
+
+    res.status(200).json({ user: savedUser, message: 'Usuário atualizado com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao atualizar usuário:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao atualizar usuário.' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 router.get('/customers', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -107,18 +195,6 @@ router.get('/customers', async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor ao pegar clientes.' });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
