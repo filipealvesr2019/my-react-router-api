@@ -1,6 +1,8 @@
 // authRoutes.js
 const express = require('express');
 const router = express.Router();
+
+const Cart = require("../models/cart")
 const Customer = require('../models/Customer'); // Importe o modelo do Customer
 const Product = require('../models/product')
 // Rota para criar um novo usuário
@@ -21,7 +23,8 @@ router.post('/signup', async (req, res) => {
       province,
       city,
       state,
-      asaasCustomerId
+      asaasCustomerId,
+      cart
     } = req.body;
 
     const existingUser = await Customer.findOne({ email });
@@ -42,7 +45,8 @@ router.post('/signup', async (req, res) => {
       province,
       city,
       state,
-      asaasCustomerId
+      asaasCustomerId,
+      cart
     });
 
     const savedUser = await newUser.save();
@@ -67,7 +71,7 @@ router.post('/signup', async (req, res) => {
         complement,
         province,
         city,
-        state,
+        state
       })
     };
 
@@ -115,7 +119,8 @@ router.put('/update/:clerkUserId', async (req, res) => {
       province,
       city,
       state,
-      asaasCustomerId
+      asaasCustomerId,
+      cart
     } = req.body;
 
     // Encontra o usuário com base no clerkUserId
@@ -139,6 +144,7 @@ router.put('/update/:clerkUserId', async (req, res) => {
     if (city) existingUser.city = city;
     if (state) existingUser.state = state;
     if (asaasCustomerId) existingUser.asaasCustomerId = asaasCustomerId;
+    if (cart) existingUser.cart = cart;
 
     // Salva as alterações no banco de dados
     const savedUser = await existingUser.save();
@@ -328,10 +334,74 @@ router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
 });
 
 
+// Rota para adicionar um produto ao carrinho de um cliente
+router.post('/add-to-cart/:clerkUserId', async (req, res) => {
+    try {
+        const clerkUserId = req.params.clerkUserId;
+        const { productId, quantity } = req.body;
+
+        // Encontra o cliente associado ao atendente
+        const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+        if (!customer) {
+            return res.status(404).json({ message: 'Cliente não encontrado.' });
+        }
+
+        // Encontra o carrinho do cliente
+        let cart = await Cart.findOne({ customer: customer._id });
+
+        // Se o carrinho não existir, cria um novo
+        if (!cart) {
+            cart = new Cart({ customer: customer._id, products: [] });
+        }
+
+        // Encontra o produto
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ message: 'Produto não encontrado.' });
+        }
+
+        // Adiciona o produto ao carrinho
+        cart.products.push({ productId: productId, quantity: quantity });
+        await cart.save();
+
+        // Retorna informações sobre o produto adicionado
+        const addedProduct = await Product.findById(productId);
+        res.status(200).json({ cart: cart, addedProductId: addedProduct._id, message: 'Produto adicionado ao carrinho com sucesso.' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Erro ao adicionar produto ao carrinho.' });
+    }
+});
 
 
 
+router.get('/cart/:clerkUserId', async (req, res) => {
+  try {
+      const clerkUserId = req.params.clerkUserId;
 
+      // Encontra o cliente associado ao atendente
+      const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+      if (!customer) {
+          return res.status(404).json({ message: 'Cliente não encontrado.' });
+      }
+
+      // Encontra o carrinho do cliente
+      const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
+
+      if (!cart) {
+          return res.status(404).json({ message: 'Carrinho não encontrado.' });
+      }
+
+      // Retorna os produtos no carrinho
+      res.status(200).json({ cart: cart.products, message: 'Produtos no carrinho.' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao mostrar produtos no carrinho.' });
+  }
+});
 
 
 

@@ -14,6 +14,10 @@ const customerSchema = new mongoose.Schema({
   city: { type: String },
   state: { type: String },
   asaasCustomerId: { type: String },
+  cart: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Cart'
+  },
   favorites: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'

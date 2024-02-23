@@ -58,7 +58,6 @@ const budgetRoutes = require('./routes/stock/budget'); // Nova rota para Categor
 const purchaseOrder = require('./routes/stock/purchaseOrder'); // Nova rota para CategoryStock
 const salesOrders = require('./routes/stock/salesOrders'); // 
 
-const cart = require('./routes/cart'); // Nova rota para CategoryStock
 
 
 app.use('/api', products)
@@ -95,7 +94,6 @@ app.use('/api', budgetRoutes); // Nova rota para CategoryStock
 
 app.use('/api', salesOrders); // Nova rota para CategoryStock
 app.use('/api', purchaseOrder); 
-app.use('/api', cart); 
 
 
 
