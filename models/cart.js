@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { v4: uuidv4 } = require('uuid');
 
 const cartSchema = mongoose.Schema({
  
@@ -17,10 +16,13 @@ const cartSchema = mongoose.Schema({
     quantity: {
       type: Number,
       required: true
-    }
+    },
+    dueDate: {
+        type: Date,
+        required: true,
+        default: Date.now,
+      },
   },
-
- 
 
 });
 
