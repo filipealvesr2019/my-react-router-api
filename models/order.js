@@ -13,7 +13,7 @@ const orderSchema = mongoose.Schema({
       required: true,
       ref: "Product"
     },
-    total:{type:Number},
+    total:{type:Number,  required: true},
     quantity: {
       type: Number,
       required: true
