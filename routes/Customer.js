@@ -6,7 +6,8 @@ const Cart = require("../models/cart")
 const Customer = require('../models/Customer'); // Importe o modelo do Customer
 const Product = require('../models/product');
 const ShippingFee = require('../models/shippingFee');
-const axios = require("axios")
+const axios = require("axios");
+const Frete = require('../models/Frete');
 // Rota para criar um novo usuário
 
 router.post('/signup', async (req, res) => {
@@ -485,6 +486,15 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
 
 
 
+
+
+
+
+
+
+
+
+
 router.post('/frete', async (req, res) => {
   try {
     const token = process.env.KUNGU_TOKEN;
@@ -526,12 +536,52 @@ router.post('/frete', async (req, res) => {
         'Origin': 'https://serveradmin-whhj.onrender.com/'
       }
     });
+
+    // Verifica se a resposta é um array
+    if (Array.isArray(response.data)) {
+      // Se for um array, faz um loop sobre os itens e salva cada um
+      for (const item of response.data) {
+        const frete = new Frete({
+          nomeTransportadora: item.transp_nome,
+          dataPrevistaEntrega: item.dtPrevEnt,
+          prazoEntrega: item.prazoEnt,
+          valorFrete: item.vlrFrete
+        });
+
+        await frete.save();
+      }
+    } else {
+      // Se não for um array, salva apenas um item
+      const frete = new Frete({
+        nomeTransportadora: response.data.transp_nome,
+        dataPrevistaEntrega: response.data.dtPrevEnt,
+        prazoEntrega: response.data.prazoEnt,
+        valorFrete: response.data.vlrFrete
+      });
+
+      await frete.save();
+    }
+
     res.json(response.data);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+
+router.get('/fretes', async (req, res) => {
+  try {
+    const fretes = await Frete.find();
+    res.json(fretes);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 
 
   
