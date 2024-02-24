@@ -4,7 +4,9 @@ const router = express.Router();
 
 const Cart = require("../models/cart")
 const Customer = require('../models/Customer'); // Importe o modelo do Customer
-const Product = require('../models/product')
+const Product = require('../models/product');
+const ShippingFee = require('../models/shippingFee');
+const axios = require("axios")
 // Rota para criar um novo usuário
 
 router.post('/signup', async (req, res) => {
@@ -481,4 +483,56 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
   }
 });
 
+
+
+router.post('/frete', async (req, res) => {
+  try {
+    const token = process.env.KUNGU_TOKEN;
+    const cep = req.body.cep;
+    const data = {
+      cepOrigem: '60762-792',
+      cepDestino: cep,
+      vlrMerc: 70,
+      pesoMerc: 0.33,
+      volumes: [
+        {
+          peso: 0,
+          altura: 0,
+          largura: 0,
+          comprimento: 0,
+          tipo: 'string',
+          valor: 0,
+          quantidade: 0
+        }
+      ],
+      produtos: [
+        {
+          peso: 0,
+          altura: 2,
+          largura: 12,
+          comprimento: 17,
+          valor: 0,
+          quantidade: 0
+        }
+      ],
+      servicos: [
+        'string'
+      ],
+      ordernar: 'string'
+    };
+    const response = await axios.post('https://portal.kangu.com.br/tms/transporte/simular', data, {
+      headers: {
+        'token': token,
+        'Origin': 'https://serveradmin-whhj.onrender.com/'
+      }
+    });
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
+  
 module.exports = router;
