@@ -13,6 +13,28 @@ const cartSchema = new Schema({
         },
         quantity: Number
     }],
+    shippingFee: {
+        type: Number,
+        required: true,
+        default: 0.0
+      },
+      taxPrice:{
+        type:Number,
+        required:true
+      },
+      orderStatus: {
+        type: String,
+        required: true,
+        default: "Processando..."
+      },
+      deliveredAt: {
+        type: Date
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now()
+      }
+    ,
     dueDate: {
         type: Date,
         required: true,

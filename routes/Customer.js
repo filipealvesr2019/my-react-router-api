@@ -6,7 +6,6 @@ const Cart = require("../models/cart")
 const Customer = require('../models/Customer'); // Importe o modelo do Customer
 const Product = require('../models/product')
 // Rota para criar um novo usuário
-const axios = require("axios")
 
 router.post('/signup', async (req, res) => {
   try {
