@@ -8,6 +8,7 @@ const Product = require('../models/product');
 const ShippingFee = require('../models/shippingFee');
 const axios = require("axios");
 const Frete = require('../models/Frete');
+const { default: mongoose } = require('mongoose');
 // Rota para criar um novo usuário
 
 router.post('/signup', async (req, res) => {
@@ -377,8 +378,6 @@ router.post('/add-to-cart/:clerkUserId', async (req, res) => {
     }
 });
 
-
-
 router.get('/cart/:clerkUserId', async (req, res) => {
   try {
       const clerkUserId = req.params.clerkUserId;
@@ -397,14 +396,16 @@ router.get('/cart/:clerkUserId', async (req, res) => {
           return res.status(404).json({ message: 'Carrinho não encontrado.' });
       }
 
+      // Adiciona o shippingFee ao objeto cart
+      cart.shippingFee = cart.shippingFee;
+
       // Retorna os produtos no carrinho
-      res.status(200).json({ cart: cart.products, message: 'Produtos no carrinho.' });
+      res.status(200).json({ cart, message: 'Produtos no carrinho.' });
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Erro ao mostrar produtos no carrinho.' });
   }
 });
-
 
 
 
@@ -471,7 +472,7 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
       if (!cart) {
           return res.status(404).json({ message: 'Carrinho não encontrado.' });
       }
-      const shippingFee = 10; // Aqui você pode definir o valor do frete ou buscar de alguma outra fonte
+      const shippingFee = 0; // Aqui você pode definir o valor do frete ou buscar de alguma outra fonte
 
       // Calcula o total do preço dos produtos no carrinho
       const totalPrice = cart.products.reduce((total, product) => total + (product.productId.price * product.quantity), 0);
@@ -493,81 +494,6 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
 
 
 
-
-
-router.post('/frete', async (req, res) => {
-  try {
-    const token = process.env.KUNGU_TOKEN;
-    const cep = req.body.cep;
-    const data = {
-      cepOrigem: '60762-792',
-      cepDestino: cep,
-      vlrMerc: 70,
-      pesoMerc: 0.33,
-      volumes: [
-        {
-          peso: 0,
-          altura: 0,
-          largura: 0,
-          comprimento: 0,
-          tipo: 'string',
-          valor: 0,
-          quantidade: 0
-        }
-      ],
-      produtos: [
-        {
-          peso: 0,
-          altura: 2,
-          largura: 12,
-          comprimento: 17,
-          valor: 0,
-          quantidade: 0
-        }
-      ],
-      servicos: [
-        'string'
-      ],
-      ordernar: 'string'
-    };
-    const response = await axios.post('https://portal.kangu.com.br/tms/transporte/simular', data, {
-      headers: {
-        'token': token,
-        'Origin': 'https://serveradmin-whhj.onrender.com/'
-      }
-    });
-
-    // Verifica se a resposta é um array
-    if (Array.isArray(response.data)) {
-      // Se for um array, faz um loop sobre os itens e salva cada um
-      for (const item of response.data) {
-        const frete = new Frete({
-          nomeTransportadora: item.transp_nome,
-          dataPrevistaEntrega: item.dtPrevEnt,
-          prazoEntrega: item.prazoEnt,
-          valorFrete: item.vlrFrete
-        });
-
-        await frete.save();
-      }
-    } else {
-      // Se não for um array, salva apenas um item
-      const frete = new Frete({
-        nomeTransportadora: response.data.transp_nome,
-        dataPrevistaEntrega: response.data.dtPrevEnt,
-        prazoEntrega: response.data.prazoEnt,
-        valorFrete: response.data.vlrFrete
-      });
-
-      await frete.save();
-    }
-
-    res.json(response.data);
-  } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
-  }
-});
 
 
 
@@ -708,7 +634,41 @@ router.get('/frete/:clerkUserId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+router.put('/cart/:clerkUserId/shippingFee/:freteId', async (req, res) => {
+  try {
+    const clerkUserId = req.params.clerkUserId;
+    const freteId = req.params.freteId;
 
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
 
-  
+    if (!customer) {
+      return res.status(404).json({ message: 'Cliente não encontrado.' });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id });
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrinho não encontrado.' });
+    }
+
+    // Encontra o Frete associado ao cliente
+    const frete = await Frete.findById(freteId);
+
+    if (!frete) {
+      return res.status(404).json({ message: 'Frete não encontrado.' });
+    }
+
+    // Atualiza a taxa de envio do carrinho com o valor do Frete
+    cart.shippingFee = frete.valorFrete;
+    await cart.save();
+
+    res.status(200).json({ message: 'Taxa de envio do carrinho atualizada com sucesso.' });
+  } catch (error) {
+    console.error('Erro ao atualizar taxa de envio do carrinho:', error);
+    res.status(500).json({ message: 'Erro interno do servidor ao atualizar taxa de envio do carrinho.' });
+  }
+});
+
 module.exports = router;
