@@ -468,12 +468,13 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
       if (!cart) {
           return res.status(404).json({ message: 'Carrinho não encontrado.' });
       }
+      const shippingFee = 10; // Aqui você pode definir o valor do frete ou buscar de alguma outra fonte
 
       // Calcula o total do preço dos produtos no carrinho
       const totalPrice = cart.products.reduce((total, product) => total + (product.productId.price * product.quantity), 0);
-
+      const totalAmount = totalPrice + shippingFee
       // Retorna o total do preço dos produtos no carrinho
-      res.status(200).json({ totalPrice, message: 'Total do preço dos produtos no carrinho.' });
+      res.status(200).json({ totalAmount, message: 'Total do preço dos produtos no carrinho.' });
   } catch (error) {
       console.error(error);
       res.status(500).json({ message: 'Erro ao calcular o total do preço dos produtos no carrinho.' });
