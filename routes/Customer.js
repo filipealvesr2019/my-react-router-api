@@ -676,5 +676,39 @@ router.post('/frete/:clerkUserId', async (req, res) => {
 });
 
 
+
+
+
+
+
+
+
+
+router.get('/frete/:clerkUserId', async (req, res) => {
+  try {
+    const clerkUserId = req.params.clerkUserId;
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+    if (!customer) {
+      return res.status(404).json({ message: 'Cliente não encontrado.' });
+    }
+
+    // Encontra os fretes associados ao cliente
+    const fretes = await Frete.find({ clerkUserId: clerkUserId });
+
+    if (!fretes) {
+      return res.status(404).json({ message: 'Fretes não encontrados.' });
+    }
+
+    res.json(fretes);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
   
 module.exports = router;
