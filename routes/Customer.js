@@ -5,10 +5,8 @@ const router = express.Router();
 const Cart = require("../models/cart")
 const Customer = require('../models/Customer'); // Importe o modelo do Customer
 const Product = require('../models/product');
-const ShippingFee = require('../models/shippingFee');
 const axios = require("axios");
 const Frete = require('../models/Frete');
-const { default: mongoose } = require('mongoose');
 // Rota para criar um novo usuário
 
 router.post('/signup', async (req, res) => {
@@ -453,8 +451,6 @@ router.put('/update-quantity/:clerkUserId/:productId', async (req, res) => {
 });
 
 
-
-// Rota para mostrar o total do preço dos produtos no carrinho
 router.get('/cart/:clerkUserId/total-price', async (req, res) => {
   try {
       const clerkUserId = req.params.clerkUserId;
@@ -472,11 +468,14 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
       if (!cart) {
           return res.status(404).json({ message: 'Carrinho não encontrado.' });
       }
-      const shippingFee = 0; // Aqui você pode definir o valor do frete ou buscar de alguma outra fonte
+
+      // Inclui a taxa de envio do carrinho no objeto cart
+      cart.shippingFee = cart.shippingFee;
 
       // Calcula o total do preço dos produtos no carrinho
       const totalPrice = cart.products.reduce((total, product) => total + (product.productId.price * product.quantity), 0);
-      const totalAmount = totalPrice + shippingFee
+      const totalAmount = totalPrice + cart.shippingFee;
+
       // Retorna o total do preço dos produtos no carrinho
       res.status(200).json({ totalAmount, message: 'Total do preço dos produtos no carrinho.' });
   } catch (error) {
@@ -484,6 +483,7 @@ router.get('/cart/:clerkUserId/total-price', async (req, res) => {
       res.status(500).json({ message: 'Erro ao calcular o total do preço dos produtos no carrinho.' });
   }
 });
+
 
 
 
@@ -634,6 +634,15 @@ router.get('/frete/:clerkUserId', async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+
+
+
+
+
+
+
 router.put('/cart/:clerkUserId/shippingFee/:freteId', async (req, res) => {
   try {
     const clerkUserId = req.params.clerkUserId;
