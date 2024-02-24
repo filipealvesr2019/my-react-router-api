@@ -1,6 +1,13 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const freteSchema = new mongoose.Schema({
+  clerkUserId: {
+    type: String,
+  },
+
+  valorFrete: {
+    type: Number,
+  },
   valorFrete: {
     type: Number,
   },
@@ -12,9 +19,9 @@ const freteSchema = new mongoose.Schema({
   },
   nomeTransportadora: {
     type: String,
-  }
+  },
 });
 
-const Frete = mongoose.model('Frete', freteSchema);
+const Frete = mongoose.model("Frete", freteSchema);
 
 module.exports = Frete;

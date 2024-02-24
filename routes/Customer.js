@@ -582,6 +582,98 @@ router.get('/fretes', async (req, res) => {
 });
 
 
+router.post('/frete/:clerkUserId', async (req, res) => {
+  try {
+    const token = process.env.KUNGU_TOKEN;
+    const cep = req.body.cep;
+    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+    if (!customer) {
+      return res.status(404).json({ message: 'Cliente não encontrado.' });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrinho não encontrado.' });
+    }
+
+    const data = {
+      cepOrigem: '60762-792',
+      cepDestino: cep,
+      vlrMerc: 70,
+      pesoMerc: 0.33,
+      volumes: [
+        {
+          peso: 0,
+          altura: 0,
+          largura: 0,
+          comprimento: 0,
+          tipo: 'string',
+          valor: 0,
+          quantidade: 0
+        }
+      ],
+      produtos: [
+        {
+          peso: 0,
+          altura: 2,
+          largura: 12,
+          comprimento: 17,
+          valor: 0,
+          quantidade: 0
+        }
+      ],
+      servicos: [
+        'string'
+      ],
+      ordernar: 'string'
+    };
+
+    const response = await axios.post('https://portal.kangu.com.br/tms/transporte/simular', data, {
+      headers: {
+        'token': token,
+        'Origin': 'https://serveradmin-whhj.onrender.com/'
+      }
+    });
+
+    // Verifica se a resposta é um array
+    if (Array.isArray(response.data)) {
+      // Se for um array, faz um loop sobre os itens e salva cada um
+      for (const item of response.data) {
+        const frete = new Frete({
+          clerkUserId: clerkUserId, // Agora é uma string
+          nomeTransportadora: item.transp_nome,
+          dataPrevistaEntrega: item.dtPrevEnt,
+          prazoEntrega: item.prazoEnt,
+          valorFrete: item.vlrFrete
+        });
+
+        await frete.save();
+      }
+    } else {
+      // Se não for um array, salva apenas um item
+      const frete = new Frete({
+        clerkUserId: clerkUserId, // Agora é uma string
+        nomeTransportadora: response.data.transp_nome,
+        dataPrevistaEntrega: response.data.dtPrevEnt,
+        prazoEntrega: response.data.prazoEnt,
+        valorFrete: response.data.vlrFrete
+      });
+
+      await frete.save();
+    }
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 
   
