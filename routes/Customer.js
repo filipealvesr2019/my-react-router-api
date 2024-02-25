@@ -527,7 +527,8 @@ router.post('/frete/:clerkUserId', async (req, res) => {
     if (!cart) {
       return res.status(404).json({ message: 'Carrinho não encontrado.' });
     }
-
+    // Apaga os registros de frete anteriores
+    await Frete.deleteMany({clerkUserId:clerkUserId})
     const data = {
       cepOrigem: '60762-792',
       cepDestino: cep,
