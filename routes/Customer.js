@@ -339,7 +339,8 @@ router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
 router.post('/add-to-cart/:clerkUserId', async (req, res) => {
     try {
         const clerkUserId = req.params.clerkUserId;
-        const { productId, quantity } = req.body;
+
+        const { productId, quantity, size, color  } = req.body;
 
         // Encontra o cliente associado ao atendente
         const customer = await Customer.findOne({ clerkUserId: clerkUserId });
@@ -364,7 +365,7 @@ router.post('/add-to-cart/:clerkUserId', async (req, res) => {
         }
 
         // Adiciona o produto ao carrinho
-        cart.products.push({ productId: productId, quantity: quantity });
+        cart.products.push({ productId: productId, quantity: quantity, size: size, color: color });
         await cart.save();
 
         // Retorna informações sobre o produto adicionado
@@ -375,6 +376,8 @@ router.post('/add-to-cart/:clerkUserId', async (req, res) => {
         res.status(500).json({ message: 'Erro ao adicionar produto ao carrinho.' });
     }
 });
+
+
 
 router.get('/cart/:clerkUserId', async (req, res) => {
   try {
@@ -396,7 +399,7 @@ router.get('/cart/:clerkUserId', async (req, res) => {
 
       // Adiciona o shippingFee ao objeto cart
       cart.shippingFee = cart.shippingFee;
-
+      
       // Retorna os produtos no carrinho
       res.status(200).json({ cart, message: 'Produtos no carrinho.' });
   } catch (error) {
