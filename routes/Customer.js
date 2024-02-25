@@ -612,9 +612,6 @@ router.post('/frete/:clerkUserId', async (req, res) => {
 
 
 
-
-
-
 router.get('/frete/:clerkUserId', async (req, res) => {
   try {
     const clerkUserId = req.params.clerkUserId;
@@ -633,13 +630,21 @@ router.get('/frete/:clerkUserId', async (req, res) => {
       return res.status(404).json({ message: 'Fretes não encontrados.' });
     }
 
-    res.json(fretes);
+    // Remove fretes duplicados
+    const fretesUnicos = fretes.reduce((unique, current) => {
+      const exists = unique.some(item => item.nomeTransportadora === current.nomeTransportadora);
+      if (!exists) {
+        unique.push(current);
+      }
+      return unique;
+    }, []);
+
+    res.json(fretesUnicos);
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 
 
