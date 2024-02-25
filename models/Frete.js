@@ -20,6 +20,9 @@ const freteSchema = new mongoose.Schema({
   nomeTransportadora: {
     type: String,
   },
+  logo: {
+    type: String,
+  },
 });
 
 const Frete = mongoose.model("Frete", freteSchema);

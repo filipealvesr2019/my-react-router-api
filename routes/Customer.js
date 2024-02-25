@@ -577,7 +577,9 @@ router.post('/frete/:clerkUserId', async (req, res) => {
           nomeTransportadora: item.transp_nome,
           dataPrevistaEntrega: item.dtPrevEnt,
           prazoEntrega: item.prazoEnt,
-          valorFrete: item.vlrFrete
+          valorFrete: item.vlrFrete,
+          logo: item.url_logo
+
         });
 
         await frete.save();
@@ -589,7 +591,9 @@ router.post('/frete/:clerkUserId', async (req, res) => {
         nomeTransportadora: response.data.transp_nome,
         dataPrevistaEntrega: response.data.dtPrevEnt,
         prazoEntrega: response.data.prazoEnt,
-        valorFrete: response.data.vlrFrete
+        valorFrete: response.data.vlrFrete,
+        logo: item.url_logo
+
       });
 
       await frete.save();
