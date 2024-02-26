@@ -418,7 +418,10 @@ router.put('/update-quantity/:clerkUserId/:productId', async (req, res) => {
       const clerkUserId = req.params.clerkUserId;
       const productId = req.params.productId;
       const { quantity } = req.body;
-
+      if (quantity <= 0) {
+        return res.status(400).json({ message: 'A quantidade deve ser um número positivo.' });
+    }
+    
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ clerkUserId: clerkUserId });
 
@@ -452,6 +455,27 @@ router.put('/update-quantity/:clerkUserId/:productId', async (req, res) => {
       res.status(500).json({ message: 'Erro ao atualizar quantidade do produto no carrinho.' });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 router.get('/cart/:clerkUserId/total-price', async (req, res) => {
