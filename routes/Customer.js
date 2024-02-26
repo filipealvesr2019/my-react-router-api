@@ -334,47 +334,52 @@ router.delete('/favorites/:clerkUserId/:productId', async (req, res) => {
   
 });
 
-
 // Rota para adicionar um produto ao carrinho de um cliente
 router.post('/add-to-cart/:clerkUserId', async (req, res) => {
-    try {
-        const clerkUserId = req.params.clerkUserId;
+  try {
+      const clerkUserId = req.params.clerkUserId;
 
-        const { productId, quantity, size, color  } = req.body;
+      const { productId, quantity, size, color  } = req.body;
 
-        // Encontra o cliente associado ao atendente
-        const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+      // Encontra o cliente associado ao atendente
+      const customer = await Customer.findOne({ clerkUserId: clerkUserId });
 
-        if (!customer) {
-            return res.status(404).json({ message: 'Cliente não encontrado.' });
-        }
+      if (!customer) {
+          return res.status(404).json({ message: 'Cliente não encontrado.' });
+      }
 
-        // Encontra o carrinho do cliente
-        let cart = await Cart.findOne({ customer: customer._id });
+      // Encontra o carrinho do cliente
+      let cart = await Cart.findOne({ customer: customer._id });
 
-        // Se o carrinho não existir, cria um novo
-        if (!cart) {
-            cart = new Cart({ customer: customer._id, products: [] });
-        }
+      // Se o carrinho não existir, cria um novo
+      if (!cart) {
+          cart = new Cart({ customer: customer._id, products: [] });
+      }
 
-        // Encontra o produto
-        const product = await Product.findById(productId);
+      // Encontra o produto
+      const product = await Product.findById(productId);
 
-        if (!product) {
-            return res.status(404).json({ message: 'Produto não encontrado.' });
-        }
+      if (!product) {
+          return res.status(404).json({ message: 'Produto não encontrado.' });
+      }
 
-        // Adiciona o produto ao carrinho
-        cart.products.push({ productId: productId, quantity: quantity, size: size, color: color });
-        await cart.save();
+      // Verifica se a quantidade do produto no carrinho é menor que a quantidade disponível do produto
+      const productInCart = cart.products.find(item => item.productId.toString() === productId.toString());
+      if (productInCart && productInCart.quantity + quantity > product.quantity) {
+          return res.status(400).json({ message: 'Quantidade do produto no carrinho é maior que a quantidade disponível.' });
+      }
 
-        // Retorna informações sobre o produto adicionado
-        const addedProduct = await Product.findById(productId);
-        res.status(200).json({ cart: cart, addedProductId: addedProduct._id, message: 'Produto adicionado ao carrinho com sucesso.' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Erro ao adicionar produto ao carrinho.' });
-    }
+      // Adiciona o produto ao carrinho
+      cart.products.push({ productId: productId, quantity: quantity, size: size, color: color });
+      await cart.save();
+
+      // Retorna informações sobre o produto adicionado
+      const addedProduct = await Product.findById(productId);
+      res.status(200).json({ cart: cart, addedProductId: addedProduct._id, message: 'Produto adicionado ao carrinho com sucesso.' });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Erro ao adicionar produto ao carrinho.' });
+  }
 });
 
 
