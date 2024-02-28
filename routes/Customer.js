@@ -767,8 +767,6 @@ router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
       });
   }
 });
-
-//
 router.post("/pix/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -792,12 +790,13 @@ router.post("/pix/:clerkUserId", async (req, res) => {
 
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
-// Calcula o total do preço dos produtos no carrinho
-const totalPrice = cart.products.reduce(
-  (total, product) => total + product.productId.price * product.quantity,
-  0
-);
-const totalAmount = totalPrice + cart.shippingFee;
+    
+    // Calcula o total do preço dos produtos no carrinho
+    const totalAmount = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    );
+
     // Apaga os registros de frete anteriores
     const data = {
       billingType: "PIX",
@@ -864,7 +863,6 @@ const totalAmount = totalPrice + cart.shippingFee;
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 
 
