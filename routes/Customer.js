@@ -775,7 +775,7 @@ router.put('/cart/:clerkUserId/shippingFee/:freteId', async (req, res) => {
 
 
 // 
-router.post('/order/:clerkUserId', async (req, res) => {
+router.post('/pix/:clerkUserId', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const clerkUserId = req.params.clerkUserId; // Agora é uma string
@@ -799,12 +799,12 @@ const asaasCustomerId = customer.asaasCustomerId;
 
 // Apaga os registros de frete anteriores
 const data = {
-  billingType: 'BOLETO',
+  billingType: 'PIX',
   discount: {value: 0, dueDateLimitDays: 0},
   interest: {value: 0},
   fine: {value: 0},
   customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
-  dueDate: '2024-02-28',
+  dueDate: new Date(), // Define a data atual como a data de vencimento
   value: 150,
   description: 'Pedido 056984',
   daysAfterDueDateToCancellationRegistration: 1,
