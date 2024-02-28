@@ -7,6 +7,7 @@ const Customer = require('../models/Customer'); // Importe o modelo do Customer
 const Product = require('../models/product');
 const axios = require("axios");
 const Frete = require('../models/Frete');
+const Pix = require('../models/Pix');
 // Rota para criar um novo usuário
 
 router.post('/signup', async (req, res) => {
@@ -753,6 +754,100 @@ router.put('/cart/:clerkUserId/shippingFee/:freteId', async (req, res) => {
   } catch (error) {
     console.error('Erro ao atualizar taxa de envio do carrinho:', error);
     res.status(500).json({ message: 'Erro interno do servidor ao atualizar taxa de envio do carrinho.' });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// 
+router.post('/order/:clerkUserId', async (req, res) => {
+  try {
+    const token = process.env.ACCESS_TOKEN;
+    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+    if (!customer) {
+      return res.status(404).json({ message: 'Cliente não encontrado.' });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrinho não encontrado.' });
+    }
+    // Apaga os registros de frete anteriores
+    const data = {
+      billingType: 'BOLETO',
+      discount: {value: 0, dueDateLimitDays: 0},
+      interest: {value: 0},
+      fine: {value: 1},
+      customer: 'cus_000005895208',
+      dueDate: '2024-02-28',
+      value: 100,
+      description: 'Pedido 056984',
+      daysAfterDueDateToCancellationRegistration: 1,
+      externalReference: '056984',
+      postalService: false
+    };
+
+    const response = await axios.post('https://sandbox.asaas.com/api/v3/payments', data, {
+      headers: {
+        'accept':" 'application/json'",
+        'content-type': 'application/json',
+        'access_token': token,
+      }
+    });
+
+   // Verifica se a resposta é um array
+if (Array.isArray(response.data)) {
+  // Se for um array, faz um loop sobre os itens e salva cada um
+  for (const item of response.data) {
+    const pix = new Pix({
+      clerkUserId: clerkUserId, // Agora é uma string
+      customer: item.customer,
+      billingType: item.billingType,
+      value: item.value,
+      dueDate: item.dueDate,
+    });
+
+    await pix.save();
+  }
+} else {
+  // Se não for um array, salva apenas um item
+  const pix = new Pix({
+    clerkUserId: clerkUserId, // Agora é uma string
+    customer: response.data.customer,
+    billingType: response.data.billingType,
+    value: response.data.value,
+    dueDate: response.data.dueDate,
+  });
+
+  await pix.save();
+}
+
+
+    res.json(response.data);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
