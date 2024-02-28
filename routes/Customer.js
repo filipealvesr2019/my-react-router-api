@@ -780,43 +780,47 @@ router.post('/order/:clerkUserId', async (req, res) => {
     const token = process.env.ACCESS_TOKEN;
     const clerkUserId = req.params.clerkUserId; // Agora é uma string
 
-    // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+   // Encontra o cliente associado ao atendente
+const customer = await Customer.findOne({ clerkUserId: clerkUserId });
 
-    if (!customer) {
-      return res.status(404).json({ message: 'Cliente não encontrado.' });
-    }
+if (!customer) {
+  return res.status(404).json({ message: 'Cliente não encontrado.' });
+}
 
-    // Encontra o carrinho do cliente
-    const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
+// Encontra o carrinho do cliente
+const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
 
-    if (!cart) {
-      return res.status(404).json({ message: 'Carrinho não encontrado.' });
-    }
-    // Apaga os registros de frete anteriores
-    const data = {
-      billingType: 'BOLETO',
-      discount: {value: 0, dueDateLimitDays: 0},
-      interest: {value: 0},
-      fine: {value: 1},
-      customer: 'cus_000005895208',
-      dueDate: '2024-02-28',
-      value: 100,
-      description: 'Pedido 056984',
-      daysAfterDueDateToCancellationRegistration: 1,
-      externalReference: '056984',
-      postalService: false
-    };
+if (!cart) {
+  return res.status(404).json({ message: 'Carrinho não encontrado.' });
+}
 
-    const response = await axios.post('https://sandbox.asaas.com/api/v3/payments', data, {
-      headers: {
-        'accept':" 'application/json'",
-        'content-type': 'application/json',
-        'access_token': token,
-      }
-    });
+// Encontra o asaasCustomerId do cliente
+const asaasCustomerId = customer.asaasCustomerId;
 
-   // Verifica se a resposta é um array
+// Apaga os registros de frete anteriores
+const data = {
+  billingType: 'BOLETO',
+  discount: {value: 0, dueDateLimitDays: 0},
+  interest: {value: 0},
+  fine: {value: 0},
+  customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
+  dueDate: '2024-02-28',
+  value: 150,
+  description: 'Pedido 056984',
+  daysAfterDueDateToCancellationRegistration: 1,
+  externalReference: '056984',
+  postalService: false
+};
+
+const response = await axios.post('https://sandbox.asaas.com/api/v3/payments', data, {
+  headers: {
+    'accept':" 'application/json'",
+    'content-type': 'application/json',
+    'access_token': token,
+  }
+});
+
+// Verifica se a resposta é um array
 if (Array.isArray(response.data)) {
   // Se for um array, faz um loop sobre os itens e salva cada um
   for (const item of response.data) {

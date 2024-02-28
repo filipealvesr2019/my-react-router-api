@@ -12,6 +12,8 @@ const pixSchema = new mongoose.Schema({
   billingType: {type:String,    enum: ['BOLETO', 'CREDIT_CARD', 'PIX']},
   
   value: { type: Number, required: true },
+  externalReference: String, 
+
   dueDate: {
     type: Date,
     required: true,
