@@ -792,7 +792,12 @@ router.post("/pix/:clerkUserId", async (req, res) => {
 
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
-
+// Calcula o total do preço dos produtos no carrinho
+const totalPrice = cart.products.reduce(
+  (total, product) => total + product.productId.price * product.quantity,
+  0
+);
+const totalAmount = totalPrice + cart.shippingFee;
     // Apaga os registros de frete anteriores
     const data = {
       billingType: "PIX",
@@ -801,7 +806,7 @@ router.post("/pix/:clerkUserId", async (req, res) => {
       fine: { value: 0 },
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       dueDate: new Date(), // Define a data atual como a data de vencimento
-      value: 150,
+      value: totalAmount,
       description: "Pedido 056984",
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: "056984",
@@ -860,6 +865,20 @@ router.post("/pix/:clerkUserId", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 //
 router.post("/boleto/:clerkUserId", async (req, res) => {
   try {
@@ -884,7 +903,11 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
 
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
-
+    const totalPrice = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    );
+    const totalAmount = totalPrice + cart.shippingFee;
     // Apaga os registros de frete anteriores
     const data = {
       billingType: "BOLETO",
@@ -893,7 +916,7 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
       fine: { value: 0 },
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       dueDate: new Date(), // Define a data atual como a data de vencimento
-      value: 100,
+      value: totalAmount,
       description: "Pedido 056984",
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: "5555555",

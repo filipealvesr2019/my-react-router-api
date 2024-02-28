@@ -26,6 +26,11 @@ const pixSchema = new mongoose.Schema({
     required: true,
     default: Date.now,
   },
+  shippingFee: {
+    type: Number,
+    required: true,
+    default: 0.0
+  },
 });
 
 const Pix = mongoose.model("Pix", pixSchema);

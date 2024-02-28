@@ -25,6 +25,11 @@ const boletoSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: Date.now,
+  }, 
+  shippingFee: {
+    type: Number,
+    required: true,
+    default: 0.0
   },
 });
 
