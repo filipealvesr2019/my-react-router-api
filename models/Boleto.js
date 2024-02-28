@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const pixSchema = new mongoose.Schema({
+const boletoSchema = new mongoose.Schema({
   clerkUserId: {
     type: String,
   },
@@ -28,6 +28,6 @@ const pixSchema = new mongoose.Schema({
   },
 });
 
-const Pix = mongoose.model("Pix", pixSchema);
+const Boleto = mongoose.model("Boleto", boletoSchema);
 
-module.exports = Pix;
+module.exports = Boleto;
