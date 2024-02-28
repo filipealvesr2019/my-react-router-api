@@ -767,6 +767,14 @@ router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
       });
   }
 });
+
+
+
+
+
+
+
+
 router.post("/pix/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -790,12 +798,25 @@ router.post("/pix/:clerkUserId", async (req, res) => {
 
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
-    
-    // Calcula o total do preço dos produtos no carrinho
-    const totalAmount = cart.products.reduce(
+    const totalPrice = cart.products.reduce(
       (total, product) => total + product.productId.price * product.quantity,
       0
     );
+    const totalAmount = totalPrice + cart.shippingFee;
+
+
+   
+    // Cria uma string vazia para armazenar os IDs dos produtos
+    let externalReferences = "";
+
+    // Itera sobre os produtos no carrinho
+    for (const product of cart.products) {
+      // Adiciona o ID do produto à string externalReferences
+      externalReferences += product.productId._id + ", ";
+    }
+
+    // Remove a vírgula extra no final da string externalReferences
+    externalReferences = externalReferences.slice(0, -1);
 
     // Apaga os registros de frete anteriores
     const data = {
@@ -808,7 +829,7 @@ router.post("/pix/:clerkUserId", async (req, res) => {
       value: totalAmount,
       description: "Pedido 056984",
       daysAfterDueDateToCancellationRegistration: 1,
-      externalReference: "056984",
+      externalReference: externalReferences,
       postalService: false,
     };
 
@@ -906,6 +927,25 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
       0
     );
     const totalAmount = totalPrice + cart.shippingFee;
+
+
+
+
+
+
+    
+    // Cria uma string vazia para armazenar os IDs dos produtos
+    let externalReferences = "";
+
+    // Itera sobre os produtos no carrinho
+    for (const product of cart.products) {
+      // Adiciona o ID do produto à string externalReferences
+      externalReferences += product.productId._id + ",";
+    }
+
+    // Remove a vírgula extra no final da string externalReferences
+    externalReferences = externalReferences.slice(0, -1);
+
     // Apaga os registros de frete anteriores
     const data = {
       billingType: "BOLETO",
@@ -917,7 +957,7 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
       value: totalAmount,
       description: "Pedido 056984",
       daysAfterDueDateToCancellationRegistration: 1,
-      externalReference: "5555555",
+      externalReference: externalReferences,
       postalService: false,
     };
 
