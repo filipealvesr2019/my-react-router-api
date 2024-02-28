@@ -33,11 +33,9 @@ router.post("/signup", async (req, res) => {
 
     const existingUser = await Customer.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          message: "Email já cadastrado. Faça login ou utilize outro email.",
-        });
+      return res.status(400).json({
+        message: "Email já cadastrado. Faça login ou utilize outro email.",
+      });
     }
 
     const newUser = new Customer({
@@ -90,13 +88,11 @@ router.post("/signup", async (req, res) => {
     savedUser.asaasCustomerId = responseData.id;
     await savedUser.save();
 
-    res
-      .status(201)
-      .json({
-        user: savedUser,
-        message: "Usuário criado com sucesso.",
-        responseData,
-      });
+    res.status(201).json({
+      user: savedUser,
+      message: "Usuário criado com sucesso.",
+      responseData,
+    });
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
     res
@@ -232,11 +228,9 @@ router.get("/favorites/:clerkUserId", async (req, res) => {
     res.status(200).json({ favorites: favoriteProducts });
   } catch (error) {
     console.error("Erro ao visualizar produtos favoritos:", error);
-    res
-      .status(500)
-      .json({
-        message: "Erro interno do servidor ao visualizar produtos favoritos.",
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao visualizar produtos favoritos.",
+    });
   }
 });
 
@@ -277,20 +271,16 @@ router.post("/favorites", async (req, res) => {
     // Salvar o usuário atualizado no banco de dados
     const updatedUser = await existingUser.save();
 
-    res
-      .status(200)
-      .json({
-        user: updatedUser,
-        message: "Produto adicionado/removido dos favoritos com sucesso.",
-      });
+    res.status(200).json({
+      user: updatedUser,
+      message: "Produto adicionado/removido dos favoritos com sucesso.",
+    });
   } catch (error) {
     console.error("Erro ao adicionar/remover produto dos favoritos:", error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erro interno do servidor ao adicionar/remover produto dos favoritos.",
-      });
+    res.status(500).json({
+      message:
+        "Erro interno do servidor ao adicionar/remover produto dos favoritos.",
+    });
   }
 });
 
@@ -322,19 +312,15 @@ router.delete("/favorites/:clerkUserId/:productId", async (req, res) => {
     // Salvar o usuário atualizado no banco de dados
     const updatedUser = await existingUser.save();
 
-    res
-      .status(200)
-      .json({
-        user: updatedUser,
-        message: "Produto removido dos favoritos com sucesso.",
-      });
+    res.status(200).json({
+      user: updatedUser,
+      message: "Produto removido dos favoritos com sucesso.",
+    });
   } catch (error) {
     console.error("Erro ao remover produto dos favoritos:", error);
-    res
-      .status(500)
-      .json({
-        message: "Erro interno do servidor ao remover produto dos favoritos.",
-      });
+    res.status(500).json({
+      message: "Erro interno do servidor ao remover produto dos favoritos.",
+    });
   }
 });
 
@@ -378,13 +364,11 @@ router.post("/add-to-cart/:clerkUserId", async (req, res) => {
 
     // Retorna informações sobre o produto adicionado
     const addedProduct = await Product.findById(productId);
-    res
-      .status(200)
-      .json({
-        cart: cart,
-        addedProductId: addedProduct._id,
-        message: "Produto adicionado ao carrinho com sucesso.",
-      });
+    res.status(200).json({
+      cart: cart,
+      addedProductId: addedProduct._id,
+      message: "Produto adicionado ao carrinho com sucesso.",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro ao adicionar produto ao carrinho." });
@@ -465,20 +449,16 @@ router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
 
     // Retorna informações sobre o produto atualizado
     const updatedProduct = await Product.findById(productId);
-    res
-      .status(200)
-      .json({
-        cart: cart,
-        updatedProductId: updatedProduct._id,
-        message: "Quantidade do produto atualizada no carrinho com sucesso.",
-      });
+    res.status(200).json({
+      cart: cart,
+      updatedProductId: updatedProduct._id,
+      message: "Quantidade do produto atualizada no carrinho com sucesso.",
+    });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: "Erro ao atualizar quantidade do produto no carrinho.",
-      });
+    res.status(500).json({
+      message: "Erro ao atualizar quantidade do produto no carrinho.",
+    });
   }
 });
 
@@ -513,19 +493,15 @@ router.get("/cart/:clerkUserId/total-price", async (req, res) => {
     const totalAmount = totalPrice + cart.shippingFee;
 
     // Retorna o total do preço dos produtos no carrinho
-    res
-      .status(200)
-      .json({
-        totalAmount,
-        message: "Total do preço dos produtos no carrinho.",
-      });
+    res.status(200).json({
+      totalAmount,
+      message: "Total do preço dos produtos no carrinho.",
+    });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        message: "Erro ao calcular o total do preço dos produtos no carrinho.",
-      });
+    res.status(500).json({
+      message: "Erro ao calcular o total do preço dos produtos no carrinho.",
+    });
   }
 });
 
@@ -566,13 +542,11 @@ router.delete("/remove-from-cart/:clerkUserId/:productId", async (req, res) => {
 
     // Retorna informações sobre o produto removido
     const removedProduct = await Product.findById(productId);
-    res
-      .status(200)
-      .json({
-        cart: cart,
-        removedProductId: removedProduct._id,
-        message: "Produto removido do carrinho com sucesso.",
-      });
+    res.status(200).json({
+      cart: cart,
+      removedProductId: removedProduct._id,
+      message: "Produto removido do carrinho com sucesso.",
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Erro ao remover produto do carrinho." });
@@ -760,21 +734,12 @@ router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
       .json({ message: "Taxa de envio do carrinho atualizada com sucesso." });
   } catch (error) {
     console.error("Erro ao atualizar taxa de envio do carrinho:", error);
-    res
-      .status(500)
-      .json({
-        message:
-          "Erro interno do servidor ao atualizar taxa de envio do carrinho.",
-      });
+    res.status(500).json({
+      message:
+        "Erro interno do servidor ao atualizar taxa de envio do carrinho.",
+    });
   }
 });
-
-
-
-
-
-
-
 
 router.post("/pix/:clerkUserId", async (req, res) => {
   try {
@@ -797,6 +762,15 @@ router.post("/pix/:clerkUserId", async (req, res) => {
       return res.status(404).json({ message: "Carrinho não encontrado." });
     }
 
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
+
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
     const totalPrice = cart.products.reduce(
@@ -805,8 +779,6 @@ router.post("/pix/:clerkUserId", async (req, res) => {
     );
     const totalAmount = totalPrice + cart.shippingFee;
 
-
-   
     // Cria uma string vazia para armazenar os IDs dos produtos
     let externalReferences = "";
 
@@ -886,19 +858,6 @@ router.post("/pix/:clerkUserId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 //
 router.post("/boleto/:clerkUserId", async (req, res) => {
   try {
@@ -921,6 +880,14 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
       return res.status(404).json({ message: "Carrinho não encontrado." });
     }
 
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
     const totalPrice = cart.products.reduce(
@@ -929,12 +896,6 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
     );
     const totalAmount = totalPrice + cart.shippingFee;
 
-
-
-
-
-
-    
     // Cria uma string vazia para armazenar os IDs dos produtos
     let externalReferences = "";
 
@@ -1014,22 +975,6 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //
 router.post("/creditCard/:clerkUserId", async (req, res) => {
   try {
@@ -1052,6 +997,14 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
       return res.status(404).json({ message: "Carrinho não encontrado." });
     }
 
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
     // Encontra o asaasCustomerId do cliente
     const asaasCustomerId = customer.asaasCustomerId;
     const totalPrice = cart.products.reduce(
@@ -1060,12 +1013,6 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
     );
     const totalAmount = totalPrice + cart.shippingFee;
 
-
-
-
-
-
-    
     // Cria uma string vazia para armazenar os IDs dos produtos
     let externalReferences = "";
 
