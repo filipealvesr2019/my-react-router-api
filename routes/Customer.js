@@ -256,6 +256,27 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
+router.get("/custumer/:clerkUserId", async (req, res) => {
+  try {
+    const { clerkUserId } = req.params;
+
+    // Encontra o usuário com base no clerkUserId
+    const existingUser = await Customer.findOne({ clerkUserId });
+
+    // Verifica se o usuário existe
+    if (!existingUser) {
+      return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+
+    // Retorna as informações do usuário
+    res.status(200).json(existingUser);
+  } catch (error) {
+    console.error("Erro ao buscar usuário:", error);
+    res.status(500).json({ message: "Erro interno do servidor ao buscar usuário." });
+  }
+});
+
+
 router.get("/favorites/:clerkUserId", async (req, res) => {
   try {
     // Extrair ID do usuário do parâmetro da rota
