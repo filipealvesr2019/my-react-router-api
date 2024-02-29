@@ -101,6 +101,17 @@ router.post("/signup", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
 router.put("/update/:clerkUserId", async (req, res) => {
   try {
     const { clerkUserId } = req.params;
@@ -116,7 +127,6 @@ router.put("/update/:clerkUserId", async (req, res) => {
       province,
       city,
       state,
-      asaasCustomerId,
       cart,
     } = req.body;
 
@@ -140,15 +150,45 @@ router.put("/update/:clerkUserId", async (req, res) => {
     if (province) existingUser.province = province;
     if (city) existingUser.city = city;
     if (state) existingUser.state = state;
-    if (asaasCustomerId) existingUser.asaasCustomerId = asaasCustomerId;
     if (cart) existingUser.cart = cart;
 
     // Salva as alterações no banco de dados
     const savedUser = await existingUser.save();
 
+    // Encontra o asaasCustomerId associado ao clerkUserId
+    const asaasCustomerId = existingUser.asaasCustomerId;
+    const token = process.env.ACCESS_TOKEN;
+
+    // Atualiza o cliente no Asaas
+    const asaasOptions = {
+      method: 'PUT',
+      url: `https://sandbox.asaas.com/api/v3/customers/${asaasCustomerId}`,
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        access_token: token
+      },
+      data: {
+        name,
+        email,
+        phone: mobilePhone,
+        cpfCnpj,
+        postalCode,
+        address,
+        addressNumber,
+        complement,
+        province,
+        externalReference: clerkUserId,
+        notificationDisabled: false,
+        additionalEmails: email,
+      }
+    };
+
+    await axios.request(asaasOptions);
+
     res
       .status(200)
-      .json({ user: savedUser, message: "Usuário atualizado com sucesso." });
+      .json({ user: savedUser, message: "Usuário e cliente no Asaas atualizados com sucesso." });
   } catch (error) {
     console.error("Erro ao atualizar usuário:", error);
     res
@@ -156,6 +196,13 @@ router.put("/update/:clerkUserId", async (req, res) => {
       .json({ message: "Erro interno do servidor ao atualizar usuário." });
   }
 });
+
+
+
+
+
+
+
 
 router.get("/customersByAsaas", async (req, res) => {
   try {
