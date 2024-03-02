@@ -10,6 +10,7 @@ const Frete = require("../models/Frete");
 const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
+
 // Rota para criar um novo usuário
 
 router.post("/signup", async (req, res) => {
@@ -392,6 +393,13 @@ router.delete("/favorites/:clerkUserId/:productId", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
 // Rota para adicionar um produto ao carrinho de um cliente
 router.post("/add-to-cart/:clerkUserId", async (req, res) => {
   try {
@@ -474,6 +482,18 @@ router.get("/cart/:clerkUserId", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
 // Rota para atualizar a quantidade de um produto no carrinho de um cliente
 router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
   try {
@@ -529,6 +549,7 @@ router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
     });
   }
 });
+
 
 router.get("/cart/:clerkUserId/total-price", async (req, res) => {
   try {
@@ -731,41 +752,7 @@ router.post("/frete/:clerkUserId", async (req, res) => {
   }
 });
 
-router.get("/frete/:clerkUserId", async (req, res) => {
-  try {
-    const clerkUserId = req.params.clerkUserId;
 
-    // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
-
-    if (!customer) {
-      return res.status(404).json({ message: "Cliente não encontrado." });
-    }
-
-    // Encontra os fretes associados ao cliente
-    const fretes = await Frete.find({ clerkUserId: clerkUserId });
-
-    if (!fretes) {
-      return res.status(404).json({ message: "Fretes não encontrados." });
-    }
-
-    // Remove fretes duplicados
-    const fretesUnicos = fretes.reduce((unique, current) => {
-      const exists = unique.some(
-        (item) => item.nomeTransportadora === current.nomeTransportadora
-      );
-      if (!exists) {
-        unique.push(current);
-      }
-      return unique;
-    }, []);
-
-    res.json(fretesUnicos);
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
 
 router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
   try {
@@ -806,6 +793,42 @@ router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
       message:
         "Erro interno do servidor ao atualizar taxa de envio do carrinho.",
     });
+  }
+});
+
+router.get("/frete/:clerkUserId", async (req, res) => {
+  try {
+    const clerkUserId = req.params.clerkUserId;
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    // Encontra os fretes associados ao cliente
+    const fretes = await Frete.find({ clerkUserId: clerkUserId });
+
+    if (!fretes) {
+      return res.status(404).json({ message: "Fretes não encontrados." });
+    }
+
+    // Remove fretes duplicados
+    const fretesUnicos = fretes.reduce((unique, current) => {
+      const exists = unique.some(
+        (item) => item.nomeTransportadora === current.nomeTransportadora
+      );
+      if (!exists) {
+        unique.push(current);
+      }
+      return unique;
+    }, []);
+
+    res.json(fretesUnicos);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 

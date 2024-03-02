@@ -3,7 +3,8 @@ const app = express();
 const bodyParser = require('body-parser');
 const cron = require('node-cron');
 const axios = require('axios');
-
+const { sessions, ClerkExpressWithAuth } = require('@clerk/clerk-sdk-node');
+const Cookies = require('cookies');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -61,7 +62,8 @@ const salesOrders = require('./routes/stock/salesOrders'); //
 
 
 app.use('/api', products)
-app.use('/api', authCustomer)
+app.use('/api',  authCustomer)
+
 app.use('/api', order)
 app.use('/api', category)
 app.use('/api', subcategory)
@@ -94,19 +96,6 @@ app.use('/api', budgetRoutes); // Nova rota para CategoryStock
 
 app.use('/api', salesOrders); // Nova rota para CategoryStock
 app.use('/api', purchaseOrder); 
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
