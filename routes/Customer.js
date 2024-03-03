@@ -1197,7 +1197,7 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
 
 
 // pagar boleto com checkout transparente 
-router.post('/tokenizeCreditCard', async (req, res) => {
+router.post('/tokenizeCreditCard/:clerkUserId', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
@@ -1243,7 +1243,7 @@ mobilePhone: '47998781877'
 });
 
 
-router.post('/testeB', async (req, res) => {
+router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
@@ -1288,6 +1288,62 @@ router.post('/testeB', async (req, res) => {
     // Aqui está o valor do token criado
     const creditCardToken = tokenJson.creditCardToken;
     
+
+
+
+
+
+
+
+
+    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate(
+      "products.productId"
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: "Carrinho não encontrado." });
+    }
+
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
+    // Encontra o asaasCustomerId do cliente
+    const asaasCustomerId = customer.asaasCustomerId;
+    const totalPrice = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    );
+    const totalAmount = totalPrice + cart.shippingFee;
+
+    // Cria uma string vazia para armazenar os IDs dos produtos
+    let externalReferences = "";
+
+    // Itera sobre os produtos no carrinho
+    for (const product of cart.products) {
+      // Adiciona o ID do produto à string externalReferences
+      externalReferences += product.productId._id + ",";
+    }
+
+    // Remove a vírgula extra no final da string externalReferences
+    externalReferences = externalReferences.slice(0, -1);
+
+    // Apaga os registros de frete anteriores
+    
     // Cria a cobrança com o token do cartão de crédito
     const paymentUrl = 'https://sandbox.asaas.com/api/v3/payments';
     const paymentOptions = {
@@ -1298,16 +1354,16 @@ router.post('/testeB', async (req, res) => {
         access_token: token,
       },
       body: JSON.stringify({
-        billingType: 'CREDIT_CARD',
+        billingType: "CREDIT_CARD",
         discount: { value: 0, dueDateLimitDays: 0 },
         interest: { value: 0 },
         fine: { value: 0 },
-        customer: 'cus_000005899977',
-        dueDate: new Date(),
-        value: 100,
-        description: 'Pedido 056984',
+        customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
+        dueDate: new Date(), // Define a data atual como a data de vencimento
+        value: totalAmount,
+        description: "Pedido 056984",
         daysAfterDueDateToCancellationRegistration: 1,
-        externalReference: '056984',
+        externalReference: externalReferences,
         postalService: false,
         creditCardToken: creditCardToken, // Adiciona o token do cartão de crédito à cobrança
       }),
