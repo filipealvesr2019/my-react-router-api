@@ -1243,5 +1243,83 @@ mobilePhone: '47998781877'
 });
 
 
+router.post('/testeB', async (req, res) => {
+  try {
+    const token = process.env.ACCESS_TOKEN;
+    const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        access_token: token,
+      },
+      body: JSON.stringify({
+        creditCard: {
+          holderName: 'john doe',
+          number: '5162306219378829',
+          expiryMonth: '05',
+          expiryYear: '2028',
+          ccv: '318'
+        },
+        creditCardHolderInfo: {
+          name: 'John Doe',
+          email: 'john.doe@asaas.com.br',
+          cpfCnpj: '24971563792',
+          postalCode: '89223-005',
+          addressNumber: '277',
+          addressComplement: null,
+          phone: '4738010919',
+          mobilePhone: '47998781877'
+        },
+        customer: 'cus_000005899977',
+        remoteIp: '116.213.42.532'
+      }),
+    };
+
+    // Cria o token de cartão de crédito
+    const tokenResponse = await fetch(url, options);
+    const tokenJson = await tokenResponse.json();
+
+    // Verifica se o token foi criado com sucesso
+    if (tokenJson.errors) {
+      return res.status(400).json({ message: tokenJson.errors[0].description });
+    }
+
+    // Cria a cobrança com o token do cartão de crédito
+    const paymentUrl = 'https://sandbox.asaas.com/api/v3/payments';
+    const paymentOptions = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        access_token: token,
+      },
+      body: JSON.stringify({
+        billingType: 'CREDIT_CARD',
+        discount: { value: 0, dueDateLimitDays: 0 },
+        interest: { value: 0 },
+        fine: { value: 0 },
+        customer: 'cus_000005899977',
+        dueDate: new Date(),
+        value: 100,
+        description: 'Pedido 056984',
+        daysAfterDueDateToCancellationRegistration: 1,
+        externalReference: '056984',
+        postalService: false,
+        creditCardToken: "6636d905-777a-48da-b8e3-ca59bff51786", // Adiciona o token do cartão de crédito à cobrança
+      }),
+    };
+
+    const paymentResponse = await fetch(paymentUrl, paymentOptions);
+    const paymentJson = await paymentResponse.json();
+
+    res.json(paymentJson);
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router;
