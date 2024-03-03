@@ -1247,50 +1247,6 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
-    const options = {
-      method: 'POST',
-      headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        access_token: token,
-      },
-      body: JSON.stringify({
-        creditCard: {
-          holderName: 'john doe',
-          number: '5162306219378829',
-          expiryMonth: '05',
-          expiryYear: '2028',
-          ccv: '318'
-        },
-        creditCardHolderInfo: {
-          name: 'John Doe',
-          email: 'john.doe@asaas.com.br',
-          cpfCnpj: '24971563792',
-          postalCode: '89223-005',
-          addressNumber: '277',
-          addressComplement: null,
-          phone: '4738010919',
-          mobilePhone: '47998781877'
-        },
-        customer: 'cus_000005899977',
-        remoteIp: '116.213.42.532'
-      }),
-    };
-
-    const tokenResponse = await fetch(url, options);
-    const tokenJson = await tokenResponse.json();
-    
-    // Verifica se o token foi criado com sucesso
-    if (tokenJson.errors) {
-      return res.status(400).json({ message: tokenJson.errors[0].description });
-    }
-    
-    // Aqui está o valor do token criado
-    const creditCardToken = tokenJson.creditCardToken;
-    
-
-
-
 
 
 
@@ -1341,6 +1297,53 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
 
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
+
+    
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        access_token: token,
+      },
+      body: JSON.stringify({
+        creditCard: {
+          holderName: 'john doe',
+          number: '5162306219378829',
+          expiryMonth: '05',
+          expiryYear: '2028',
+          ccv: '318'
+        },
+        creditCardHolderInfo: {
+          name: 'John Doe',
+          email: 'john.doe@asaas.com.br',
+          cpfCnpj: '24971563792',
+          postalCode: '89223-005',
+          addressNumber: '277',
+          addressComplement: null,
+          phone: '4738010919',
+          mobilePhone: '47998781877'
+        },
+        customer: asaasCustomerId,
+        remoteIp: '116.213.42.532'
+      }),
+    };
+
+    const tokenResponse = await fetch(url, options);
+    const tokenJson = await tokenResponse.json();
+    
+    // Verifica se o token foi criado com sucesso
+    if (tokenJson.errors) {
+      return res.status(400).json({ message: tokenJson.errors[0].description });
+    }
+    
+    // Aqui está o valor do token criado
+    const creditCardToken = tokenJson.creditCardToken;
+    
+
+
+
+
 
     // Apaga os registros de frete anteriores
     
