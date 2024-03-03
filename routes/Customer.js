@@ -1277,15 +1277,17 @@ router.post('/testeB', async (req, res) => {
       }),
     };
 
-    // Cria o token de cartão de crédito
     const tokenResponse = await fetch(url, options);
     const tokenJson = await tokenResponse.json();
-
+    
     // Verifica se o token foi criado com sucesso
     if (tokenJson.errors) {
       return res.status(400).json({ message: tokenJson.errors[0].description });
     }
-
+    
+    // Aqui está o valor do token criado
+    const creditCardToken = tokenJson.creditCardToken;
+    
     // Cria a cobrança com o token do cartão de crédito
     const paymentUrl = 'https://sandbox.asaas.com/api/v3/payments';
     const paymentOptions = {
@@ -1307,14 +1309,16 @@ router.post('/testeB', async (req, res) => {
         daysAfterDueDateToCancellationRegistration: 1,
         externalReference: '056984',
         postalService: false,
-        creditCardToken: "6636d905-777a-48da-b8e3-ca59bff51786", // Adiciona o token do cartão de crédito à cobrança
+        creditCardToken: creditCardToken, // Adiciona o token do cartão de crédito à cobrança
       }),
     };
-
+    
     const paymentResponse = await fetch(paymentUrl, paymentOptions);
     const paymentJson = await paymentResponse.json();
-
+    
     res.json(paymentJson);
+    
+    
   } catch (error) {
     console.error('Error fetching data:', error);
     res.status(500).json({ error: 'Internal Server Error' });
