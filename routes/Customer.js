@@ -1197,170 +1197,51 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
 
 
 // pagar boleto com checkout transparente 
-router.post("/creditCardToken/:clerkUserId", async (req, res) => {
+router.post('/tokenizeCreditCard', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
-
-    // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
-
-    if (!customer) {
-      return res.status(404).json({ message: "Cliente não encontrado." });
-    }
-
-    // Encontra o carrinho do cliente
-    const cart = await Cart.findOne({ customer: customer._id }).populate(
-      "products.productId"
-    );
-
-    if (!cart) {
-      return res.status(404).json({ message: "Carrinho não encontrado." });
-    }
-
-    // Remove todos os produtos do carrinho
-    const result = await Cart.deleteMany({ customer: customer._id });
-
-    if (result.deletedCount === 0) {
-      return res
-        .status(404)
-        .json({ message: "Nenhum produto encontrado no carrinho." });
-    }
-    // Encontra o asaasCustomerId do cliente
-    const asaasCustomerId = customer.asaasCustomerId;
-    const totalPrice = cart.products.reduce(
-      (total, product) => total + product.productId.price * product.quantity,
-      0
-    );
-    const totalAmount = totalPrice + cart.shippingFee;
-
-    // Cria uma string vazia para armazenar os IDs dos produtos
-    let externalReferences = "";
-
-    // Itera sobre os produtos no carrinho
-    for (const product of cart.products) {
-      // Adiciona o ID do produto à string externalReferences
-      externalReferences += product.productId._id + ",";
-    }
-
-    // Remove a vírgula extra no final da string externalReferences
-    externalReferences = externalReferences.slice(0, -1);
-
-    // Apaga os registros de frete anteriores
-    const data = {
-   
-      creditCard: {
-        holderName: 'john doe',
-        number: '5162306219378829',
-        expiryMonth: '05',
-        expiryYear: '2028',
-        ccv: '318'
+    const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
+    const options = {
+      method: 'POST',
+      headers: {
+        accept: 'application/json',
+        'content-type': 'application/json',
+        access_token: token,
+      },
+      body: JSON.stringify({
+        creditCard: {
+          holderName: 'john doe',
+          number: '5162306219378829',
+          expiryMonth: '05',
+          expiryYear: '2028',
+          ccv: '318'
         },
         creditCardHolderInfo: {
-        name: 'John Doe',
-        email: 'john.doe@asaas.com.br',
-        cpfCnpj: '24971563792',
-        postalCode: '89223-005',
-        addressNumber: '277',
-        addressComplement: null,
-        phone: '4738010919',
-        mobilePhone: '47998781877'
+          name: 'John Doe',
+email: 'john.doe@asaas.com.br',
+cpfCnpj: '24971563792',
+postalCode: '89223-005',
+addressNumber: '277',
+addressComplement: null,
+phone: '4738010919',
+mobilePhone: '47998781877'
         },
         customer: 'cus_000005899977',
         remoteIp: '116.213.42.532'
-      
+      }),
     };
 
-    const response = await axios.post(
-      "https://sandbox.asaas.com/api/v3/payments",
-      data,
-      {
-        headers: {
-          accept: " 'application/json'",
-          "content-type": "application/json",
-          access_token: token,
-        },
-      }
-    );
 
-    // Verifica se a resposta é um array
-    if (Array.isArray(response.data)) {
-      // Se for um array, faz um loop sobre os itens e salva cada um
-      for (const item of response.data) {
-        const creditCard = new CreditCard({
-          clerkUserId: clerkUserId, // Agora é uma string
-          customer: item.customer,
-          billingType: item.billingType,
-          value: item.value,
-          externalReference: item.externalReference,
-          invoiceUrl: item.invoiceUrl,
-          bankSlipUrl: item.bankSlipUrl,
-          dueDate: item.dueDate,
-        });
+    const response = await fetch(url, options);
+    const json = await response.json();
 
-        await creditCard.save();
-      }
-    } else {
-      // Se não for um array, salva apenas um item
-      const creditCard = new CreditCard({
-        clerkUserId: clerkUserId, // Agora é uma string
-        customer: response.data.customer,
-        billingType: response.data.billingType,
-        value: response.data.value,
-        externalReference: response.data.externalReference,
-        invoiceUrl: response.data.invoiceUrl,
-        bankSlipUrl: response.data.bankSlipUrl,
-        dueDate: response.data.dueDate,
-      });
-
-      await creditCard.save();
-    }
-
-    res.json(response.data);
+    res.json(json);
   } catch (error) {
-    console.error("Error fetching data:", error);
-    res.status(500).json({ error: "Internal Server Error" });
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 
 
-
-const fetch = require('node-fetch');
-
-const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
-const options = {
-  method: 'POST',
-  headers: {
-    accept: 'application/json',
-    'content-type': 'application/json',
-    access_token: '$aact_YTU5YTE0M2M2N2I4MTliNzk0YTI5N2U5MzdjNWZmNDQ6OjAwMDAwMDAwMDAwMDAwNzQ5MDA6OiRhYWNoXzBmYzU3ZTFhLTNlNTktNGM5Yi1hNmU4LWJhMzhiMDc0ZmY2YQ=='
-  },
-  body: JSON.stringify({
-    creditCard: {
-      holderName: 'john doe',
-      number: '5162306219378829',
-      expiryMonth: '05',
-      expiryYear: '2028',
-      ccv: '318'
-    },
-    creditCardHolderInfo: {
-      name: 'John Doe',
-      email: 'john.doe@asaas.com.br',
-      cpfCnpj: '24971563792',
-      postalCode: '89223-005',
-      addressNumber: '277',
-      addressComplement: null,
-      phone: '4738010919',
-      mobilePhone: '47998781877'
-    },
-    customer: 'cus_000005899977',
-    remoteIp: '116.213.42.532'
-  })
-};
-
-fetch(url, options)
-  .then(res => res.json())
-  .then(json => console.log(json))
-  .catch(err => console.error('error:' + err));
 
 module.exports = router;
