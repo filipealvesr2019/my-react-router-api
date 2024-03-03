@@ -1298,6 +1298,23 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
 
+   
+    const {
+      holderName,
+      number,
+      expiryMonth,
+      expiryYear,
+      ccv,
+      name,
+      email,
+      cpfCnpj,
+      postalCode,
+      addressNumber,
+      addressComplement,
+      phone,
+      mobilePhone
+    } = req.body;
+   
     
     const options = {
       method: 'POST',
@@ -1315,14 +1332,14 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
           ccv: '318'
         },
         creditCardHolderInfo: {
-          name: 'John Doe',
-          email: 'john.doe@asaas.com.br',
-          cpfCnpj: '24971563792',
-          postalCode: '89223-005',
-          addressNumber: '277',
-          addressComplement: null,
-          phone: '4738010919',
-          mobilePhone: '47998781877'
+          name,
+          email,
+          cpfCnpj,
+          postalCode,
+          addressNumber,
+          addressComplement,
+          phone,
+          mobilePhone
         },
         customer: asaasCustomerId,
         remoteIp: '116.213.42.532'
