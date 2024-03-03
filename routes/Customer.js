@@ -832,6 +832,8 @@ router.get("/frete/:clerkUserId", async (req, res) => {
   }
 });
 
+
+  // pagar com pix sem checkout transparente 
 router.post("/pix/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -949,7 +951,7 @@ router.post("/pix/:clerkUserId", async (req, res) => {
   }
 });
 
-//
+    // pagar boleto sem checkout transparente 
 router.post("/boleto/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -1066,7 +1068,7 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
   }
 });
 
-//
+// pagar boleto com checkout transparente 
 router.post("/creditCard/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
