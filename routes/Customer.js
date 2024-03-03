@@ -1197,7 +1197,7 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
 
 
 // pagar boleto com checkout transparente 
-router.post('/tokenizeCreditCard/:clerkUserId', async (req, res) => {
+router.post('/tokenizeCreditCard', async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
