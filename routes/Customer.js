@@ -10,6 +10,7 @@ const Frete = require("../models/Frete");
 const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
+const creditCardData = require("../models/creditCardData");
 
 // Rota para criar um novo usuário
 
@@ -1316,6 +1317,14 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
     } = req.body;
    
     
+    // Crie um novo objeto CreditCardData com os dados do cartão de crédito
+    const newCreditCardData = new creditCardData({
+      holderName,
+      number,
+      expiryMonth,
+      expiryYear,
+      ccv,
+    });
     const options = {
       method: 'POST',
       headers: {
@@ -1325,11 +1334,11 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
       },
       body: JSON.stringify({
         creditCard: {
-          holderName: 'john doe',
-          number: '5162306219378829',
-          expiryMonth: '05',
-          expiryYear: '2028',
-          ccv: '318'
+          holderName,
+          number,
+          expiryMonth,
+          expiryYear,
+          ccv
         },
         creditCardHolderInfo: {
           name,
