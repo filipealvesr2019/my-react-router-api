@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken")
 const User = require("../models/AuthUser")
-const user =  require("../models/Customer")
 // verifica se o usuario esta autenticado
 exports.isAuthenticatedUser = async (req, res, next) =>{
 
