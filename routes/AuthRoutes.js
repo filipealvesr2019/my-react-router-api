@@ -16,7 +16,7 @@ const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
 
 const { addUserDataToRequest, checkPermissions } = require("../middleware/middleware");
 
-router.get("/users", getAllUsers); // Rota para buscar todos os usuários
+router.get("/users",isAuthenticated, getAllUsers); // Rota para buscar todos os usuários
 router.post("/login", loginUser); // Use directly from AuthController
 
 router.post("/user", addUserDataToRequest, checkPermissions(["administrador"]), registerUser); // Use directly from AuthController
