@@ -2,7 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Product = require("../models/product")
 const productController = require('../controllers/productController'); // Corrigir o nome do controlador
-const {addUserDataToRequest, checkPermissions} = require("../middleware/middleware")
 
 const {
   getProducts,
@@ -13,7 +12,6 @@ const {
   getProductReviews,
   deleteReview
 } = require("../controllers/productController");
-const { isAuthenticatedUser } = require("../middleware/auth");
 const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
 
 
@@ -23,7 +21,7 @@ router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
 
 
-router.post("/admin/product/new", addUserDataToRequest, checkPermissions(["administrador", "Gerente"]),  productController.newProduct);
+router.post("/admin/product/new",   productController.newProduct);
 
 
 
@@ -32,11 +30,11 @@ router.post("/admin/product/new", addUserDataToRequest, checkPermissions(["admin
 
 
 
-router.put('/update/product/:productId', checkPermissions(["administrador", "Gerente"]),addUserDataToRequest, productController.updateProduct);
-router.route("/admin/product/:id").delete( checkPermissions(["administrador", "Gerente"]),addUserDataToRequest, deleteProduct);
-router.route("/review").put(isAuthenticatedUser, createProductReview);
-router.get("/reviews", isAuthenticatedUser, getProductReviews);
-router.route("/review").delete(isAuthenticatedUser, deleteReview);
+router.put('/update/product/:productId', productController.updateProduct);
+router.route("/admin/product/:id").delete(  deleteProduct);
+router.route("/review").put( createProductReview);
+router.get("/reviews", getProductReviews);
+router.route("/review").delete(deleteReview);
 router.get('/products/search', productController.getProductsByKeyword);
 router.post('/product/:productId/add-color', productController.addColorToProduct);
 

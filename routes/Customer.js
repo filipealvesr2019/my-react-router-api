@@ -11,6 +11,7 @@ const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
+const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
 
 // Rota para criar um novo usuário
 
@@ -452,7 +453,7 @@ router.post("/add-to-cart/:clerkUserId", async (req, res) => {
   }
 });
 
-router.get("/cart/:clerkUserId", async (req, res) => {
+router.get("/cart/:clerkUserId", isAuthenticated, async (req, res) => {
   try {
     const clerkUserId = req.params.clerkUserId;
 

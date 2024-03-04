@@ -90,7 +90,13 @@ const loginUser = async (req, res, next) => {
   } else if (user.role === "funcionario") {
     // Lógica para funcionário
     // Adicione aqui as ações específicas para o funcionário
-  }
+  } else if (user.role === "customer") {
+  // Lógica para funcionário
+  // Adicione aqui as ações específicas para o funcionário
+}
+
+
+  
 
   // Envie o token para o usuário
   console.log("Enviando token para o usuário");

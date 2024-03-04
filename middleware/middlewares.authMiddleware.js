@@ -1,6 +1,31 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/AuthUser'); // Importe o modelo do usuário aqui
 
+
+
+
+// Middleware para verificar se o usuário autenticado é um administrador
+const isAdmin = async (req, res, next) => {
+    try {
+      // Obtenha o ID do usuário autenticado a partir do token JWT
+      const userId = req.user.id;
+  
+      // Encontre o usuário no banco de dados
+      const user = await User.findById(userId);
+  
+      // Verifique se o usuário tem a credencial de administrador
+      if (user.role !== 'administrador') {
+        return res.status(403).json({ message: 'Acesso negado: apenas administradores podem acessar esta rota.' });
+      }
+  
+      // Se o usuário for um administrador, permita o acesso à rota
+      next();
+    } catch (error) {
+      console.error('Erro ao verificar credenciais de administrador:', error);
+      res.status(500).json({ message: 'Erro ao verificar credenciais de administrador.' });
+    }
+  };
+  
 // Middleware para verificar se o usuário está autenticado
 const isAuthenticated = async (req, res, next) => {
     try {
@@ -38,4 +63,4 @@ const isAuthenticated = async (req, res, next) => {
       }
 };
 
-module.exports = { isAuthenticated };
+module.exports = { isAuthenticated, isAdmin };
