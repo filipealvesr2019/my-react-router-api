@@ -14,10 +14,11 @@ const {
   deleteReview
 } = require("../controllers/productController");
 const { isAuthenticatedUser } = require("../middleware/auth");
+const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
 
 
 
-router.route("/products").get(getProducts);
+router.route("/products").get( isAuthenticated, getProducts);
 router.route("/product/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
 
