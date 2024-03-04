@@ -8,14 +8,12 @@ const addUserDataToRequest = (req, res, next) => {
     // Chame o próximo middleware na cadeia
     next();
   };
+  
   const checkPermissions = (allowedRoles) => {
     return (req, res, next) => {
       const userRole = req.user ? req.user.role : null;
   
-      if (!req.user) {
-        console.log('Usuário não logado. Permissão negada.');
-        return res.status(401).json({ message: "Usuário não logado." });
-      }
+   
   
       if (!userRole) {
         console.log('Token inválido ou ausente. Permissão negada.');
@@ -31,7 +29,6 @@ const addUserDataToRequest = (req, res, next) => {
       }
     };
   };
-  
   
   module.exports = { addUserDataToRequest, checkPermissions };
   
