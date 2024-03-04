@@ -32,5 +32,6 @@ const addUserDataToRequest = (req, res, next) => {
     };
   };
   
+  
   module.exports = { addUserDataToRequest, checkPermissions };
   
