@@ -12,7 +12,7 @@ const {
   getProductReviews,
   deleteReview
 } = require("../controllers/productController");
-const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
+const { isAuthenticated, isAdmin } = require("../middleware/middlewares.authMiddleware");
 
 
 
@@ -31,7 +31,7 @@ router.post("/admin/product/new",   productController.newProduct);
 
 
 router.put('/update/product/:productId', productController.updateProduct);
-router.route("/admin/product/:id").delete(  deleteProduct);
+router.route("/admin/product/:id").delete(isAuthenticated, isAdmin,  deleteProduct);
 router.route("/review").put( createProductReview);
 router.get("/reviews", getProductReviews);
 router.route("/review").delete(deleteReview);
