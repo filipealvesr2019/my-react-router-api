@@ -12,6 +12,7 @@ const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
 const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
+const PixQRcode = require("../models/PixQRcode");
 
 // Rota para criar um novo usuário
 
@@ -104,17 +105,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
 router.put("/update/:clerkUserId", async (req, res) => {
   try {
     const { clerkUserId } = req.params;
@@ -164,12 +154,12 @@ router.put("/update/:clerkUserId", async (req, res) => {
 
     // Atualiza o cliente no Asaas
     const asaasOptions = {
-      method: 'PUT',
+      method: "PUT",
       url: `https://sandbox.asaas.com/api/v3/customers/${asaasCustomerId}`,
       headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
-        access_token: token
+        accept: "application/json",
+        "content-type": "application/json",
+        access_token: token,
       },
       data: {
         name,
@@ -184,14 +174,17 @@ router.put("/update/:clerkUserId", async (req, res) => {
         externalReference: clerkUserId,
         notificationDisabled: false,
         additionalEmails: email,
-      }
+      },
     };
 
     await axios.request(asaasOptions);
 
     res
       .status(200)
-      .json({ user: savedUser, message: "Usuário e cliente no Asaas atualizados com sucesso." });
+      .json({
+        user: savedUser,
+        message: "Usuário e cliente no Asaas atualizados com sucesso.",
+      });
   } catch (error) {
     console.error("Erro ao atualizar usuário:", error);
     res
@@ -199,13 +192,6 @@ router.put("/update/:clerkUserId", async (req, res) => {
       .json({ message: "Erro interno do servidor ao atualizar usuário." });
   }
 });
-
-
-
-
-
-
-
 
 router.get("/customersByAsaas", async (req, res) => {
   try {
@@ -275,10 +261,11 @@ router.get("/custumer/:clerkUserId", async (req, res) => {
     res.status(200).json(existingUser);
   } catch (error) {
     console.error("Erro ao buscar usuário:", error);
-    res.status(500).json({ message: "Erro interno do servidor ao buscar usuário." });
+    res
+      .status(500)
+      .json({ message: "Erro interno do servidor ao buscar usuário." });
   }
 });
-
 
 router.get("/favorites/:clerkUserId", async (req, res) => {
   try {
@@ -395,13 +382,6 @@ router.delete("/favorites/:clerkUserId/:productId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
 // Rota para adicionar um produto ao carrinho de um cliente
 router.post("/add-to-cart/:clerkUserId", async (req, res) => {
   try {
@@ -484,18 +464,6 @@ router.get("/cart/:clerkUserId", isAuthenticated, async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
 // Rota para atualizar a quantidade de um produto no carrinho de um cliente
 router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
   try {
@@ -551,7 +519,6 @@ router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
     });
   }
 });
-
 
 router.get("/cart/:clerkUserId/total-price", async (req, res) => {
   try {
@@ -754,8 +721,6 @@ router.post("/frete/:clerkUserId", async (req, res) => {
   }
 });
 
-
-
 router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
   try {
     const clerkUserId = req.params.clerkUserId;
@@ -834,8 +799,7 @@ router.get("/frete/:clerkUserId", async (req, res) => {
   }
 });
 
-
-  // pagar com pix sem checkout transparente 
+// pagar com pix sem checkout transparente
 router.post("/pix/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -953,7 +917,7 @@ router.post("/pix/:clerkUserId", async (req, res) => {
   }
 });
 
-    // pagar boleto sem checkout transparente 
+// pagar boleto sem checkout transparente
 router.post("/boleto/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -1070,7 +1034,7 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
   }
 });
 
-// pagar boleto com checkout transparente 
+// pagar creditCard com checkout transparente
 router.post("/creditCard/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -1187,72 +1151,55 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-// pagar boleto com checkout transparente 
-router.post('/tokenizeCreditCard', async (req, res) => {
+// pagar boleto com checkout transparente
+router.post("/tokenizeCreditCard", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
+    const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
     const options = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
+        accept: "application/json",
+        "content-type": "application/json",
         access_token: token,
       },
       body: JSON.stringify({
         creditCard: {
-          holderName: 'john doe',
-          number: '5162306219378829',
-          expiryMonth: '05',
-          expiryYear: '2028',
-          ccv: '318'
+          holderName: "john doe",
+          number: "5162306219378829",
+          expiryMonth: "05",
+          expiryYear: "2028",
+          ccv: "318",
         },
         creditCardHolderInfo: {
-          name: 'John Doe',
-email: 'john.doe@asaas.com.br',
-cpfCnpj: '24971563792',
-postalCode: '89223-005',
-addressNumber: '277',
-addressComplement: null,
-phone: '4738010919',
-mobilePhone: '47998781877'
+          name: "John Doe",
+          email: "john.doe@asaas.com.br",
+          cpfCnpj: "24971563792",
+          postalCode: "89223-005",
+          addressNumber: "277",
+          addressComplement: null,
+          phone: "4738010919",
+          mobilePhone: "47998781877",
         },
-        customer: 'cus_000005899977',
-        remoteIp: '116.213.42.532'
+        customer: "cus_000005899977",
+        remoteIp: "116.213.42.532",
       }),
     };
-
 
     const response = await fetch(url, options);
     const json = await response.json();
 
     res.json(json);
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-
-router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
+router.post("/creditCardAndToken/:clerkUserId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const url = 'https://sandbox.asaas.com/api/v3/creditCard/tokenize';
-
-
-
-
+    const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
 
     const clerkUserId = req.params.clerkUserId; // Agora é uma string
 
@@ -1300,7 +1247,6 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
 
-   
     const {
       holderName,
       number,
@@ -1314,10 +1260,9 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
       addressNumber,
       addressComplement,
       phone,
-      mobilePhone
+      mobilePhone,
     } = req.body;
-   
-    
+
     // Crie um novo objeto CreditCardData com os dados do cartão de crédito
     const newCreditCardData = new creditCardData({
       holderName,
@@ -1327,10 +1272,10 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
       ccv,
     });
     const options = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
+        accept: "application/json",
+        "content-type": "application/json",
         access_token: token,
       },
       body: JSON.stringify({
@@ -1339,7 +1284,7 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
           number,
           expiryMonth,
           expiryYear,
-          ccv
+          ccv,
         },
         creditCardHolderInfo: {
           name,
@@ -1349,38 +1294,33 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
           addressNumber,
           addressComplement,
           phone,
-          mobilePhone
+          mobilePhone,
         },
         customer: asaasCustomerId,
-        remoteIp: '116.213.42.532'
+        remoteIp: "116.213.42.532",
       }),
     };
 
     const tokenResponse = await fetch(url, options);
     const tokenJson = await tokenResponse.json();
-    
+
     // Verifica se o token foi criado com sucesso
     if (tokenJson.errors) {
       return res.status(400).json({ message: tokenJson.errors[0].description });
     }
-    
+
     // Aqui está o valor do token criado
     const creditCardToken = tokenJson.creditCardToken;
-    
-
-
-
-
 
     // Apaga os registros de frete anteriores
-    
+
     // Cria a cobrança com o token do cartão de crédito
-    const paymentUrl = 'https://sandbox.asaas.com/api/v3/payments';
+    const paymentUrl = "https://sandbox.asaas.com/api/v3/payments";
     const paymentOptions = {
-      method: 'POST',
+      method: "POST",
       headers: {
-        accept: 'application/json',
-        'content-type': 'application/json',
+        accept: "application/json",
+        "content-type": "application/json",
         access_token: token,
       },
       body: JSON.stringify({
@@ -1398,18 +1338,143 @@ router.post('/creditCardAndToken/:clerkUserId', async (req, res) => {
         creditCardToken: creditCardToken, // Adiciona o token do cartão de crédito à cobrança
       }),
     };
-    
+
     const paymentResponse = await fetch(paymentUrl, paymentOptions);
     const paymentJson = await paymentResponse.json();
-    
+
     res.json(paymentJson);
-    
-    
   } catch (error) {
-    console.error('Error fetching data:', error);
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+// pagar com pix sem checkout transparente
+router.post("/pixQRcodeStatico/:clerkUserId", async (req, res) => {
+  try {
+    const token = process.env.ACCESS_TOKEN;
+    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate(
+      "products.productId"
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: "Carrinho não encontrado." });
+    }
+
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
+
+    // Encontra o asaasCustomerId do cliente
+    const asaasCustomerId = customer.asaasCustomerId;
+    const totalPrice = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    );
+    const totalAmount = totalPrice + cart.shippingFee;
+
+    // Cria uma string vazia para armazenar os IDs dos produtos
+    let externalReferences = "";
+
+    // Itera sobre os produtos no carrinho
+    for (const product of cart.products) {
+      // Adiciona o ID do produto à string externalReferences
+      externalReferences += product.productId._id + ", ";
+    }
+
+    // Remove a vírgula extra no final da string externalReferences
+    externalReferences = externalReferences.slice(0, -1);
+
+    // Apaga os registros de frete anteriores
+    const data = {
+      customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
+      value: totalAmount,
+      description: "Pedido 056984",
+      format: 'ALL',
+      expirationDate: new Date(), // Define a data atual como a data de vencimento
+      allowsMultiplePayments: true  
+    };
+
+    const response = await axios.post(
+      "https://sandbox.asaas.com/api/v3/pix/qrCodes/static",
+      data,
+      {
+        headers: {
+          accept: " 'application/json'",
+          "content-type": "application/json",
+          access_token: token,
+        },
+      }
+    );
+
+  
+    if (Array.isArray(response.data)) {
+      for (const item of response.data) {
+        const pix = new PixQRcode({
+          customer: data.customer, // Ajuste para usar o cliente correto
+          value: data.value, // Ajuste para usar o valor correto
+          description: item.description,
+          format: item.format,
+          expirationDate: new Date(item.expirationDate), // Converte para o formato de data
+          allowsMultiplePayments: item.allowsMultiplePayments,
+          externalReference: item.externalReference,
+          payload: item.payload,
+          encodedImage: item.encodedImage,
+          id: item.id,
+        });
+  
+        await pix.save();
+      }
+    } else {
+      const pix = new PixQRcode({
+        customer: data.customer, // Ajuste para usar o cliente correto
+        value: data.value, // Ajuste para usar o valor correto
+        description: response.data.description,
+        format: response.data.format,
+        expirationDate: new Date(response.data.expirationDate), // Converte para o formato de data
+        allowsMultiplePayments: response.data.allowsMultiplePayments,
+        externalReference: response.data.externalReference,
+        payload: response.data.payload,
+        encodedImage: response.data.encodedImage,
+        id: response.data.id,
+      });
+  
+      await pix.save();
+    }
+  
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 module.exports = router;
