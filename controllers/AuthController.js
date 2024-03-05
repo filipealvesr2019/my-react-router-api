@@ -174,13 +174,14 @@ const getUserByUsername = async (req, res) => {
 
 const getAllUsers = async (req, res) => {
   try {
-    const users = await User.find();
+    const users = await User.find({ role: { $ne: "customer" } });
     res.status(200).json(users);
   } catch (error) {
     console.error(error);
     res.status(400).send("Erro do servidor ao buscar todos os usuários!");
   }
 };
+
 
 // deslogar um usuario api/v1/logout
 const logout = async (req, res, next) => {
