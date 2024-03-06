@@ -216,6 +216,60 @@ const Userlogout = async (req, res, next) => {
   }
 };
 
+
+
+
+
+
+
+const postmark = require("postmark");
+
+// Função para enviar email de recuperação de senha
+const sendPasswordResetEmail = async (req, res) => {
+  const { email } = req.body;
+
+  // Verificar se o email foi fornecido
+  if (!email) {
+    return res.status(400).json({ message: "O email é obrigatório." });
+  }
+
+  try {
+    // Verificar se o usuário existe no banco de dados
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: "Usuário não encontrado." });
+    }
+
+    // Gerar um token de redefinição de senha
+    const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1h", // Token expira em 1 hora
+    });
+
+    // Enviar o email de recuperação de senha usando o Postmark
+    const client = new postmark.ServerClient("db21bace-7a62-4d98-9e5a-a5cedea5e6f4");
+    const resetLink = `${req.protocol}://${req.get(
+      "host"
+    )}/api/v1/reset-password/${resetToken}`;
+    await client.sendEmail({
+      From: "ceo@mediewal.com.br",
+      To: email,
+      Subject: "Redefinição de senha",
+      TextBody: `Você solicitou uma redefinição de senha. Por favor, clique no seguinte link para redefinir sua senha: ${resetLink}`,
+    });
+
+    res.status(200).json({
+      message: "Email de recuperação de senha enviado com sucesso.",
+    });
+  } catch (error) {
+    console.error("Erro ao enviar email de recuperação de senha:", error);
+    res.status(500).json({
+      message: "Erro interno do servidor ao enviar email de recuperação de senha.",
+    });
+  }
+};
+
+
+
 module.exports = {
   loginUser,
   Userlogout,
@@ -226,5 +280,6 @@ module.exports = {
   getUserByUsername,
   getAllUsers,
   logout,
+  sendPasswordResetEmail
   
 };

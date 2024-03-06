@@ -43,4 +43,7 @@ router.post('/public-route', (req, res) => {
   res.json({ message: 'Esta rota é pública e pode ser acessada por qualquer usuário.' });
 });
 
+router.post("/forgot-password", AuthController.sendPasswordResetEmail);
+
+
 module.exports = router;

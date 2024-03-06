@@ -26,6 +26,7 @@
     "opn": "^6.0.0",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "postmark": "^4.0.2",
     "uuid": "^9.0.1",
     "validator": "^13.11.0",
     "vercel": "^32.3.0"
