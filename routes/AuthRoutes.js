@@ -45,7 +45,7 @@ router.post('/public-route', (req, res) => {
 
 router.post("/forgot-password", AuthController.sendPasswordResetEmail);
 // Rota para redefinir a senha
-router.post('/reset-password',  AuthController.resetPassword);
+router.post('/reset-password/:token',  AuthController.resetPassword);
 
 
 
