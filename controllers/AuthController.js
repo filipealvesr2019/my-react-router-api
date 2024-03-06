@@ -246,7 +246,7 @@ const sendPasswordResetEmail = async (req, res) => {
     });
 
     // Enviar o email de recuperação de senha usando o Postmark
-    const client = new postmark.ServerClient("db21bace-7a62-4d98-9e5a-a5cedea5e6f4");
+    const client = new postmark.ServerClient("");
     const resetLink = `${req.protocol}://${req.get(
       "host"
     )}/api/v1/reset-password/${resetToken}`;
