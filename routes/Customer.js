@@ -247,10 +247,10 @@ router.get("/user/:id", async (req, res) => {
 
 router.get("/custumer/:clerkUserId", async (req, res) => {
   try {
-    const { clerkUserId } = req.params;
+    const { custumerId } = req.params;
 
     // Encontra o usuário com base no clerkUserId
-    const existingUser = await Customer.findOne({ clerkUserId });
+    const existingUser = await Customer.findOne({ custumerId });
 
     // Verifica se o usuário existe
     if (!existingUser) {
