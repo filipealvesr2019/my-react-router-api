@@ -1,6 +1,5 @@
 const express = require("express");
 const router = express.Router();
-
 const {
   getUser,
   updateUser,
@@ -12,7 +11,7 @@ const {
 } = require("../controllers/AuthController");
 const { Userlogout } = require("../controllers/AuthController");
 const { isAuthenticated, isAdmin } = require("../middleware/middlewares.authMiddleware");
-
+const AuthController = require('../controllers/AuthController')
 router.get("/users",isAuthenticated, getAllUsers); // Rota para buscar todos os usuários
 router.post("/login", loginUser); // Use directly from AuthController
 

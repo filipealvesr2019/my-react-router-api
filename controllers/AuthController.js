@@ -101,14 +101,8 @@ const loginUser = async (req, res, next) => {
   // Envie o token para o usuário
   console.log("Enviando token para o usuário");
   sendToken(user, 200, res);
+  
 };
-
-
-
-
-
-
-
 
 
 const getUser = async (req, res) => {
@@ -232,4 +226,5 @@ module.exports = {
   getUserByUsername,
   getAllUsers,
   logout,
+  
 };

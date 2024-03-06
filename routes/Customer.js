@@ -19,7 +19,7 @@ const PixQRcode = require("../models/PixQRcode");
 router.post("/signup", async (req, res) => {
   try {
     const {
-      clerkUserId,
+      custumerId,
       name,
       cpfCnpj,
       mobilePhone,
@@ -43,7 +43,7 @@ router.post("/signup", async (req, res) => {
     }
 
     const newUser = new Customer({
-      clerkUserId,
+      custumerId,
       name,
       cpfCnpj,
       mobilePhone,
