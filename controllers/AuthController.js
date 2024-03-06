@@ -244,12 +244,19 @@ const sendPasswordResetEmail = async (req, res) => {
     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1h", // Token expira em 1 hora
     });
-
     // Enviar o email de recuperação de senha usando o Postmark
-    const client = new postmark.ServerClient("");
+    const postmarkApiKey = process.env.POSTMARK_API_KEY;
+
+if (!postmarkApiKey) {
+  console.error("Chave do Postmark não encontrada. Configure a variável de ambiente POSTMARK_API_KEY.");
+  return; // Ou faça outro tratamento de erro adequado
+}
+
+const client = new postmark.ServerClient(postmarkApiKey);
+
     const resetLink = `${req.protocol}://${req.get(
       "host"
-    )}/api/v1/reset-password/${resetToken}`;
+    )}/reset-password/${resetToken}`;
     await client.sendEmail({
       From: "ceo@mediewal.com.br",
       To: email,
