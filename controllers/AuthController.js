@@ -274,8 +274,40 @@ const client = new postmark.ServerClient(postmarkApiKey);
     });
   }
 };
+const bcrypt = require("bcrypt");
 
 
+// Função para redefinir a senha
+const resetPassword = async (req, res) => {
+  const { token, newPassword, confirmPassword } = req.body;
+
+  // Verificar se todas as informações necessárias foram fornecidas
+  if (!token || !newPassword || !confirmPassword) {
+    return res.status(400).json({ message: "Todos os campos são obrigatórios." });
+  }
+
+  try {
+    // Verificar se as senhas fornecidas coincidem
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "As senhas não coincidem." });
+    }
+
+    // Verificar se o token de redefinição de senha é válido e obter o ID do usuário
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decodedToken.userId;
+
+    // Hash da nova senha
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Atualizar a senha do usuário no banco de dados
+    await User.updateOne({ _id: userId }, { password: hashedPassword });
+
+    res.status(200).json({ message: "Senha redefinida com sucesso." });
+  } catch (error) {
+    console.error("Erro ao redefinir senha:", error);
+    res.status(500).json({ message: "Erro interno do servidor ao redefinir senha." });
+  }
+};
 
 module.exports = {
   loginUser,
@@ -287,6 +319,7 @@ module.exports = {
   getUserByUsername,
   getAllUsers,
   logout,
-  sendPasswordResetEmail
+  sendPasswordResetEmail,
+  resetPassword
   
 };
