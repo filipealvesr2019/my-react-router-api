@@ -99,6 +99,78 @@ app.use('/api', purchaseOrder);
 
 
 
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const session = require('express-session');
+const User = require('./models/AuthUser');
+const GoogleUser = require('./models/GoogleUser');
+
+
+
+
+// Configurando a estratégia de autenticação do Google
+// Configurando a estratégia de autenticação do Google
+passport.use(new GoogleStrategy({
+  clientID: process.env.GOOGLE_CLIENT_ID,
+  clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+  callbackURL: '/auth/google/callback',
+  scope: ['profile', 'email'] // Defina os escopos necessários aqui
+}, async (accessToken, refreshToken, profile, done) => {
+  try {
+    // Verifica se o usuário já existe no banco de dados
+    let user = await GoogleUser.findOne({ googleId: profile.id });
+    if (!user) {
+      // Cria um novo usuário com o valor "customer" para o campo role
+      user = await GoogleUser.create({
+        googleId: profile.id,
+        email: profile.emails[0].value,
+        role: "customer"
+      });
+    }
+    return done(null, user);
+  } catch (error) {
+    return done(error);
+  }
+}));
+
+// Restante do seu código...
+
+// Configurando a serialização e desserialização do usuário
+passport.serializeUser((user, done) => {
+  done(null, user.id);
+});
+
+passport.deserializeUser(async (id, done) => {
+  try {
+    const user = await GoogleUser.findById(id);
+    done(null, user);
+  } catch (error) {
+    done(error);
+  }
+});
+
+
+// Configurando o middleware de sessão
+app.use(session({
+  secret: 'secret',
+  resave: false,
+  saveUninitialized: true
+}));
+
+// Inicializando o Passport e middleware de sessão
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Rota de autenticação do Google
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Rota de callback do Google após a autenticação
+app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
+  // Autenticação bem-sucedida, redirecione ou retorne a resposta desejada
+  res.redirect('/');
+});
+
+
 
 // Exemplo de uso: app.get('/perfil', ensureAuthenticated, (req, res) => { ... });
 
