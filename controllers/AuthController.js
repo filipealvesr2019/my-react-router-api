@@ -254,15 +254,14 @@ if (!postmarkApiKey) {
 
 const client = new postmark.ServerClient(postmarkApiKey);
 
-    const resetLink = `${req.protocol}://${req.get(
-      "host"
-    )}/reset-password/${resetToken}`;
+const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+
+
     await client.sendEmail({
       From: "ceo@mediewal.com.br",
       To: email,
       Subject: "Redefinição de senha",
-      TextBody: `Você solicitou uma redefinição de senha. Por favor, clique no seguinte link para redefinir sua senha: ${resetLink}`,
-    });
+      TextBody: `Você solicitou uma redefinição de senha. Por favor, clique no seguinte link para redefinir sua senha: ${resetLink}`,    });
 
     res.status(200).json({
       message: "Email de recuperação de senha enviado com sucesso.",
