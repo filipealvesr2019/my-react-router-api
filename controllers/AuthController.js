@@ -3,6 +3,8 @@ const User = require("../models/AuthUser");
 const jwt = require("jsonwebtoken");
 const validator = require("validator");
 const sendToken = require("../utils/jwtToken");
+const postmark = require("postmark");
+const bcrypt = require("bcrypt");
 
 // cadastro de usuarios => /api/v1/register
 const registerUser = async (req, res, next) => {
@@ -222,7 +224,6 @@ const Userlogout = async (req, res, next) => {
 
 
 
-const postmark = require("postmark");
 
 // Função para enviar email de recuperação de senha
 const sendPasswordResetEmail = async (req, res) => {
@@ -277,7 +278,6 @@ const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
     });
   }
 };
-const bcrypt = require("bcrypt");
 
 
 // Função para redefinir a senha
