@@ -167,7 +167,7 @@ app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'em
 // Rota de callback do Google após a autenticação
 app.get('/auth/google/callback', passport.authenticate('google', { failureRedirect: '/' }), (req, res) => {
   // Autenticação bem-sucedida, redirecione ou retorne a resposta desejada
-  res.redirect('/');
+  res.redirect('http://localhost:5173/perfil');
 });
 
 
