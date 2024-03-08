@@ -91,7 +91,6 @@ router.post("/register/request", async (req, res) => {
   try {
     // Gerar token JWT com duração de 10 minutos
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "10m" });
-    console.log("Token gerado:", token); // Verificar o token gerado
 
     // Enviar e-mail com o link de registro contendo o token
     await sendEmail(email, token);
