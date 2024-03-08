@@ -68,7 +68,7 @@ const sendEmail = async (email, token) => {
   const client = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
 
   try {
-    const registrationLink = `http://localhost:3001/register/${token}`;
+    const registrationLink = `http://localhost:5173/register/${token}`;
 
     await client.sendEmail({
       From: "ceo@mediewal.com.br",
