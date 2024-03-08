@@ -109,7 +109,6 @@ router.post("/register/:token", async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
-    console.log("Token recebido:", token); // Adicione este log para verificar o token recebido
 
     // Verificar se o token é válido
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
