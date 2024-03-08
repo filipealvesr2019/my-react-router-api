@@ -13,7 +13,6 @@ const {
   getAllUsers,
   loginUser,
   registerUser,
-  registerCustumer,
   loginCustumer
 } = require("../controllers/AuthController");
 const { Userlogout } = require("../controllers/AuthController");
@@ -24,7 +23,6 @@ router.post("/login", loginUser); // Use directly from AuthController
 
 router.post("/user",  registerUser); // Use directly from AuthController
 
-router.post("/custumer",  registerCustumer); // Use directly from AuthController
 router.post("/loginCustumer", loginCustumer); // Use directly from AuthController
 
 router.post("/user",  registerUser); // Use directly from AuthController

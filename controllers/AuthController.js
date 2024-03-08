@@ -41,40 +41,7 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-// cadastro de usuarios => /api/v1/register
-const registerCustumer = async (req, res, next) => {
-  const { email, password, role } = req.body;
 
-  if (password.length < 10) {
-    return res.status(400).json({
-      success: false,
-      error: "A senha deve ter pelo menos 10 caracteres.",
-    });
-  }
-
-  if (!email || !validator.isEmail(email)) {
-    return res.status(400).json({
-      success: false,
-      error: "Digite um endereço de email válido.",
-    });
-  }
-
-  try {
-    const user = await User.create({
-      email,
-      password,
-      role,
-    });
-
-    sendToken(user, 200, res);
-  } catch (error) {
-    console.error("Erro, ao cadastrar usuario", error);
-    res.status(500).json({
-      success: false,
-      error: "Erro interno do servidor.",
-    });
-  }
-};
 
 // logar usuario com JWT token
 const loginCustumer = async (req, res, next) => {
@@ -395,6 +362,5 @@ module.exports = {
   logout,
   sendPasswordResetEmail,
   resetPassword,
-  registerCustumer,
   loginCustumer,
 };
