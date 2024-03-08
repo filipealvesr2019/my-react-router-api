@@ -91,6 +91,7 @@ router.post("/register/request", async (req, res) => {
   try {
     // Gerar token JWT com duração de 10 minutos
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "10m" });
+    console.log("Token gerado:", token); // Verificar o token gerado
 
     // Enviar e-mail com o link de registro contendo o token
     await sendEmail(email, token);
@@ -108,6 +109,8 @@ router.post("/register/:token", async (req, res) => {
   const { email, password, role } = req.body;
 
   try {
+    console.log("Token recebido:", token); // Adicione este log para verificar o token recebido
+
     // Verificar se o token é válido
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
