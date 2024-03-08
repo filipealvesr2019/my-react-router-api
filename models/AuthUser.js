@@ -25,6 +25,14 @@ const userSchema = new mongoose.Schema({
       validator: validateRole,
       message: "Digite uma credencial válida!",
     },
+  },
+  loginAttempts: {
+    type: Number,
+    default: 0
+  },
+  lockUntil: {
+    type: Date,
+    default: null
   }
 });
 
@@ -52,6 +60,14 @@ userSchema.methods.getJwtToken = function () {
       expiresIn:process.env.JWT_DURATION
   });
 }
+
+
+
+
+
+
+
+
 const User = mongoose.model("User", userSchema);
 
 module.exports = User;

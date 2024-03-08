@@ -43,6 +43,24 @@ const registerUser = async (req, res, next) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // logar usuario com JWT token
 const loginCustumer = async (req, res, next) => {
   const { email, password } = req.body;
@@ -90,6 +108,33 @@ const loginCustumer = async (req, res, next) => {
   console.log("Enviando token para o usuário");
   sendToken(user, 200, res);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // logar usuario com JWT token
 const loginUser = async (req, res, next) => {
