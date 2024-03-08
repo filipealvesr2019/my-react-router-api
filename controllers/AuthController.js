@@ -307,7 +307,7 @@ const sendPasswordResetEmail = async (req, res) => {
 
     // Gerar um token de redefinição de senha
     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1m", // Token expira em 1 hora
+      expiresIn: "10m", // Token expira em 1 hora
     });
     // Enviar o email de recuperação de senha usando o Postmark
     const postmarkApiKey = process.env.POSTMARK_API_KEY;
