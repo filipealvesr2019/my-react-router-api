@@ -307,7 +307,7 @@ const sendPasswordResetEmail = async (req, res) => {
 
     // Gerar um token de redefinição de senha
     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h", // Token expira em 1 hora
+      expiresIn: "1m", // Token expira em 1 hora
     });
     // Enviar o email de recuperação de senha usando o Postmark
     const postmarkApiKey = process.env.POSTMARK_API_KEY;
@@ -327,6 +327,8 @@ const sendPasswordResetEmail = async (req, res) => {
       From: "ceo@mediewal.com.br",
       To: email,
       Subject: "Redefinição de senha",
+      TextBody: `Clique no seguinte link para se registrar: ${resetLink}`,
+
       HtmlBody: `
     <p>Você solicitou uma redefinição de senha.</p>
     <p>Por favor, clique no botão abaixo para redefinir sua senha:</p>
