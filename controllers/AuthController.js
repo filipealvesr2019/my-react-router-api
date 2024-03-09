@@ -62,7 +62,7 @@ const registerUser = async (req, res, next) => {
 
 
 // logar usuario com JWT token
-const loginCustumer = async (req, res, next) => {
+const loginCustomer = async (req, res, next) => {
   const { email, password } = req.body;
 
   // verifica se o usuario esta logado com email e senha
@@ -407,5 +407,5 @@ module.exports = {
   logout,
   sendPasswordResetEmail,
   resetPassword,
-  loginCustumer,
+  loginCustomer,
 };

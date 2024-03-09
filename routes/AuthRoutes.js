@@ -13,7 +13,7 @@ const {
   getAllUsers,
   loginUser,
   registerUser,
-  loginCustumer
+  loginCustomer
 } = require("../controllers/AuthController");
 const { Userlogout } = require("../controllers/AuthController");
 const { isAuthenticated, isAdmin } = require("../middleware/middlewares.authMiddleware");
@@ -23,7 +23,7 @@ router.post("/login", loginUser); // Use directly from AuthController
 
 router.post("/user",  registerUser); // Use directly from AuthController
 
-router.post("/loginCustumer", loginCustumer); // Use directly from AuthController
+router.post("/loginCustumer", loginCustomer); // Use directly from AuthController
 
 router.post("/user",  registerUser); // Use directly from AuthController
 router.get("/user/:id", getUser); // Rota para buscar usuário por ID

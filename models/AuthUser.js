@@ -26,13 +26,18 @@ const userSchema = new mongoose.Schema({
       message: "Digite uma credencial válida!",
     },
   },
+  
   loginAttempts: {
     type: Number,
-    default: 0
+    default: 0,
   },
   lockUntil: {
-    type: Date,
-    default: null
+    type: Number,
+  },
+  googleId: {
+    type: String,
+    unique: true, // Garante que apenas um usuário tenha esse ID do Google
+    sparse: true // Permite que outros usuários tenham null ou undefined para este campo
   }
 });
 

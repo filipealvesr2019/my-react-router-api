@@ -3,7 +3,14 @@ const express = require('express');
 const router = express.Router();
 const categoriesController = require('../controllers/categoriesController'); // Substitua pelo caminho real do seu controlador
 
-
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+      // Se o usuário estiver autenticado, prossiga com a solicitação
+      return next();
+    }
+    // Se o usuário não estiver autenticado, redirecione-o para a página de login
+    res.redirect('/auth/google'); // Ou qualquer URL de login que você tenha definido
+  }
 // Rota para adicionar nova categoria
 router.post('/admin/category/new',  categoriesController.newCategory);
 router.get('/categories', categoriesController.getAllCategories);
