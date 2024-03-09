@@ -41,31 +41,48 @@ const registerUser = async (req, res, next) => {
   }
 };
 
+let loginAttempts = {}; // Objeto para armazenar o número de tentativas de login de cada usuário
 
+const MAX_LOGIN_ATTEMPTS = 6; // Número máximo de tentativas de login permitidas
+const BLOCK_DURATION = 3000; // Duração do bloqueio em milissegundos (20 segundos)
 
+// Função para retornar o número de tentativas restantes para o login
+const remainingLoginAttempts = (email) => {
+  const attempts = loginAttempts[email] || 0;
+  const remaining = MAX_LOGIN_ATTEMPTS - attempts;
 
+  // Ajuste para retornar 1 quando a contagem for 0
+  const adjustedRemaining = remaining > 0 ? remaining : 1;
+  return adjustedRemaining;
+};
 
+// Função para bloquear o usuário após exceder o número máximo de tentativas
+const blockUser = (email) => {
+  console.log(`Bloqueando usuário ${email}`);
+  // Aqui você pode implementar a lógica para bloquear o usuário, por exemplo, atualizando um campo no banco de dados
 
+  // Remove o bloqueio após a duração especificada
+  setTimeout(() => {
+    console.log(`Removendo bloqueio para usuário ${email}`);
+    // Aqui você pode implementar a lógica para remover o bloqueio do usuário, por exemplo, atualizando um campo no banco de dados
+  }, BLOCK_DURATION);
+};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// logar usuario com JWT token
+// Função para logar usuário com JWT token
 const loginCustomer = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // verifica se o usuario esta logado com email e senha
+  // Verifica se o usuário foi bloqueado por exceder o número máximo de tentativas
+  if (loginAttempts[email] >= MAX_LOGIN_ATTEMPTS) {
+    console.log("Usuário bloqueado");
+    return res.status(401).json({
+      success: false,
+      error:
+        "Você excedeu o número máximo de tentativas de login. Por favor, entre em contato com o suporte.",
+    });
+  }
+
+  // Verifica se o email e a senha foram fornecidos
   if (!email || !password) {
     console.log("Email ou senha ausentes");
     return res.status(400).json({
@@ -74,67 +91,46 @@ const loginCustomer = async (req, res, next) => {
     });
   }
 
-  // procurando usuario no banco de dados
+  // Procurando usuário no banco de dados
   const user = await User.findOne({ email }).select("+password +role");
 
   if (!user) {
     console.log("Usuário não encontrado");
+    // Incrementa o contador de tentativas de login
+    loginAttempts[email] = (loginAttempts[email] || 0) + 1;
     return res.status(401).json({
       success: false,
       error: "Email ou senha inválidos.",
+      remainingAttempts: remainingLoginAttempts(email), // Retorna o número de tentativas restantes
     });
   }
 
-  // verifica se a senha está correta ou não
+  // Verifica se a senha está correta
   const isPasswordMatch = await user.comparePassword(password);
 
   if (!isPasswordMatch) {
     console.log("Senha incorreta");
+    // Incrementa o contador de tentativas de login
+    loginAttempts[email] = (loginAttempts[email] || 0) + 1;
+    if (loginAttempts[email] >= MAX_LOGIN_ATTEMPTS) {
+      blockUser(email); // Bloqueia o usuário se exceder o número máximo de tentativas
+    }
     return res.status(401).json({
       success: false,
       error: "Email ou senha inválidos.",
+      remainingAttempts: remainingLoginAttempts(email), // Retorna o número de tentativas restantes
     });
   }
 
-  // Agora, dependendo do papel (role) do usuário, você pode realizar ações específicas
-  if (user.role === "customer") {
-    // Lógica para administrador
-    // Adicione aqui as ações específicas para o administrador
-  } else {
-    console.log("Erro: Permissões de usuário não reconhecidas.");
-  }
+  // Limpa o contador de tentativas de login se o login for bem-sucedido
+  delete loginAttempts[email];
+
+  // Verifica o papel (role) do usuário e executa ações específicas, se necessário
 
   // Envie o token para o usuário
   console.log("Enviando token para o usuário");
   sendToken(user, 200, res);
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // logar usuario com JWT token
 const loginUser = async (req, res, next) => {
@@ -342,9 +338,27 @@ const sendPasswordResetEmail = async (req, res) => {
       TextBody: `Clique no seguinte link para se registrar: ${resetLink}`,
 
       HtmlBody: `
-    <p>Você solicitou uma redefinição de senha.</p>
-    <p>Por favor, clique no botão abaixo para redefinir sua senha:</p>
-    <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px;">Redefinir Senha</a>
+      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+      justify-content: center;
+      align-items: center;">
+            <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+     </div>
+     <div style="display: flex;
+     flex-direction: column;
+     justify-content: center;
+     align-items: center;">
+     <p style=" font-weight: 400;
+     font-size: 1.8rem;
+     text-align: center;
+     margin-top: 5rem;
+
+     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+   }">Você solicitou uma redefinição de senha, clique no botão abaixo para redefinir sua senha:</p>
+     
+   <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Redefinir Senha</a>
+
+     </div>
+   
   `,
     });
     res.status(200).json({
