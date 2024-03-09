@@ -41,10 +41,12 @@ const registerUser = async (req, res, next) => {
   }
 };
 
-let loginAttempts = {}; // Objeto para armazenar o número de tentativas de login de cada usuário
 
-const MAX_LOGIN_ATTEMPTS = 6; // Número máximo de tentativas de login permitidas
-const BLOCK_DURATION = 3000; // Duração do bloqueio em milissegundos (20 segundos)
+let loginAttempts = {}; // Objeto para armazenar o número de tentativas de login de cada usuário
+let blockedUsers = {}; // Objeto para armazenar os usuários bloqueados
+
+const MAX_LOGIN_ATTEMPTS = 7; // Número máximo de tentativas de login permitidas
+const BLOCK_DURATION = 10000; // Duração do bloqueio em milissegundos (3 segundos)
 
 // Função para retornar o número de tentativas restantes para o login
 const remainingLoginAttempts = (email) => {
@@ -59,12 +61,11 @@ const remainingLoginAttempts = (email) => {
 // Função para bloquear o usuário após exceder o número máximo de tentativas
 const blockUser = (email) => {
   console.log(`Bloqueando usuário ${email}`);
-  // Aqui você pode implementar a lógica para bloquear o usuário, por exemplo, atualizando um campo no banco de dados
-
+  blockedUsers[email] = true; // Marca o usuário como bloqueado
   // Remove o bloqueio após a duração especificada
   setTimeout(() => {
     console.log(`Removendo bloqueio para usuário ${email}`);
-    // Aqui você pode implementar a lógica para remover o bloqueio do usuário, por exemplo, atualizando um campo no banco de dados
+    delete blockedUsers[email]; // Remove o usuário da lista de bloqueados
   }, BLOCK_DURATION);
 };
 
@@ -72,13 +73,12 @@ const blockUser = (email) => {
 const loginCustomer = async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Verifica se o usuário foi bloqueado por exceder o número máximo de tentativas
-  if (loginAttempts[email] >= MAX_LOGIN_ATTEMPTS) {
+  // Verifica se o usuário está bloqueado
+  if (blockedUsers[email]) {
     console.log("Usuário bloqueado");
     return res.status(401).json({
       success: false,
-      error:
-        "Você excedeu o número máximo de tentativas de login. Por favor, entre em contato com o suporte.",
+      error: "Usuário bloqueado. Tente novamente mais tarde.",
     });
   }
 
@@ -131,6 +131,22 @@ const loginCustomer = async (req, res, next) => {
   console.log("Enviando token para o usuário");
   sendToken(user, 200, res);
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // logar usuario com JWT token
 const loginUser = async (req, res, next) => {
