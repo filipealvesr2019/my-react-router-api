@@ -619,14 +619,14 @@ router.get("/fretes", async (req, res) => {
   }
 });
 
-router.post("/frete/:clerkUserId", async (req, res) => {
+router.post("/frete/:custumerId", async (req, res) => {
   try {
     const token = process.env.KUNGU_TOKEN;
     const cep = req.body.cep;
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+    const custumerId = req.params.custumerId; // Agora é uma string
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -641,7 +641,7 @@ router.post("/frete/:clerkUserId", async (req, res) => {
       return res.status(404).json({ message: "Carrinho não encontrado." });
     }
     // Apaga os registros de frete anteriores
-    await Frete.deleteMany({ clerkUserId: clerkUserId });
+    await Frete.deleteMany({ custumerId: custumerId });
     const data = {
       cepOrigem: "60762-792",
       cepDestino: cep,
@@ -719,13 +719,13 @@ router.post("/frete/:clerkUserId", async (req, res) => {
   }
 });
 
-router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
+router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
     const freteId = req.params.freteId;
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -761,19 +761,19 @@ router.put("/cart/:clerkUserId/shippingFee/:freteId", async (req, res) => {
   }
 });
 
-router.get("/frete/:clerkUserId", async (req, res) => {
+router.get("/frete/:custumerId", async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
     }
 
     // Encontra os fretes associados ao cliente
-    const fretes = await Frete.find({ clerkUserId: clerkUserId });
+    const fretes = await Frete.find({ custumerId: custumerId });
 
     if (!fretes) {
       return res.status(404).json({ message: "Fretes não encontrados." });
@@ -798,13 +798,13 @@ router.get("/frete/:clerkUserId", async (req, res) => {
 });
 
 // pagar com pix sem checkout transparente
-router.post("/pix/:clerkUserId", async (req, res) => {
+router.post("/pix/:custumerId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+    const custumerId = req.params.custumerId; // Agora é uma string
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -880,7 +880,7 @@ router.post("/pix/:clerkUserId", async (req, res) => {
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const pix = new Pix({
-          clerkUserId: clerkUserId, // Agora é uma string
+          custumerId: custumerId, // Agora é uma string
           customer: item.customer,
           billingType: item.billingType,
           value: item.value,
@@ -895,7 +895,7 @@ router.post("/pix/:clerkUserId", async (req, res) => {
     } else {
       // Se não for um array, salva apenas um item
       const pix = new Pix({
-        clerkUserId: clerkUserId, // Agora é uma string
+        custumerId: custumerId, // Agora é uma string
         customer: response.data.customer,
         billingType: response.data.billingType,
         value: response.data.value,
@@ -916,13 +916,13 @@ router.post("/pix/:clerkUserId", async (req, res) => {
 });
 
 // pagar boleto sem checkout transparente
-router.post("/boleto/:clerkUserId", async (req, res) => {
+router.post("/boleto/:custumerId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+    const custumerId = req.params.custumerId; // Agora é uma string
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
