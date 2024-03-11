@@ -1213,21 +1213,20 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
       externalReference: externalReferences,
       postalService: false,
       creditCard: {
-        holderName: "john doe",
+        holderName: customer.name,
         number: "5162306219378829",
         expiryMonth: "05",
         expiryYear: "2025",
         ccv: "318",
       },
       creditCardHolderInfo: {
-        name: "John Doe",
-        email: "john.doe@asaas.com.br",
-        cpfCnpj: "24971563792",
-        postalCode: "89223-005",
-        addressNumber: "277",
+        name: customer.name,
+        email: customer.email,
+        cpfCnpj: customer.cpfCnpj,
+        postalCode:  customer.postalCode,
+        addressNumber: customer.addressNumber,
         addressComplement: null,
-        phone: "4738010919",
-        mobilePhone: "47998781877",
+        phone: customer.mobilePhone
       },
     };
 

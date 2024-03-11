@@ -82,18 +82,9 @@ const sendEmail = async (email, token) => {
             <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
      </div>
       
-      
-      <p style="display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;">
-      <p style=" font-weight: 400;
-      font-size: 1.6rem;
-      text-align: center;
-      margin-top: 3rem;
- 
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }">Clique no <a href="${registrationLink}">butão</a> para se registrar.</p>
+
+    
+    
     <div style="display: flex;
     flex-direction: column;
     justify-content: center;
@@ -104,9 +95,20 @@ const sendEmail = async (email, token) => {
     margin-top: 5rem;
 
     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }">Você solicitou uma redefinição de senha, clique no botão abaixo para redefinir sua senha:</p>
+  }">      
+  <p style="display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;">
+  <p style=" font-weight: 400;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-top: 3rem;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">Clique no butão  para se <a href="${registrationLink}">cadastrar</a>.</p></p>
     
-  <a href="${registrationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Redefinir Senha</a>
+  <a href="${registrationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Cadastrar-se</a>
 
     </div>
     `,
