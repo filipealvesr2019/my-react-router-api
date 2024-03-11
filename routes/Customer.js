@@ -1214,10 +1214,10 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
       postalService: false,
       creditCard: {
         holderName: customer.name,
-        number: "5162306219378829",
-        expiryMonth: "05",
-        expiryYear: "2025",
-        ccv: "318",
+        number: req.body.number,
+        expiryMonth: req.body.expiryMonth,
+        expiryYear: req.body.expiryYear,
+        ccv: req.body.ccv,
       },
       creditCardHolderInfo: {
         name: customer.name,
