@@ -179,12 +179,10 @@ router.put("/update/:custumerId", async (req, res) => {
 
     await axios.request(asaasOptions);
 
-    res
-      .status(200)
-      .json({
-        user: savedUser,
-        message: "Usuário e cliente no Asaas atualizados com sucesso.",
-      });
+    res.status(200).json({
+      user: savedUser,
+      message: "Usuário e cliente no Asaas atualizados com sucesso.",
+    });
   } catch (error) {
     console.error("Erro ao atualizar usuário:", error);
     res
@@ -1034,23 +1032,6 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // pagar creditCard com checkout transparente
 router.post("/creditCard/:custumerId", async (req, res) => {
   try {
@@ -1168,17 +1149,6 @@ router.post("/creditCard/:custumerId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
 // pagar creditCard com checkout transparente
 router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
   try {
@@ -1242,23 +1212,23 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
-      creditCard:{
-        "holderName": "john doe",
-"number": "5162306219378829",
-"expiryMonth": "05",
-"expiryYear": "2025",
-"ccv": "318"
+      creditCard: {
+        holderName: "john doe",
+        number: "5162306219378829",
+        expiryMonth: "05",
+        expiryYear: "2025",
+        ccv: "318",
       },
-      creditCardHolderInfo:{
-        "name": "John Doe",
-"email": "john.doe@asaas.com.br",
-"cpfCnpj": "24971563792",
-"postalCode": "89223-005",
-"addressNumber": "277",
-"addressComplement": null,
-"phone": "4738010919",
-"mobilePhone": "47998781877"
-      }
+      creditCardHolderInfo: {
+        name: "John Doe",
+        email: "john.doe@asaas.com.br",
+        cpfCnpj: "24971563792",
+        postalCode: "89223-005",
+        addressNumber: "277",
+        addressComplement: null,
+        phone: "4738010919",
+        mobilePhone: "47998781877",
+      },
     };
 
     const response = await axios.post(
@@ -1312,30 +1282,6 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // pagar boleto com checkout transparente
 router.post("/tokenizeCreditCard", async (req, res) => {
@@ -1535,25 +1481,6 @@ router.post("/creditCardAndToken/:custumerId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 // pagar com pix sem checkout transparente
 router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
   try {
@@ -1610,9 +1537,9 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       value: totalAmount,
       description: "Pedido 056984",
-      format: 'ALL',
+      format: "ALL",
       expirationDate: new Date(), // Define a data atual como a data de vencimento
-      allowsMultiplePayments: true  
+      allowsMultiplePayments: true,
     };
 
     const response = await axios.post(
@@ -1627,7 +1554,6 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
       }
     );
 
-  
     if (Array.isArray(response.data)) {
       for (const item of response.data) {
         const pix = new PixQRcode({
@@ -1642,7 +1568,7 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
           encodedImage: item.encodedImage,
           id: item.id,
         });
-  
+
         await pix.save();
       }
     } else {
@@ -1658,10 +1584,10 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
         encodedImage: response.data.encodedImage,
         id: response.data.id,
       });
-  
+
       await pix.save();
     }
-  
+
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching data:", error);
