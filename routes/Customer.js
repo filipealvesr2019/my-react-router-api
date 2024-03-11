@@ -265,13 +265,13 @@ router.get("/custumer/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/favorites/:clerkUserId", async (req, res) => {
+router.get("/favorites/:custumerId", async (req, res) => {
   try {
     // Extrair ID do usuário do parâmetro da rota
-    const { clerkUserId } = req.params;
+    const { custumerId } = req.params;
 
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findOne({ clerkUserId });
+    const existingUser = await Customer.findOne({ custumerId });
     if (!existingUser) {
       return res.status(404).json({ message: "Usuário não encontrado." });
     }
@@ -293,13 +293,13 @@ router.get("/favorites/:clerkUserId", async (req, res) => {
 router.post("/favorites", async (req, res) => {
   try {
     // Extrair ID do usuário do corpo da solicitação
-    const { clerkUserId } = req.body;
+    const { custumerId } = req.body;
 
     // Extrair ID do produto do corpo da solicitação
     const { productId } = req.body;
 
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findOne({ clerkUserId });
+    const existingUser = await Customer.findOne({ custumerId });
     if (!existingUser) {
       return res.status(404).json({ message: "Usuário não encontrado." });
     }
@@ -340,13 +340,13 @@ router.post("/favorites", async (req, res) => {
   }
 });
 
-router.delete("/favorites/:clerkUserId/:productId", async (req, res) => {
+router.delete("/favorites/:custumerId/:productId", async (req, res) => {
   try {
     // Extrair ID do usuário e do produto dos parâmetros da solicitação
-    const { clerkUserId, productId } = req.params;
+    const { custumerId, productId } = req.params;
 
     // Verificar se o usuário existe pelo ID
-    const existingUser = await Customer.findOne({ clerkUserId });
+    const existingUser = await Customer.findOne({ custumerId });
     if (!existingUser) {
       return res.status(404).json({ message: "Usuário não encontrado." });
     }
