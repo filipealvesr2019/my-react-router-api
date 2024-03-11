@@ -431,12 +431,12 @@ router.post("/add-to-cart/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/cart/:clerkUserId", isAuthenticated, async (req, res) => {
+router.get("/cart/:custumerId",  async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -562,13 +562,13 @@ router.get("/cart/:clerkUserId/total-price", async (req, res) => {
 });
 
 // Rota para excluir um produto do carrinho de um cliente
-router.delete("/remove-from-cart/:clerkUserId/:productId", async (req, res) => {
+router.delete("/remove-from-cart/:custumerId/:productId", async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
     const productId = req.params.productId;
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
