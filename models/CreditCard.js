@@ -24,7 +24,7 @@ const creditCardSchema = new mongoose.Schema({
 });
 
 const customerSchema = new mongoose.Schema({
-  clerkUserId: {
+  custumerId: {
     type: String,
     required: true
   },

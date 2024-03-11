@@ -105,9 +105,9 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.put("/update/:clerkUserId", async (req, res) => {
+router.put("/update/:custumerId", async (req, res) => {
   try {
-    const { clerkUserId } = req.params;
+    const { custumerId } = req.params;
     const {
       name,
       cpfCnpj,
@@ -124,7 +124,7 @@ router.put("/update/:clerkUserId", async (req, res) => {
     } = req.body;
 
     // Encontra o usuário com base no clerkUserId
-    const existingUser = await Customer.findOne({ clerkUserId });
+    const existingUser = await Customer.findOne({ custumerId });
 
     // Verifica se o usuário existe
     if (!existingUser) {
@@ -171,7 +171,7 @@ router.put("/update/:clerkUserId", async (req, res) => {
         addressNumber,
         complement,
         province,
-        externalReference: clerkUserId,
+        externalReference: custumerId,
         notificationDisabled: false,
         additionalEmails: email,
       },
@@ -245,7 +245,7 @@ router.get("/user/:id", async (req, res) => {
   }
 });
 
-router.get("/custumer/:clerkUserId", async (req, res) => {
+router.get("/custumer/:custumerId", async (req, res) => {
   try {
     const { custumerId } = req.params;
 
@@ -383,14 +383,14 @@ router.delete("/favorites/:clerkUserId/:productId", async (req, res) => {
 });
 
 // Rota para adicionar um produto ao carrinho de um cliente
-router.post("/add-to-cart/:clerkUserId", async (req, res) => {
+router.post("/add-to-cart/:custumerId", async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
 
     const { productId, quantity, size, color } = req.body;
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -1034,14 +1034,31 @@ router.post("/boleto/:clerkUserId", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // pagar creditCard com checkout transparente
-router.post("/creditCard/:clerkUserId", async (req, res) => {
+router.post("/creditCard/:custumerId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+    const custumerId = req.params.custumerId; // Agora é uma string
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -1116,7 +1133,7 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const creditCard = new CreditCard({
-          clerkUserId: clerkUserId, // Agora é uma string
+          custumerId: custumerId, // Agora é uma string
           customer: item.customer,
           billingType: item.billingType,
           value: item.value,
@@ -1131,7 +1148,7 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
     } else {
       // Se não for um array, salva apenas um item
       const creditCard = new CreditCard({
-        clerkUserId: clerkUserId, // Agora é uma string
+        custumerId: custumerId, // Agora é uma string
         customer: response.data.customer,
         billingType: response.data.billingType,
         value: response.data.value,
@@ -1150,6 +1167,175 @@ router.post("/creditCard/:clerkUserId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+// pagar creditCard com checkout transparente
+router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
+  try {
+    const token = process.env.ACCESS_TOKEN;
+    const custumerId = req.params.custumerId; // Agora é uma string
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ custumerId: custumerId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate(
+      "products.productId"
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: "Carrinho não encontrado." });
+    }
+
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
+
+    if (result.deletedCount === 0) {
+      return res
+        .status(404)
+        .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
+    // Encontra o asaasCustomerId do cliente
+    const asaasCustomerId = customer.asaasCustomerId;
+    const totalPrice = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    );
+    const totalAmount = totalPrice + cart.shippingFee;
+
+    // Cria uma string vazia para armazenar os IDs dos produtos
+    let externalReferences = "";
+
+    // Itera sobre os produtos no carrinho
+    for (const product of cart.products) {
+      // Adiciona o ID do produto à string externalReferences
+      externalReferences += product.productId._id + ",";
+    }
+
+    // Remove a vírgula extra no final da string externalReferences
+    externalReferences = externalReferences.slice(0, -1);
+
+    // Apaga os registros de frete anteriores
+    const data = {
+      billingType: "CREDIT_CARD",
+      discount: { value: 0, dueDateLimitDays: 0 },
+      interest: { value: 0 },
+      fine: { value: 0 },
+      customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
+      dueDate: new Date(), // Define a data atual como a data de vencimento
+      value: totalAmount,
+      description: "Pedido 056984",
+      daysAfterDueDateToCancellationRegistration: 1,
+      externalReference: externalReferences,
+      postalService: false,
+      creditCard:{
+        "holderName": "john doe",
+"number": "5162306219378829",
+"expiryMonth": "05",
+"expiryYear": "2025",
+"ccv": "318"
+      },
+      creditCardHolderInfo:{
+        "name": "John Doe",
+"email": "john.doe@asaas.com.br",
+"cpfCnpj": "24971563792",
+"postalCode": "89223-005",
+"addressNumber": "277",
+"addressComplement": null,
+"phone": "4738010919",
+"mobilePhone": "47998781877"
+      }
+    };
+
+    const response = await axios.post(
+      "https://sandbox.asaas.com/api/v3/payments",
+      data,
+      {
+        headers: {
+          accept: " 'application/json'",
+          "content-type": "application/json",
+          access_token: token,
+        },
+      }
+    );
+
+    // Verifica se a resposta é um array
+    if (Array.isArray(response.data)) {
+      // Se for um array, faz um loop sobre os itens e salva cada um
+      for (const item of response.data) {
+        const creditCard = new CreditCard({
+          custumerId: custumerId, // Agora é uma string
+          customer: item.customer,
+          billingType: item.billingType,
+          value: item.value,
+          externalReference: item.externalReference,
+          invoiceUrl: item.invoiceUrl,
+          bankSlipUrl: item.bankSlipUrl,
+          dueDate: item.dueDate,
+        });
+
+        await creditCard.save();
+      }
+    } else {
+      // Se não for um array, salva apenas um item
+      const creditCard = new CreditCard({
+        custumerId: custumerId, // Agora é uma string
+        customer: response.data.customer,
+        billingType: response.data.billingType,
+        value: response.data.value,
+        externalReference: response.data.externalReference,
+        invoiceUrl: response.data.invoiceUrl,
+        bankSlipUrl: response.data.bankSlipUrl,
+        dueDate: response.data.dueDate,
+      });
+
+      await creditCard.save();
+    }
+
+    res.json(response.data);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // pagar boleto com checkout transparente
 router.post("/tokenizeCreditCard", async (req, res) => {
@@ -1196,15 +1382,15 @@ router.post("/tokenizeCreditCard", async (req, res) => {
   }
 });
 
-router.post("/creditCardAndToken/:clerkUserId", async (req, res) => {
+router.post("/creditCardAndToken/:custumerId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
 
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+    const custumerId = req.params.custumerId; // Agora é uma string
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
@@ -1362,14 +1548,20 @@ router.post("/creditCardAndToken/:clerkUserId", async (req, res) => {
 
 
 
+
+
+
+
+
+
 // pagar com pix sem checkout transparente
-router.post("/pixQRcodeStatico/:clerkUserId", async (req, res) => {
+router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const clerkUserId = req.params.clerkUserId; // Agora é uma string
+    const custumerId = req.params.custumerId; // Agora é uma string
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
