@@ -609,6 +609,7 @@ router.delete("/remove-from-cart/:custumerId/:productId", async (req, res) => {
   }
 });
 
+
 router.get("/fretes", async (req, res) => {
   try {
     const fretes = await Frete.find();
