@@ -998,7 +998,7 @@ router.post("/boleto/:custumerId", async (req, res) => {
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const boleto = new Boleto({
-          clerkUserId: clerkUserId, // Agora é uma string
+          clerkUserId: custumerId, // Agora é uma string
           customer: item.customer,
           billingType: item.billingType,
           value: item.value,
@@ -1013,7 +1013,7 @@ router.post("/boleto/:custumerId", async (req, res) => {
     } else {
       // Se não for um array, salva apenas um item
       const boleto = new Boleto({
-        clerkUserId: clerkUserId, // Agora é uma string
+        custumerId: custumerId, // Agora é uma string
         customer: response.data.customer,
         billingType: response.data.billingType,
         value: response.data.value,
@@ -1534,7 +1534,9 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
 
     // Apaga os registros de frete anteriores
     const data = {
+      addressKey: "7591d992-c101-4d70-bc5f-cf589124bc12",
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
+      
       value: totalAmount,
       description: "Pedido 056984",
       format: "ALL",
@@ -1594,5 +1596,7 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 module.exports = router;

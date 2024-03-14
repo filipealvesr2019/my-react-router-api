@@ -3,7 +3,7 @@
 const mongoose = require("mongoose");
 
 const PixQRcodeSchema = new mongoose.Schema({
-    clerkUserId: {
+  custumerId: {
         type: String,
       },
   customer: {
@@ -40,6 +40,9 @@ const PixQRcodeSchema = new mongoose.Schema({
   encodedImage: {
     type: String,
   }, 
+  decodedImage:{
+    type: String,
+  },
   id: {
     type: String,
   }, 
