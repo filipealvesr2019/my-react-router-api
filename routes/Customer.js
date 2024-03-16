@@ -1214,7 +1214,7 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
 
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
-
+   
     // Apaga os registros de frete anteriores
     const data = {
       billingType: "CREDIT_CARD",
@@ -1228,7 +1228,7 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
-      installmentCount: 5,
+      installmentCount: req.body.installmentCount,
       installmentValue: 100,
       creditCard: {
         holderName: customer.name,
