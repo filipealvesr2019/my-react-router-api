@@ -1214,7 +1214,15 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
 
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
-   
+
+// Pegue o valor do corpo da requisição
+const requestBody = req.body;
+
+// Extraia o número de parcelas do corpo da requisição
+const installmentCount = requestBody.installmentCount;
+
+// Calcule o valor de cada parcela
+const installmentResult = totalAmount / installmentCount;
     // Apaga os registros de frete anteriores
     const data = {
       billingType: "CREDIT_CARD",
@@ -1229,7 +1237,7 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
       externalReference: externalReferences,
       postalService: false,
       installmentCount: req.body.installmentCount,
-      installmentValue: 100,
+      installmentValue: installmentResult,
       creditCard: {
         holderName: customer.name,
         number: req.body.number,
