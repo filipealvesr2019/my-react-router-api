@@ -518,12 +518,12 @@ router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
   }
 });
 
-router.get("/cart/:clerkUserId/total-price", async (req, res) => {
+router.get("/cart/:custumerId/total-price", async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
