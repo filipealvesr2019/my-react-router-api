@@ -1150,6 +1150,21 @@ router.post("/creditCard/:custumerId", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // pagar creditCard com checkout transparente
 router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
   try {
@@ -1213,6 +1228,8 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
+      installmentCount: 5,
+      installmentValue: 100,
       creditCard: {
         holderName: customer.name,
         number: req.body.number,
@@ -1282,6 +1299,23 @@ router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // pagar boleto com checkout transparente
 router.post("/tokenizeCreditCard", async (req, res) => {
