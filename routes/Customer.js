@@ -689,7 +689,7 @@ router.post("/frete/:custumerId", async (req, res) => {
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const frete = new Frete({
-          clerkUserId: clerkUserId, // Agora é uma string
+          custumerId: custumerId, // Agora é uma string
           nomeTransportadora: item.transp_nome,
           dataPrevistaEntrega: item.dtPrevEnt,
           prazoEntrega: item.prazoEnt,
@@ -702,7 +702,7 @@ router.post("/frete/:custumerId", async (req, res) => {
     } else {
       // Se não for um array, salva apenas um item
       const frete = new Frete({
-        clerkUserId: clerkUserId, // Agora é uma string
+        custumerId: custumerId, // Agora é uma string
         nomeTransportadora: response.data.transp_nome,
         dataPrevistaEntrega: response.data.dtPrevEnt,
         prazoEntrega: response.data.prazoEnt,
