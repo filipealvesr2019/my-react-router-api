@@ -463,9 +463,9 @@ router.get("/cart/:custumerId",  async (req, res) => {
 });
 
 // Rota para atualizar a quantidade de um produto no carrinho de um cliente
-router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
+router.put("/update-quantity/:custumerId/:productId", async (req, res) => {
   try {
-    const clerkUserId = req.params.clerkUserId;
+    const custumerId = req.params.custumerId;
     const productId = req.params.productId;
     const { quantity } = req.body;
     if (quantity <= 0) {
@@ -475,7 +475,7 @@ router.put("/update-quantity/:clerkUserId/:productId", async (req, res) => {
     }
 
     // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ clerkUserId: clerkUserId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
