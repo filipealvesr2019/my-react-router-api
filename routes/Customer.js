@@ -798,6 +798,8 @@ router.get("/frete/:custumerId", async (req, res) => {
   }
 });
 
+
+
 // pagar com pix sem checkout transparente
 router.post("/pix/:custumerId", async (req, res) => {
   try {
