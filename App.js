@@ -107,7 +107,6 @@ const GoogleUser = require('./models/GoogleUser');
 
 
 
-
 // Configurando a estratégia de autenticação do Google
 // Configurando a estratégia de autenticação do Google
 passport.use(new GoogleStrategy({
