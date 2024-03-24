@@ -13,6 +13,7 @@ const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
 const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
+const PaymentReports = require("../models/paymentReports");
 
 // Rota para criar um novo usuário
 
@@ -542,11 +543,11 @@ router.get("/cart/:custumerId/total-price", async (req, res) => {
     cart.shippingFee = cart.shippingFee;
 
     // Calcula o total do preço dos produtos no carrinho
-    const totalPrice = cart.products.reduce(
+    let totalPrice = cart.products.reduce(
       (total, product) => total + product.productId.price * product.quantity,
       0
     );
-    const totalAmount = totalPrice + cart.shippingFee;
+    let totalAmount = totalPrice + cart.shippingFee;
 
     // Retorna o total do preço dos produtos no carrinho
     res.status(200).json({
@@ -1641,6 +1642,20 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
   }
 });
 
+
+
+
+
+// Rota para adicionar um novo pagamento ao relatório
+router.post('/reports', async (req, res) => {
+  try {
+      const newPayment = new PaymentReports(req.body); // Crie uma nova instância do modelo com os dados do corpo da requisição
+      const savedPayment = await newPayment.save(); // Salve o pagamento no banco de dados
+      res.status(201).json(savedPayment); // Responda com o pagamento salvo
+  } catch (err) {
+      res.status(400).json({ message: err.message }); // Se houver um erro, responda com uma mensagem de erro
+  }
+});
 
 
 module.exports = router;
