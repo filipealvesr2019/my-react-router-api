@@ -1,11 +1,7 @@
 const mongoose = require('mongoose');
 
 const paymentReportsSchema = new mongoose.Schema({
-    event: {
-        type: String,
-        required: true
-    },
-    payment: {
+ 
         object: {
             type: String,
             required: true
@@ -145,8 +141,8 @@ const paymentReportsSchema = new mongoose.Schema({
             },
             creditCardToken: {
                 type: String
-            }
-        },
+            },
+  
         discount: {
             value: {
                 type: Number,
