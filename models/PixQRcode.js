@@ -46,6 +46,7 @@ const PixQRcodeSchema = new mongoose.Schema({
   id: {
     type: String,
   }, 
+
 });
 
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);

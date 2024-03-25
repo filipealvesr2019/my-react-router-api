@@ -1,57 +1,65 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const cartSchema = new Schema({
-    customer: {
+  customer: {
+    type: Schema.Types.ObjectId,
+    ref: "Customer",
+  },
+  products: [
+    {
+      productId: {
         type: Schema.Types.ObjectId,
-        ref: 'Customer'
-    },
-    products: [{
-        productId: {
-            type: Schema.Types.ObjectId,
-            ref: 'Product'
-        },
-        quantity: {
-          type: Number,
-          default: 0.0
-        },
-        size: {
-          type: String,
-          default: " "
-    
-        },
-        color: {
-          type: String,
-          default: " "
-        }
-
-    }],
-    shippingFee: {
+        ref: "Product",
+      },
+      quantity: {
         type: Number,
-        default: 0.0
+        default: 0.0,
       },
-      taxPrice:{
-        type:Number
-      },
-      orderStatus: {
+      size: {
         type: String,
-        default: "Processando..."
+        default: " ",
       },
-      deliveredAt: {
-        type: Date
+      color: {
+        type: String,
+        default: " ",
       },
-      createdAt: {
-        type: Date,
-        default: Date.now()
-      }
-    ,
-    dueDate: {
-        type: Date,
-        required: true,
-        default: Date.now,
-    }
+    },
+  ],
+  shippingFee: {
+    type: Number,
+    default: 0.0,
+  },
+  transportadora: {
+    nome: {
+      type: String,
+    },
+    
+  },
+  logo:{ img: {
+    type: String,
+  },},
+  taxPrice: {
+    type: Number,
+  },
+  orderStatus: {
+    type: String,
+    default: "Processando...",
+  },
+  deliveredAt: {
+    type: Date,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now(),
+  },
+  dueDate: {
+    type: Date,
+    required: true,
+    default: Date.now,
+  },
 });
 
-const Cart = mongoose.model('Cart', cartSchema);
+const Cart = mongoose.model("Cart", cartSchema);
 
 module.exports = Cart;

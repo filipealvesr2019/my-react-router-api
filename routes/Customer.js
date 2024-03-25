@@ -708,7 +708,7 @@ router.post("/frete/:custumerId", async (req, res) => {
         dataPrevistaEntrega: response.data.dtPrevEnt,
         prazoEntrega: response.data.prazoEnt,
         valorFrete: response.data.vlrFrete,
-        logo: data.url_logo,
+        logo: response.data.url_logo,
       });
 
       await frete.save();
@@ -749,6 +749,9 @@ router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
 
     // Atualiza a taxa de envio do carrinho com o valor do Frete
     cart.shippingFee = frete.valorFrete;
+    cart.transportadora.nome = frete.nomeTransportadora;
+    cart.logo.img = frete.logo;
+
     await cart.save();
 
     res
@@ -1579,7 +1582,7 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
 
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
-
+    
     // Apaga os registros de frete anteriores
     const data = {
       addressKey: "7591d992-c101-4d70-bc5f-cf589124bc12",
@@ -1617,6 +1620,7 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
           payload: item.payload,
           encodedImage: item.encodedImage,
           id: item.id,
+
         });
 
         await pix.save();
