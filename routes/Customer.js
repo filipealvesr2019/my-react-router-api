@@ -708,7 +708,7 @@ router.post("/frete/:custumerId", async (req, res) => {
         dataPrevistaEntrega: response.data.dtPrevEnt,
         prazoEntrega: response.data.prazoEnt,
         valorFrete: response.data.vlrFrete,
-        logo: item.url_logo,
+        logo: data.url_logo,
       });
 
       await frete.save();
@@ -763,6 +763,9 @@ router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
   }
 });
 
+
+
+
 router.get("/frete/:custumerId", async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
@@ -774,8 +777,8 @@ router.get("/frete/:custumerId", async (req, res) => {
       return res.status(404).json({ message: "Cliente não encontrado." });
     }
 
-    // Encontra os fretes associados ao cliente
-    const fretes = await Frete.find({ custumerId: custumerId });
+    // Encontra e ordena os fretes associados ao cliente pelo valor do frete
+    const fretes = await Frete.find({ custumerId: custumerId }).sort({ valorFrete: 1 });
 
     if (!fretes) {
       return res.status(404).json({ message: "Fretes não encontrados." });
