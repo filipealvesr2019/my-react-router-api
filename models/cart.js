@@ -58,6 +58,7 @@ const cartSchema = new Schema({
     required: true,
     default: Date.now,
   },
+
 });
 
 const Cart = mongoose.model("Cart", cartSchema);

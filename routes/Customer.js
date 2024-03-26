@@ -519,48 +519,6 @@ router.put("/update-quantity/:custumerId/:productId", async (req, res) => {
   }
 });
 
-router.get("/cart/:custumerId/total-price", async (req, res) => {
-  try {
-    const custumerId = req.params.custumerId;
-
-    // Encontra o cliente associado ao atendente
-    const customer = await Customer.findOne({ custumerId: custumerId });
-
-    if (!customer) {
-      return res.status(404).json({ message: "Cliente não encontrado." });
-    }
-
-    // Encontra o carrinho do cliente
-    const cart = await Cart.findOne({ customer: customer._id }).populate(
-      "products.productId"
-    );
-
-    if (!cart) {
-      return res.status(404).json({ message: "Carrinho não encontrado." });
-    }
-
-    // Inclui a taxa de envio do carrinho no objeto cart
-    cart.shippingFee = cart.shippingFee;
-
-    // Calcula o total do preço dos produtos no carrinho
-    let totalPrice = cart.products.reduce(
-      (total, product) => total + product.productId.price * product.quantity,
-      0
-    );
-    let totalAmount = totalPrice + cart.shippingFee;
-
-    // Retorna o total do preço dos produtos no carrinho
-    res.status(200).json({
-      totalAmount,
-      message: "Total do preço dos produtos no carrinho.",
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      message: "Erro ao calcular o total do preço dos produtos no carrinho.",
-    });
-  }
-});
 
 // Rota para excluir um produto do carrinho de um cliente
 router.delete("/remove-from-cart/:custumerId/:productId", async (req, res) => {
@@ -721,6 +679,7 @@ router.post("/frete/:custumerId", async (req, res) => {
   }
 });
 
+
 router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
@@ -733,8 +692,12 @@ router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
       return res.status(404).json({ message: "Cliente não encontrado." });
     }
 
-    // Encontra o carrinho do cliente
-    const cart = await Cart.findOne({ customer: customer._id });
+
+ // Encontra o carrinho do cliente
+ const cart = await Cart.findOne({ customer: customer._id }).populate(
+  "products.productId"
+);
+
 
     if (!cart) {
       return res.status(404).json({ message: "Carrinho não encontrado." });
@@ -747,24 +710,86 @@ router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
       return res.status(404).json({ message: "Frete não encontrado." });
     }
 
-    // Atualiza a taxa de envio do carrinho com o valor do Frete
-    cart.shippingFee = frete.valorFrete;
+    // Calcula o total do preço dos produtos no carrinho
+    let totalPrice = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    ); 
+
+
+
+    // Atualiza a taxa de envio do carrinho com base na condição
+    if (totalPrice >= 300 ) {
+      cart.shippingFee = 0;
+    } else {
+      cart.shippingFee = frete.valorFrete;
+    }
+
     cart.transportadora.nome = frete.nomeTransportadora;
     cart.logo.img = frete.logo;
 
     await cart.save();
 
-    res
-      .status(200)
-      .json({ message: "Taxa de envio do carrinho atualizada com sucesso." });
+    res.status(200).json({ message: "Taxa de envio do carrinho atualizada com sucesso." });
   } catch (error) {
     console.error("Erro ao atualizar taxa de envio do carrinho:", error);
     res.status(500).json({
-      message:
-        "Erro interno do servidor ao atualizar taxa de envio do carrinho.",
+      message: "Erro interno do servidor ao atualizar taxa de envio do carrinho.",
     });
   }
 });
+
+
+
+
+
+
+
+
+
+router.get("/cart/:custumerId/total-price", async (req, res) => {
+  try {
+    const custumerId = req.params.custumerId;
+
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ custumerId: custumerId });
+
+    if (!customer) {
+      return res.status(404).json({ message: "Cliente não encontrado." });
+    }
+
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate(
+      "products.productId"
+    );
+
+    if (!cart) {
+      return res.status(404).json({ message: "Carrinho não encontrado." });
+    }
+
+
+    // Calcula o total do preço dos produtos no carrinho
+    let totalPrice = cart.products.reduce(
+      (total, product) => total + product.productId.price * product.quantity,
+      0
+    );
+    console.log("Total Price:", totalPrice);
+
+    let totalAmount = totalPrice + cart.shippingFee;
+
+    // Retorna o total do preço dos produtos no carrinho
+    res.status(200).json({
+      totalAmount,
+      message: "Total do preço dos produtos no carrinho.",
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Erro ao calcular o total do preço dos produtos no carrinho.",
+    });
+  }
+});
+
 
 
 
