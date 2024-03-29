@@ -484,6 +484,17 @@ router.put("/update-quantity/:custumerId/:productId", async (req, res) => {
         .status(404)
         .json({ message: "Produto não encontrado no carrinho." });
     }
+    
+     // Encontra o produto no banco de dados
+     const product = await Product.findById(productId);
+
+     if (!product) {
+       return res.status(404).json({ message: "Produto não encontrado." });
+     }
+   // Verifica se a quantidade no carrinho excede a quantidade disponível do produto
+   if (quantity > product.quantity) {
+    return res.status(400).json({ message: "A quantidade no carrinho excede a quantidade disponível do produto." });
+  }
 
     // Atualiza a quantidade do produto no carrinho
     cart.products[productIndex].quantity = quantity;
