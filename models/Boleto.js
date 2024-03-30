@@ -31,6 +31,40 @@ const boletoSchema = new mongoose.Schema({
     required: true,
     default: 0.0
   },
+  shippingFeeData: {
+    transportadora: {
+      type: String,
+      default: "",
+    },
+    logo: {
+      type: String,
+      default: "",
+    },
+    shippingFeePrice:{
+      type: String,
+      default: "",
+    },
+  },
+  products: [
+    {
+      productId: {
+        type: String,
+        default: "",
+      },
+      quantity: {
+        type: String,
+        default: "",
+      },
+      size: {
+        type: String,
+        default: "",
+      },
+      color: {
+        type: String,
+        default: "",
+      },
+    },
+  ],
 });
 
 const Boleto = mongoose.model("Boleto", boletoSchema);

@@ -55,7 +55,41 @@ const customerSchema = new mongoose.Schema({
     required: true,
     default: Date.now
   },
-  creditCard: creditCardSchema
+  creditCard: creditCardSchema,
+  shippingFeeData: {
+    transportadora: {
+      type: String,
+      default: "",
+    },
+    logo: {
+      type: String,
+      default: "",
+    },
+    shippingFeePrice:{
+      type: String,
+      default: "",
+    },
+  },
+  products: [
+    {
+      productId: {
+        type: String,
+        default: "",
+      },
+      quantity: {
+        type: String,
+        default: "",
+      },
+      size: {
+        type: String,
+        default: "",
+      },
+      color: {
+        type: String,
+        default: "",
+      },
+    },
+  ],
 });
 
 const CreditCard = mongoose.model('CreditCard', customerSchema);

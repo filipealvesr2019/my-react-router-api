@@ -34,11 +34,12 @@ const cartSchema = new Schema({
     nome: {
       type: String,
     },
-    
   },
-  logo:{ img: {
-    type: String,
-  },},
+  logo: {
+    img: {
+      type: String,
+    },
+  },
   taxPrice: {
     type: Number,
   },
@@ -58,7 +59,6 @@ const cartSchema = new Schema({
     required: true,
     default: Date.now,
   },
-
 });
 
 const Cart = mongoose.model("Cart", cartSchema);

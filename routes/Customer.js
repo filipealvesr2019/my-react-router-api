@@ -769,7 +769,6 @@ router.get("/cart/:custumerId/total-price", async (req, res) => {
       (total, product) => total + product.productId.price * product.quantity,
       0
     );
-    console.log("Total Price:", totalPrice);
 
     let totalAmount = totalPrice + cart.shippingFee;
 
@@ -946,7 +945,7 @@ router.post("/pix/:custumerId", async (req, res) => {
   }
 });
 
-// pagar boleto sem checkout transparente
+// pagar boleto com checkout transparente
 router.post("/boleto/:custumerId", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
@@ -1009,6 +1008,17 @@ router.post("/boleto/:custumerId", async (req, res) => {
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
+      shippingFeeData: {
+        transportadora: cart.transportadora.nome || "",
+        logo: cart.logo.img || "",
+        shippingFeePrice: cart.shippingFee
+      },
+      products: cart.products.map(product => ({
+        productId: product.productId._id,
+        quantity: product.quantity,
+        size: product.size,
+        color: product.color
+      }))
     };
 
     const response = await axios.post(
@@ -1036,6 +1046,12 @@ router.post("/boleto/:custumerId", async (req, res) => {
           invoiceUrl: item.invoiceUrl,
           bankSlipUrl: item.bankSlipUrl,
           dueDate: item.dueDate,
+          shippingFeeData: {
+            transportadora: cart.transportadora.nome,
+            logo: cart.logo.img,
+            shippingFeePrice: cart.shippingFee
+          },
+          products: data.products
         });
 
         await boleto.save();
@@ -1051,6 +1067,12 @@ router.post("/boleto/:custumerId", async (req, res) => {
         invoiceUrl: response.data.invoiceUrl,
         bankSlipUrl: response.data.bankSlipUrl,
         dueDate: response.data.dueDate,
+        shippingFeeData: {
+          transportadora: cart.transportadora.nome,
+          logo: cart.logo.img,
+          shippingFeePrice: cart.shippingFee
+          },
+          products: data.products
       });
 
       await boleto.save();
@@ -1284,6 +1306,17 @@ const installmentResult = totalAmount / installmentCount;
         addressComplement: null,
         phone: customer.mobilePhone
       },
+      shippingFeeData: {
+        transportadora: cart.transportadora.nome || "",
+        logo: cart.logo.img || "",
+        shippingFeePrice: cart.shippingFee
+      },
+      products: cart.products.map(product => ({
+        productId: product.productId._id,
+        quantity: product.quantity,
+        size: product.size,
+        color: product.color
+      }))
     };
 
     const response = await axios.post(
@@ -1311,6 +1344,12 @@ const installmentResult = totalAmount / installmentCount;
           invoiceUrl: item.invoiceUrl,
           bankSlipUrl: item.bankSlipUrl,
           dueDate: item.dueDate,
+          shippingFeeData: {
+            transportadora: cart.transportadora.nome,
+            logo: cart.logo.img,
+            shippingFeePrice: cart.shippingFee
+          },
+          products: data.products
         });
 
         await creditCard.save();
@@ -1326,6 +1365,12 @@ const installmentResult = totalAmount / installmentCount;
         invoiceUrl: response.data.invoiceUrl,
         bankSlipUrl: response.data.bankSlipUrl,
         dueDate: response.data.dueDate,
+        shippingFeeData: {
+          transportadora: cart.transportadora.nome,
+          logo: cart.logo.img,
+          shippingFeePrice: cart.shippingFee
+          },
+          products: data.products
       });
 
       await creditCard.save();
@@ -1561,7 +1606,6 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
 
     // Encontra o cliente associado ao atendente
     const customer = await Customer.findOne({ custumerId: custumerId });
-
     if (!customer) {
       return res.status(404).json({ message: "Cliente não encontrado." });
     }
@@ -1582,6 +1626,15 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
       return res
         .status(404)
         .json({ message: "Nenhum produto encontrado no carrinho." });
+    }
+
+     // Atualiza a quantidade de cada produto no banco de dados
+     for (const product of cart.products) {
+      await Product.findByIdAndUpdate(
+        product.productId._id,
+        { $inc: { quantity: -product.quantity } }, // Decrementa a quantidade pelo número de produtos no carrinho
+        { new: true }
+      );
     }
 
     // Encontra o asaasCustomerId do cliente
@@ -1608,12 +1661,23 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
     const data = {
       addressKey: "7591d992-c101-4d70-bc5f-cf589124bc12",
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
-      
       value: totalAmount,
       description: "Pedido 056984",
       format: "ALL",
       expirationDate: new Date(), // Define a data atual como a data de vencimento
       allowsMultiplePayments: true,
+      externalReference: externalReferences,
+      shippingFeeData: {
+        transportadora: cart.transportadora.nome || "",
+        logo: cart.logo.img || "",
+        shippingFeePrice: cart.shippingFee
+      },
+      products: cart.products.map(product => ({
+        productId: product.productId._id,
+        quantity: product.quantity,
+        size: product.size,
+        color: product.color
+      }))
     };
 
     const response = await axios.post(
@@ -1641,6 +1705,13 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
           payload: item.payload,
           encodedImage: item.encodedImage,
           id: item.id,
+          shippingFeeData: {
+          transportadora: cart.transportadora.nome,
+          logo: cart.logo.img,
+          shippingFeePrice: cart.shippingFee
+        },
+        products: data.products
+
 
         });
 
@@ -1658,11 +1729,18 @@ router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
         payload: response.data.payload,
         encodedImage: response.data.encodedImage,
         id: response.data.id,
+        shippingFeeData: {
+        transportadora: cart.transportadora.nome,
+        logo: cart.logo.img,
+        shippingFeePrice: cart.shippingFee
+        },
+        products: data.products
+
       });
+      
 
       await pix.save();
     }
-
     res.json(response.data);
   } catch (error) {
     console.error("Error fetching data:", error);

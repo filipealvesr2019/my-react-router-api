@@ -20,7 +20,8 @@ const creditCardDataSchema = new mongoose.Schema({
   ccv: {
     type: String,
     required: true,
-  }
+  },
+  
 });
 
 const creditCardData = mongoose.model("creditCardData", creditCardDataSchema);
