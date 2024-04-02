@@ -498,6 +498,8 @@ router.put("/update-quantity/:custumerId/:productId", async (req, res) => {
 
     // Atualiza a quantidade do produto no carrinho
     cart.products[productIndex].quantity = quantity;
+      // Zera o shippingFee do carrinho
+      cart.shippingFee = 0;
     await cart.save();
 
     // Retorna informações sobre o produto atualizado
