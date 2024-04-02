@@ -25,6 +25,31 @@ const isAdmin = async (req, res, next) => {
       res.status(500).json({ message: 'Erro ao verificar credenciais de administrador.' });
     }
   };
+
+
+  
+
+// Middleware para verificar se o usuário autenticado é um administrador
+const isCustumer = async (req, res, next) => {
+  try {
+    // Obtenha o ID do usuário autenticado a partir do token JWT
+    const userId = req.user.id;
+
+    // Encontre o usuário no banco de dados
+    const user = await User.findById(userId);
+
+    // Verifique se o usuário tem a credencial de administrador
+    if (user.role !== 'customer') {
+      return res.status(403).json({ message: 'Acesso negado: apenas customers podem acessar esta rota.' });
+    }
+
+    // Se o usuário for um administrador, permita o acesso à rota
+    next();
+  } catch (error) {
+    console.error('Erro ao verificar credenciais de administrador:', error);
+    res.status(500).json({ message: 'Erro ao verificar credenciais de administrador.' });
+  }
+};
   
 // Middleware para verificar se o usuário está autenticado
 const isAuthenticated = async (req, res, next) => {
@@ -63,4 +88,4 @@ const isAuthenticated = async (req, res, next) => {
       }
 };
 
-module.exports = { isAuthenticated, isAdmin };
+module.exports = { isAuthenticated, isAdmin, isCustumer };

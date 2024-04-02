@@ -11,13 +11,13 @@ const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
-const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
+const { isAuthenticated, isCustumer } = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
 
 // Rota para criar um novo usuário
 
-router.post("/signup", async (req, res) => {
+router.post("/signup", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const {
       custumerId,
@@ -106,7 +106,7 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-router.put("/update/:custumerId", async (req, res) => {
+router.put("/update/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const { custumerId } = req.params;
     const {
@@ -192,7 +192,7 @@ router.put("/update/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/customersByAsaas", async (req, res) => {
+router.get("/customersByAsaas",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = "https://sandbox.asaas.com/api/v3/customers";
@@ -216,7 +216,7 @@ router.get("/customersByAsaas", async (req, res) => {
   }
 });
 
-router.get("/customers", async (req, res) => {
+router.get("/customers",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const customers = await Customer.find();
     res.status(200).json({ customers });
@@ -229,7 +229,7 @@ router.get("/customers", async (req, res) => {
 });
 
 
-router.get("/custumer/:custumerId", async (req, res) => {
+router.get("/custumer/:custumerId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const { custumerId } = req.params;
 
@@ -251,7 +251,7 @@ router.get("/custumer/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/favorites/:custumerId", async (req, res) => {
+router.get("/favorites/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     // Extrair ID do usuário do parâmetro da rota
     const { custumerId } = req.params;
@@ -276,7 +276,7 @@ router.get("/favorites/:custumerId", async (req, res) => {
   }
 });
 
-router.post("/favorites", async (req, res) => {
+router.post("/favorites",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     // Extrair ID do usuário do corpo da solicitação
     const { custumerId } = req.body;
@@ -326,7 +326,7 @@ router.post("/favorites", async (req, res) => {
   }
 });
 
-router.delete("/favorites/:custumerId/:productId", async (req, res) => {
+router.delete("/favorites/:custumerId/:productId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     // Extrair ID do usuário e do produto dos parâmetros da solicitação
     const { custumerId, productId } = req.params;
@@ -367,7 +367,7 @@ router.delete("/favorites/:custumerId/:productId", async (req, res) => {
 });
 
 // Rota para adicionar um produto ao carrinho de um cliente
-router.post("/add-to-cart/:custumerId", async (req, res) => {
+router.post("/add-to-cart/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
 
@@ -417,7 +417,7 @@ router.post("/add-to-cart/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/cart/:custumerId",  async (req, res) => {
+router.get("/cart/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
 
@@ -449,7 +449,7 @@ router.get("/cart/:custumerId",  async (req, res) => {
 });
 
 // Rota para atualizar a quantidade de um produto no carrinho de um cliente
-router.put("/update-quantity/:custumerId/:productId", async (req, res) => {
+router.put("/update-quantity/:custumerId/:productId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
     const productId = req.params.productId;
@@ -519,7 +519,7 @@ router.put("/update-quantity/:custumerId/:productId", async (req, res) => {
 
 
 // Rota para excluir um produto do carrinho de um cliente
-router.delete("/remove-from-cart/:custumerId/:productId", async (req, res) => {
+router.delete("/remove-from-cart/:custumerId/:productId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
     const productId = req.params.productId;
@@ -567,7 +567,7 @@ router.delete("/remove-from-cart/:custumerId/:productId", async (req, res) => {
 });
 
 
-router.get("/fretes", async (req, res) => {
+router.get("/fretes",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const fretes = await Frete.find();
     res.json(fretes);
@@ -577,7 +577,7 @@ router.get("/fretes", async (req, res) => {
   }
 });
 
-router.post("/frete/:custumerId", async (req, res) => {
+router.post("/frete/:custumerId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.KUNGU_TOKEN;
     const cep = req.body.cep;
@@ -678,7 +678,7 @@ router.post("/frete/:custumerId", async (req, res) => {
 });
 
 
-router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
+router.put("/cart/:custumerId/shippingFee/:freteId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
     const freteId = req.params.freteId;
@@ -745,7 +745,7 @@ router.put("/cart/:custumerId/shippingFee/:freteId", async (req, res) => {
 
 
 
-router.get("/cart/:custumerId/total-price", async (req, res) => {
+router.get("/cart/:custumerId/total-price", isAuthenticated, isCustumer, async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
 
@@ -791,7 +791,7 @@ router.get("/cart/:custumerId/total-price", async (req, res) => {
 
 
 
-router.get("/frete/:custumerId", async (req, res) => {
+router.get("/frete/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const custumerId = req.params.custumerId;
 
@@ -830,7 +830,7 @@ router.get("/frete/:custumerId", async (req, res) => {
 
 
 // pagar com pix sem checkout transparente
-router.post("/pix/:custumerId", async (req, res) => {
+router.post("/pix/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const custumerId = req.params.custumerId; // Agora é uma string
@@ -948,7 +948,7 @@ router.post("/pix/:custumerId", async (req, res) => {
 });
 
 // pagar boleto com checkout transparente
-router.post("/boleto/:custumerId", async (req, res) => {
+router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const custumerId = req.params.custumerId; // Agora é uma string
@@ -1088,7 +1088,7 @@ router.post("/boleto/:custumerId", async (req, res) => {
 });
 
 // pagar creditCard com checkout transparente
-router.post("/creditCard/:custumerId", async (req, res) => {
+router.post("/creditCard/:custumerId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const custumerId = req.params.custumerId; // Agora é uma string
@@ -1220,7 +1220,7 @@ router.post("/creditCard/:custumerId", async (req, res) => {
 
 
 // pagar creditCard com checkout transparente
-router.post("/creditCardWithoutTokenization/:custumerId", async (req, res) => {
+router.post("/creditCardWithoutTokenization/:custumerId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const custumerId = req.params.custumerId; // Agora é uma string
@@ -1403,7 +1403,7 @@ const installmentResult = totalAmount / installmentCount;
 
 
 // pagar boleto com checkout transparente
-router.post("/tokenizeCreditCard", async (req, res) => {
+router.post("/tokenizeCreditCard", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
@@ -1447,7 +1447,7 @@ router.post("/tokenizeCreditCard", async (req, res) => {
   }
 });
 
-router.post("/creditCardAndToken/:custumerId", async (req, res) => {
+router.post("/creditCardAndToken/:custumerId", isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
@@ -1601,7 +1601,7 @@ router.post("/creditCardAndToken/:custumerId", async (req, res) => {
 });
 
 // pagar com pix sem checkout transparente
-router.post("/pixQRcodeStatico/:custumerId", async (req, res) => {
+router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
     const custumerId = req.params.custumerId; // Agora é uma string
