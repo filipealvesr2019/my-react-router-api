@@ -187,8 +187,6 @@ exports.getProductsBySpecificDiscount = async (req, res) => {
 
 
 
-
-
 exports.getProductsByDiscountPercentage = async (req, res) => {
   try {
     const { percentage } = req.params;
@@ -207,8 +205,8 @@ exports.getProductsByDiscountPercentage = async (req, res) => {
     // Extrair os IDs dos produtos com desconto
     const productIds = discounts.map(discount => discount.productId);
 
-    // Encontrar os produtos com base nos IDs extraídos
-    const productsWithDiscount = await Product.find({ _id: { $in: productIds } });
+    // Encontrar os produtos com base nos IDs extraídos e com quantidade maior que zero
+    const productsWithDiscount = await Product.find({ _id: { $in: productIds }, quantity: { $gt: 0 } }); // Adicione a condição para quantidade maior que zero
 
     res.status(200).json({
       success: true,
@@ -222,7 +220,6 @@ exports.getProductsByDiscountPercentage = async (req, res) => {
     });
   }
 };
-
 
 
 exports.getProductsByDiscountAndCategory = async (req, res) => {
@@ -243,10 +240,11 @@ exports.getProductsByDiscountAndCategory = async (req, res) => {
     // Extrair os IDs dos produtos com desconto
     const productIds = discounts.map(discount => discount.productId);
 
-    // Encontrar os produtos com base nos IDs extraídos e na categoria fornecida
+    // Encontrar os produtos com base nos IDs extraídos, na categoria fornecida e com quantidade maior que zero
     const productsWithDiscountAndCategory = await Product.find({
       _id: { $in: productIds },
-      category: category, // Considerando que o campo de categoria no modelo seja chamado "category"
+      category: category,
+      quantity: { $gt: 0 } // Adicione a condição para quantidade maior que zero
     });
 
     // Se não houver produtos com a categoria especificada, retornar uma resposta vazia
@@ -269,11 +267,6 @@ exports.getProductsByDiscountAndCategory = async (req, res) => {
     });
   }
 };
-
-
-
-
-
 
 
 

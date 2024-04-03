@@ -524,18 +524,16 @@ exports.deleteUrlFromColor = async (req, res, next) => {
 };
 
 
-
-
 exports.listNewArrivals = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
   const perPage = 5; // Número de produtos por página
   const startIndex = (page - 1) * perPage; // Índice inicial do produto
   try {
-    // Contar o total de produtos
-    const totalProducts = await Product.countDocuments();
-    
-    // Encontrar os produtos da página atual
-    const newArrivals = await Product.find()
+    // Contar o total de produtos com quantidade maior que zero
+    const totalProducts = await Product.countDocuments({ quantity: { $gt: 0 } });
+
+    // Encontrar os produtos da página atual com quantidade maior que zero
+    const newArrivals = await Product.find({ quantity: { $gt: 0 } })
       .sort('-createdAt')
       .skip(startIndex)
       .limit(perPage);

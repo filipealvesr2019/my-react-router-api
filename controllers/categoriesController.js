@@ -307,6 +307,7 @@ const getAllCategoriesWithProducts = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
+
 const getMixedProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
@@ -315,7 +316,7 @@ const getMixedProductsByCategory = async (req, res) => {
 
     // Opções de filtro
     const { color, size, priceRange } = req.query;
-    const filter = { category };
+    const filter = { category, quantity: { $gt: 0 } }; // Adicione a condição para quantidade maior que zero
 
     // Adicionar opções de filtro se fornecidas
     if (color) {
@@ -365,6 +366,7 @@ const getMixedProductsByCategory = async (req, res) => {
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
 
 // Rota no arquivo de roteamento
 

@@ -53,17 +53,16 @@ router.get('/products/new-arrivals', productController.listNewArrivals);
 router.get("/productsFilter", productController.getProductsByFilter);
 router.get('/subcategories/:category', productController.getSubcategoriesByCategory);
 // Modifique a rota para tratar produtos com base na categoria e subcategoria
-
 router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) => {
   try {
     const { category, subcategory } = req.params;
     const page = req.query.page || 1;
     const perPage = 10; // Número de produtos por página
 
-    const totalProducts = await Product.countDocuments({ category, subcategory });
+    const totalProducts = await Product.countDocuments({ category, subcategory, quantity: { $gt: 0 } }); // Adicione a condição para quantidade maior que zero
     const totalPages = Math.ceil(totalProducts / perPage);
 
-    const products = await Product.find({ category, subcategory })
+    const products = await Product.find({ category, subcategory, quantity: { $gt: 0 } }) // Adicione a condição para quantidade maior que zero
       .skip((page - 1) * perPage)
       .limit(perPage);
 
@@ -97,18 +96,15 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
 
 
 
-
-
-
 router.get('/search/product', async (req, res) => {
   try {
     const { searchQuery, page = 1, pageSize = 10, color, size, priceRange } = req.query;
 
     const skip = (page - 1) * pageSize;
 
-    let query = {};
+    let query = { quantity: { $gt: 0 } }; // Adicione a condição para quantidade maior que zero
     if (searchQuery) {
-      query = { name: new RegExp(searchQuery, 'i') };
+      query.name = new RegExp(searchQuery, 'i');
     }
 
     if (color) {
@@ -156,7 +152,6 @@ router.get('/search/product', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
 
 // Rota para paginação de produtos
 router.get('/products/pagination', async (req, res) => {

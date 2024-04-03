@@ -889,7 +889,7 @@ router.post("/pix/:custumerId",isAuthenticated, isCustumer,  async (req, res) =>
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       dueDate: new Date(), // Define a data atual como a data de vencimento
       value: totalAmount,
-      description: "Pedido 056984",
+      description: "",
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
@@ -1006,7 +1006,7 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       dueDate: new Date(), // Define a data atual como a data de vencimento
       value: totalAmount,
-      description: "Pedido 056984",
+      description: "",
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
@@ -1146,7 +1146,7 @@ router.post("/creditCard/:custumerId", isAuthenticated, isCustumer,  async (req,
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       dueDate: new Date(), // Define a data atual como a data de vencimento
       value: totalAmount,
-      description: "Pedido 056984",
+      description: "",
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
@@ -1286,7 +1286,7 @@ const installmentResult = totalAmount / installmentCount;
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       dueDate: new Date(), // Define a data atual como a data de vencimento
       value: totalAmount,
-      description: "Pedido 056984",
+      description: "",
       daysAfterDueDateToCancellationRegistration: 1,
       externalReference: externalReferences,
       postalService: false,
@@ -1582,7 +1582,7 @@ router.post("/creditCardAndToken/:custumerId", isAuthenticated, isCustumer,  asy
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         dueDate: new Date(), // Define a data atual como a data de vencimento
         value: totalAmount,
-        description: "Pedido 056984",
+        description: "",
         daysAfterDueDateToCancellationRegistration: 1,
         externalReference: externalReferences,
         postalService: false,
@@ -1658,13 +1658,13 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
 
     // Remove a vírgula extra no final da string externalReferences
     externalReferences = externalReferences.slice(0, -1);
-    
+    const addressKey = process.env.ADDRESS_KEY
     // Apaga os registros de frete anteriores
     const data = {
-      addressKey: "7591d992-c101-4d70-bc5f-cf589124bc12",
+      addressKey: addressKey,
       customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
       value: totalAmount,
-      description: "Pedido 056984",
+      description: "",
       format: "ALL",
       expirationDate: new Date(), // Define a data atual como a data de vencimento
       allowsMultiplePayments: true,
