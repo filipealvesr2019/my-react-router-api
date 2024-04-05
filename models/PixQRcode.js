@@ -77,6 +77,9 @@ const PixQRcodeSchema = new mongoose.Schema({
       },
     },
   ],
+
+  trackingCode:{type: String}
+
 });
 
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);

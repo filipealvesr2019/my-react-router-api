@@ -1697,6 +1697,7 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
     if (Array.isArray(response.data)) {
       for (const item of response.data) {
         const pix = new PixQRcode({
+          custumerId: custumerId,
           customer: data.customer, // Ajuste para usar o cliente correto
           value: data.value, // Ajuste para usar o valor correto
           description: item.description,
@@ -1721,6 +1722,7 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
       }
     } else {
       const pix = new PixQRcode({
+        custumerId: custumerId,
         customer: data.customer, // Ajuste para usar o cliente correto
         value: data.value, // Ajuste para usar o valor correto
         description: response.data.description,
@@ -1762,6 +1764,40 @@ router.post('/reports', async (req, res) => {
       res.status(201).json(savedPayment); // Responda com o pagamento salvo
   } catch (err) {
       res.status(400).json({ message: err.message }); // Se houver um erro, responda com uma mensagem de erro
+  }
+});
+
+
+// Rota para adicionar código de rastreamento a um pedido específico do QR code
+router.post('/traking/code/:orderId', async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { trackingCode } = req.body;
+
+    // Verifica se o código de rastreamento é fornecido
+    if (!trackingCode) {
+      return res.status(400).json({ error: 'Código de rastreamento é obrigatório.' });
+    }
+
+    // Procura pelo pedido específico na base de dados
+    const order = await PixQRcode.findById(orderId);
+
+    // Verifica se o pedido existe
+    if (!order) {
+      return res.status(404).json({ error: 'Pedido não encontrado.' });
+    }
+
+    // Atualiza o código de rastreamento do pedido
+    order.trackingCode = trackingCode;
+
+    // Salva as alterações no banco de dados
+    await order.save();
+
+    // Retorna uma resposta de sucesso
+    return res.status(200).json({ message: 'Código de rastreamento adicionado com sucesso ao pedido do QR code.' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
 
