@@ -1040,7 +1040,8 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const boleto = new Boleto({
-          clerkUserId: custumerId, // Agora é uma string
+          billingType:"BOLETO",
+          customerId: custumerId, // Agora é uma string
           customer: item.customer,
           billingType: item.billingType,
           value: item.value,
@@ -1061,7 +1062,8 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
     } else {
       // Se não for um array, salva apenas um item
       const boleto = new Boleto({
-        custumerId: custumerId, // Agora é uma string
+        billingType:"BOLETO",
+        customerId: custumerId, // Agora é uma string
         customer: response.data.customer,
         billingType: response.data.billingType,
         value: response.data.value,
@@ -1697,6 +1699,7 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
     if (Array.isArray(response.data)) {
       for (const item of response.data) {
         const pix = new PixQRcode({
+          billingType:"PIX",
           custumerId: custumerId,
           customer: data.customer, // Ajuste para usar o cliente correto
           value: data.value, // Ajuste para usar o valor correto
@@ -1722,6 +1725,7 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
       }
     } else {
       const pix = new PixQRcode({
+        billingType:"PIX",
         custumerId: custumerId,
         customer: data.customer, // Ajuste para usar o cliente correto
         value: data.value, // Ajuste para usar o valor correto

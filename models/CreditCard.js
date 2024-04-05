@@ -90,6 +90,9 @@ const customerSchema = new mongoose.Schema({
       },
     },
   ],
+  typeOrder: {
+    type: String,
+  },
 });
 
 const CreditCard = mongoose.model('CreditCard', customerSchema);

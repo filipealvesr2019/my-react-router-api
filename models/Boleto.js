@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 
 const boletoSchema = new mongoose.Schema({
-  clerkUserId: {
+  customerId: {
     type: String,
   },
   customer: {
     type: String,
     required: true
-
   },
   billingType: {type:String,    enum: ['BOLETO', 'CREDIT_CARD', 'PIX']},
   

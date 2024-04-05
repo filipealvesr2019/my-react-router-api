@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const PixQRcodeSchema = new mongoose.Schema({
+  billingType: {
+    type: String,
+  },
   custumerId: {
     type: String,
   },
@@ -52,7 +55,7 @@ const PixQRcodeSchema = new mongoose.Schema({
       type: String,
       default: "",
     },
-    shippingFeePrice:{
+    shippingFeePrice: {
       type: String,
       default: "",
     },
@@ -78,8 +81,7 @@ const PixQRcodeSchema = new mongoose.Schema({
     },
   ],
 
-  trackingCode:{type: String}
-
+  trackingCode: { type: String },
 });
 
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);
