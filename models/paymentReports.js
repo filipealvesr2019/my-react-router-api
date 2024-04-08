@@ -2,10 +2,10 @@ const mongoose = require('mongoose');
 
 
 const paymentReportsSchema = new mongoose.Schema({
-    object: String,
-    id: String,
-    dateCreated: Date,
-    customer: String,
+    object: { type: String, required: true },
+  id: { type: String, required: true },
+  dateCreated: { type: Date, required: true },
+    customer: { type: String, required: true },
     paymentLink: String,
     value: Number,
     netValue: Number,
