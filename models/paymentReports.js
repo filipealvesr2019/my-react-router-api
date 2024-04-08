@@ -4,9 +4,7 @@ const mongoose = require('mongoose');
 const paymentReportsSchema = new mongoose.Schema({
   event: String,
   payment:{
-    id: String,
-
-    customer: String
+    id: String
 
   }
 });
