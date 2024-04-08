@@ -1760,14 +1760,13 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
 
 
 
-// Rota para adicionar um novo pagamento ao relatório
 router.post('/reports', async (req, res) => {
   try {
-      const newPayment = new PaymentReports(req.body); // Crie uma nova instância do modelo com os dados do corpo da requisição
-      const savedPayment = await newPayment.save(); // Salve o pagamento no banco de dados
-      res.status(201).json(savedPayment); // Responda com o pagamento salvo
-  } catch (err) {
-      res.status(400).json({ message: err.message }); // Se houver um erro, responda com uma mensagem de erro
+    const newPayment = await Payment.create(req.body);
+    res.status(201).json(newPayment);
+  } catch (error) {
+    console.error('Erro ao criar novo pagamento:', error);
+    res.status(500).json({ error: 'Erro ao criar novo pagamento' });
   }
 });
 

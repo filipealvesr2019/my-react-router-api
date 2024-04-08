@@ -1,76 +1,29 @@
 const mongoose = require('mongoose');
 
+
 const paymentReportsSchema = new mongoose.Schema({
-    object: {
-        type: String,
-        required: true
-    },
-    id: {
-        type: String,
-        required: true
-    },
-    dateCreated: {
-        type: Date,
-        required: true
-    },
-    customer: {
-        type: String,
-        required: true
-    },
+    object: String,
+    id: String,
+    dateCreated: Date,
+    customer: String,
     paymentLink: String,
-    value: {
-        type: Number,
-        required: true
-    },
-    netValue: {
-        type: Number,
-        required: true
-    },
-    originalValue: Number,
-    interestValue: Number,
-    description: {
-        type: String,
-        required: true
-    },
-    billingType: {
-        type: String,
-        required: true
-    },
-    canBePaidAfterDueDate: {
-        type: Boolean,
-        required: true
-    },
-    pixTransaction: String,
-    status: {
-        type: String,
-        required: true
-    },
-    dueDate: {
-        type: Date,
-        required: true
-    },
-    originalDueDate: {
-        type: Date,
-        required: true
-    },
+    value: Number,
+    netValue: Number,
+    description: String,
+    billingType: String,
+    canBePaidAfterDueDate: Boolean,
+    status: String,
+    dueDate: Date,
+    originalDueDate: Date,
     paymentDate: Date,
     clientPaymentDate: Date,
     installmentNumber: Number,
     invoiceUrl: String,
     invoiceNumber: String,
     externalReference: String,
-    deleted: {
-        type: Boolean,
-        default: false
-    },
-    anticipated: {
-        type: Boolean,
-        default: false
-    },
-    anticipable: {
-        type: Boolean,
-        default: false
-    },
+    deleted: Boolean,
+    anticipated: Boolean,
+    anticipable: Boolean,
     creditDate: Date,
     estimatedCreditDate: Date,
     transactionReceiptUrl: String,
@@ -79,45 +32,23 @@ const paymentReportsSchema = new mongoose.Schema({
     lastInvoiceViewedDate: Date,
     lastBankSlipViewedDate: Date,
     discount: {
-        value: {
-            type: Number,
-            default: 0
-        },
-        limitDate: Date,
-        dueDateLimitDays: Number,
-        type: {
-            type: String,
-            default: 'PERCENTAGE'
-        }
+      value: Number,
+      limitDate: Date,
+      dueDateLimitDays: Number,
+      type: String
     },
     fine: {
-        value: {
-            type: Number,
-            default: 0
-        },
-        type: {
-            type: String,
-            default: 'PERCENTAGE'
-        }
+      value: Number,
+      type: String
     },
     interest: {
-        value: {
-            type: Number,
-            default: 0
-        },
-        type: {
-            type: String,
-            default: 'PERCENTAGE'
-        }
+      value: Number,
+      type: String
     },
-    postalService: {
-        type: Boolean,
-        default: false
-    },
+    postalService: Boolean,
     custody: String,
-    refunds: Array
-});
-
+    refunds: mongoose.Schema.Types.Mixed // Pode conter qualquer tipo de dado
+  });
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
 
 module.exports = PaymentReports;
