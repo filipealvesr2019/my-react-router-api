@@ -8,7 +8,6 @@ const paymentReportsSchema = new mongoose.Schema({
     id: String
   },
   status: String
-
 });
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
 
