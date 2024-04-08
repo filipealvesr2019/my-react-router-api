@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 const paymentReportsSchema = new mongoose.Schema({
-  event: String,
+  event: {type: String},
   payment:{
     id: String
   },
