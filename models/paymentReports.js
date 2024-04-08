@@ -6,7 +6,7 @@ const paymentReportsSchema = new mongoose.Schema({
   payment:{
     object:String,
     id: String,
-    dateCreated: Date,
+    dateCreated: String,
     customer: String
 
   }
