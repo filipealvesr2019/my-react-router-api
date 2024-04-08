@@ -6,7 +6,8 @@ const paymentReportsSchema = new mongoose.Schema({
   event: String,
   payment:{
     id: String,
-    status: String
+    status: String,
+    dateCreated: String
 
   },
 });
