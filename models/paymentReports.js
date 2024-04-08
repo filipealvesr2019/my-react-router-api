@@ -33,9 +33,6 @@ const paymentReportsSchema = new mongoose.Schema({
   bankSlipUrl: String,
   lastInvoiceViewedDate: Date,
   lastBankSlipViewedDate: Date,
-  discount: discountSchema, // Usando o esquema de desconto definido acima
-  fine: fineSchema, // Usando o esquema de multa definido acima
-  interest: interestSchema, // Usando o esquema de juros definido acima
   postalService: Boolean,
   custody: String,
   refunds: mongoose.Schema.Types.Mixed // Pode conter qualquer tipo de dado
