@@ -14,7 +14,7 @@ const creditCardData = require("../models/creditCardData");
 const { isAuthenticated, isCustumer } = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
-
+const CustomerController = require("../controllers/CustomerController")
 // Rota para criar um novo usuário
 
 router.post("/signup", isAuthenticated, isCustumer,  async (req, res) => {
@@ -1804,6 +1804,74 @@ router.post('/traking/code/:orderId', async (req, res) => {
     return res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
+
+
+
+// Rota para obter dados por customerId
+router.get('/order/:customerId', async (req, res) => {
+  const customerId = req.params.customerId;
+  
+  try {
+    // Buscar dados de Boleto por customerId
+    const boletoData = await Boleto.find({ customerId: customerId });
+    
+    // Buscar dados de Cartão de Crédito por customerId
+    const creditCardData = await CreditCard.find({ custumerId: customerId });
+    
+    // Buscar dados de PixQRcode por customerId
+    const pixData = await PixQRcode.find({ custumerId: customerId });
+
+    // Consolidar os dados e enviar a resposta
+    const responseData = {
+      boleto: boletoData,
+      creditCard: creditCardData,
+      pix: pixData
+    };
+
+    res.json(responseData);
+  } catch (error) {
+    console.error('Erro ao buscar dados:', error);
+    res.status(500).json({ error: 'Erro ao buscar dados' });
+  }
+});
+
+
+
+
+// Rota para procurar uma ordem por ID e customerId
+router.get('/order/:customerId/:orderId', async (req, res) => {
+  const customerId = req.params.customerId;
+  const orderId = req.params.orderId;
+  
+  try {
+    let orderData;
+
+    // Procurar ordem em Boleto por customerId e orderId
+    orderData = await Boleto.findOne({ customerId: customerId, _id: orderId });
+
+    // Se não encontrou em Boleto, procurar em CreditCard
+    if (!orderData) {
+      orderData = await CreditCard.findOne({ custumerId: customerId, _id: orderId });
+    }
+
+    // Se ainda não encontrou, procurar em PixQRcode
+    if (!orderData) {
+      orderData = await PixQRcode.findOne({ custumerId: customerId, _id: orderId });
+    }
+
+    // Se encontrou a ordem, enviar a resposta
+    if (orderData) {
+      res.json(orderData);
+    } else {
+      // Se não encontrou em nenhum modelo, enviar mensagem de ordem não encontrada
+      res.status(404).json({ message: 'Ordem não encontrada para o customerId e orderId fornecidos.' });
+    }
+  } catch (error) {
+    console.error('Erro ao procurar ordem:', error);
+    res.status(500).json({ error: 'Erro ao procurar ordem' });
+  }
+});
+
 
 
 module.exports = router;

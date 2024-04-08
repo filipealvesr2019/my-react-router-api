@@ -3,6 +3,9 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const Customer = require('../models/Customer'); // Certifique-se de que o caminho está correto
+const Boleto = require('../models/Boleto');
+const CreditCard = require('../models/CreditCard');
+const PixQRcode = require('../models/PixQRcode');
 
 // Rota para criar um novo usuário
 router.post('/signup', async (req, res) => {
@@ -59,6 +62,7 @@ router.post('/signup', async (req, res) => {
     res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
+
 
 // Exportar o roteador
 module.exports = router;
