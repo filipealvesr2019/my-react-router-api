@@ -5,9 +5,10 @@ const paymentReportsSchema = new mongoose.Schema({
     id: String,
   event: String,
   payment:{
-    id: String
+    id: String,
+    status: String
+
   },
-  status: String
 });
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
 
