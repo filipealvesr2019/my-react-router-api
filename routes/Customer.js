@@ -1762,13 +1762,14 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
 
 router.post('/reports', async (req, res) => {
   try {
-    const newPayment = await Payment.create(req.body);
+    const newPayment = await PaymentReports.create(req.body);
     res.status(201).json(newPayment);
   } catch (error) {
     console.error('Erro ao criar novo pagamento:', error);
     res.status(500).json({ error: 'Erro ao criar novo pagamento' });
   }
 });
+
 
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
