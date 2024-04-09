@@ -39,31 +39,7 @@ const paymentReportsSchema = new mongoose.Schema({
     lastInvoiceViewedDate: String,
     lastBankSlipViewedDate: String,
     postalService: String,
-    creditCard:{
-      creditCardNumber: String,
-      creditCardBrand: String,
-      creditCardToken: String
-    },
-    discount:{
-      value: Number,
-      dueDateLimitDays: Number,
-      limitedDate: String,
-      type: String
-    },
-    fine:{
-      value: Number,
-      type: String
-    },
-    interest:{
-      value: Number,
-      type: String
-    },
   
-    chargeback:{
-      status: String,
-      reason: String
-    },
-    refunds: String,
 
   },
 }
