@@ -45,8 +45,15 @@ const paymentReportsSchema = new mongoose.Schema({
       creditCardBrand: String,
       creditCardToken: String,
    },
-
   },
+  discount:{
+     value: Number,
+     dueDateLimitDays: Number,
+     limitedDate: String,
+     type: String,
+  },
+
+
 }
 
 );
