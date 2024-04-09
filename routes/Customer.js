@@ -1771,7 +1771,6 @@ router.post('/reports', async (req, res) => {
 });
 
 
-
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post('/traking/code/:orderId', async (req, res) => {
   try {
