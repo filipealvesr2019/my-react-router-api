@@ -68,6 +68,11 @@ const paymentReportsSchema = new mongoose.Schema({
        refusalReason: String,
     }
  ],
+ chargeback: {
+     status: String,
+     reason: String,
+ },
+ refunds: String,
 
 
 }
