@@ -7,7 +7,7 @@ const paymentReportsSchema = new mongoose.Schema({
   payment:{
     id: String,
     status: String,
-    dateCreated: Date,
+    dateCreated: String,
     subscription: String,
     installment: String,
     paymentLink: String
