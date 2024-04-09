@@ -18,10 +18,10 @@ const paymentReportsSchema = new mongoose.Schema({
     billingType: String,
     canBePaidAfterDueDate: Boolean,
     status: String,
-    dueDate: Date,
-    originalDueDate: Date,
-    paymentDate: Date,
-    clientPaymentDate: Date,
+    dueDate: String,
+    originalDueDate: String,
+    paymentDate: String,
+    clientPaymentDate: String,
     
   },
 });
