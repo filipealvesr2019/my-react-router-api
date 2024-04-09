@@ -8,6 +8,7 @@ const paymentReportsSchema = new mongoose.Schema({
     object: String,
     id: String,
     dateCreated: String,
+    customer: String,
     subscription: String,
     installment: String,
     paymentLink: String,
@@ -39,7 +40,11 @@ const paymentReportsSchema = new mongoose.Schema({
     lastInvoiceViewedDate: String,
     lastBankSlipViewedDate: String,
     postalService: String,
-  
+    creditCard:{
+      creditCardNumber: String,
+      creditCardBrand: String,
+      creditCardToken: String,
+   },
 
   },
 }
