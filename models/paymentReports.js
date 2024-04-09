@@ -58,12 +58,7 @@ const paymentReportsSchema = new mongoose.Schema({
       value: Number,
       type: String
     },
-    split:[{
-      walletId: String,
-      fixedValue: Number,
-      status: String,
-      refusalReason: String
-    }],
+  
     chargeback:{
       status: String,
       reason: String
@@ -71,7 +66,9 @@ const paymentReportsSchema = new mongoose.Schema({
     refunds: String,
 
   },
-});
+}
+
+);
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
 
 module.exports = PaymentReports;
