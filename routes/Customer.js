@@ -1763,7 +1763,7 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
 router.post('/reports', async (req, res) => {
   try {
     const newPayment = await PaymentReports.create(req.body);
-    res.status(201).json(newPayment);
+    res.status(200).json(newPayment);
   } catch (error) {
     console.error('Erro ao criar novo pagamento:', error);
     res.status(500).json({ error: 'Erro ao criar novo pagamento' });
