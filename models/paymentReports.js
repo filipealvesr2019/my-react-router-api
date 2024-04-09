@@ -33,11 +33,43 @@ const paymentReportsSchema = new mongoose.Schema({
     bankSlipUrl: String,
     transactionReceiptUrl: String,
     invoiceNumber: String,
-     
-    
     deleted: String,
     anticipated: String,
     anticipable: String,
+    lastInvoiceViewedDate: String,
+    lastBankSlipViewedDate: String,
+    postalService: String,
+    creditCard:{
+      creditCardNumber: String,
+      creditCardBrand: String,
+      creditCardToken: String
+    },
+    discount:{
+      value: Number,
+      dueDateLimitDays: Number,
+      limitedDate: String,
+      type: String
+    },
+    fine:{
+      value: Number,
+      type: String
+    },
+    fine:{
+      value: Number,
+      type: String
+    },
+    split:[{
+      walletId: String,
+      fixedValue: Number,
+      status: String,
+      refusalReason: String
+    }],
+    chargeback:{
+      status: Number,
+      reason: String
+    },
+    refunds: String,
+
   },
 });
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
