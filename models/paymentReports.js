@@ -58,12 +58,12 @@ const paymentReportsSchema = new mongoose.Schema({
       value: Number,
       type: String
     },
-    split:{
+    split:[{
       walletId: String,
       fixedValue: Number,
       status: String,
       refusalReason: String
-    },
+    }],
     chargeback:{
       status: String,
       reason: String
