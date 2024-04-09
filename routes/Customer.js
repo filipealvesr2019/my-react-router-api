@@ -1805,26 +1805,30 @@ router.post('/traking/code/:orderId', async (req, res) => {
 });
 
 
-
-// Rota para obter dados por customerId
 router.get('/order/:customerId', async (req, res) => {
   const customerId = req.params.customerId;
   
   try {
-    // Buscar dados de Boleto por customerId
+    // Find the customer's data in other schemas
     const boletoData = await Boleto.find({ customerId: customerId });
-    
-    // Buscar dados de Cartão de Crédito por customerId
     const creditCardData = await CreditCard.find({ custumerId: customerId });
-    
-    // Buscar dados de PixQRcode por customerId
     const pixData = await PixQRcode.find({ custumerId: customerId });
 
-    // Consolidar os dados e enviar a resposta
+    // Find the customer's data in PaymentReports
+    const paymentReports = await PaymentReports.find({ 
+      $or: [
+        { 'creditCard.creditCardNumber': { $in: creditCardData.map(card => card.creditCardNumber) } },
+        { 'boleto.id': { $in: boletoData.map(boleto => boleto.id) } },
+        { 'pix.id': { $in: pixData.map(pix => pix.id) } }
+      ]
+    });
+
     const responseData = {
       boleto: boletoData,
       creditCard: creditCardData,
-      pix: pixData
+      pix: pixData,
+      paymentReports: paymentReports
+
     };
 
     res.json(responseData);
