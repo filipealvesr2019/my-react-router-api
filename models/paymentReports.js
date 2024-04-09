@@ -60,6 +60,14 @@ const paymentReportsSchema = new mongoose.Schema({
      value: Number,
      type: String,
   },
+  split:[
+    {
+       walletId: String,
+       fixedValue: Number,
+       status: String,
+       refusalReason: String,
+    }
+ ],
 
 
 }
