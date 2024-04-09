@@ -26,7 +26,18 @@ const paymentReportsSchema = new mongoose.Schema({
     paymentDate: String,
     clientPaymentDate: String,
     installmentNumber: String,
-
+    creditDate: String,
+    custody: String,
+    estimatedCreditDate: String,
+    invoiceUrl: String,
+    bankSlipUrl: String,
+    transactionReceiptUrl: String,
+    invoiceNumber: String,
+     
+    
+    deleted: String,
+    anticipated: String,
+    anticipable: String,
   },
 });
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
