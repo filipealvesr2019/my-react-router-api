@@ -52,6 +52,14 @@ const paymentReportsSchema = new mongoose.Schema({
      limitedDate: String,
      type: String,
   },
+  fine:{
+     value: Number,
+     type: String,
+  },
+  interest:{
+     value: Number,
+     type: String,
+  },
 
 
 }
