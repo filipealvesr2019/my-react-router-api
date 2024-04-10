@@ -1764,7 +1764,7 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
 
 
 
-
+// relatorio com status dos pedidos dos consumidores
 router.post('/reports', async (req, res) => {
   try {
     const newPaymentData = req.body;
