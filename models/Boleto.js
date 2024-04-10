@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const boletoSchema = new mongoose.Schema({
+  orderId: {
+    type: String,
+  },
   customerId: {
     type: String,
   },

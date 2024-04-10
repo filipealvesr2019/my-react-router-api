@@ -1040,6 +1040,7 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const boleto = new Boleto({
+          orderId: item.id, 
           billingType:"BOLETO",
           customerId: custumerId, // Agora é uma string
           customer: item.customer,
@@ -1076,7 +1077,9 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
           logo: cart.logo.img,
           shippingFeePrice: cart.shippingFee
           },
-          products: data.products
+          products: data.products,
+          orderId: response.data.id,
+
       });
 
       await boleto.save();
@@ -1874,6 +1877,14 @@ router.get('/order/:customerId/:orderId', async (req, res) => {
     res.status(500).json({ error: 'Erro ao procurar ordem' });
   }
 });
+
+
+
+
+
+
+
+
 
 
 
