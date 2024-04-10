@@ -1765,14 +1765,26 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
 
 
 
-
 router.post('/reports', async (req, res) => {
   try {
-    const newPayment = await PaymentReports.create(req.body);
-    res.status(200).json(newPayment);
+    const newPaymentData = req.body;
+    const paymentId = newPaymentData.payment.id;
+
+    // Verificar se já existe um pagamento com esse ID
+    const existingPayment = await PaymentReports.findOne({ 'payment.id': paymentId });
+
+    if (existingPayment) {
+      // Se já existe, atualize as informações existentes
+      await PaymentReports.findOneAndUpdate({ 'payment.id': paymentId }, newPaymentData);
+      res.status(200).json({ message: 'Informações atualizadas com sucesso' });
+    } else {
+      // Se não existe, crie um novo documento
+      const newPayment = await PaymentReports.create(newPaymentData);
+      res.status(200).json(newPayment);
+    }
   } catch (error) {
-    console.error('Erro ao criar novo pagamento:', error);
-    res.status(500).json({ error: 'Erro ao criar novo pagamento' });
+    console.error('Erro ao criar/atualizar pagamento:', error);
+    res.status(500).json({ error: 'Erro ao criar/atualizar pagamento' });
   }
 });
 
