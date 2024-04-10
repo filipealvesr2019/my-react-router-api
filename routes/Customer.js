@@ -18,7 +18,7 @@ const CustomerController = require("../controllers/CustomerController")
 
 // Rota para criar um novo usuário
 
-router.post("/signup", isAuthenticated, isCustumer,  async (req, res) => {
+router.post("/signup",   async (req, res) => {
   try {
     const {
       custumerId,
