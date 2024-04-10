@@ -1812,23 +1812,28 @@ router.post('/traking/code/:orderId', async (req, res) => {
 
 
 
-router.get('/orders/:customer', async (req, res) => {
-  const customer= req.params.customer;
+router.get('/orders/:customerId', async (req, res) => {
+  const customerId = req.params.customerId;
   
   try {
-  // Find payment reports for the customer
-  const paymentReports = await PaymentReports.find({ 'payment.customer': customer});
-  
+    // Encontre o asaasCustomerId com base no custumerId
+    const customer = await Customer.findOne({ custumerId: customerId });
 
-  res.json(paymentReports);
-  
-  
-  
+    if (!customer) {
+      return res.status(404).json({ error: 'Customer not found' });
+    }
+
+    const asaasCustomerId = customer.asaasCustomerId;
+
+    // Encontre todos os pedidos correspondentes
+    const paymentReports = await PaymentReports.find({ 'payment.customer': asaasCustomerId });
+
+    res.json(paymentReports);
   } catch (error) {
-  console.error('Erro ao buscar dados:', error);
-  res.status(500).json({ error: 'Erro ao buscar dados' });
+    console.error('Erro ao buscar dados:', error);
+    res.status(500).json({ error: 'Erro ao buscar dados' });
   }
-  });
+});
 
 
 
