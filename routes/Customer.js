@@ -15,6 +15,7 @@ const { isAuthenticated, isCustumer } = require("../middleware/middlewares.authM
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
 const CustomerController = require("../controllers/CustomerController")
+
 // Rota para criar um novo usuário
 
 router.post("/signup", isAuthenticated, isCustumer,  async (req, res) => {
@@ -1343,6 +1344,7 @@ const installmentResult = totalAmount / installmentCount;
       // Se for um array, faz um loop sobre os itens e salva cada um
       for (const item of response.data) {
         const creditCard = new CreditCard({
+          orderId: item.id,
           custumerId: custumerId, // Agora é uma string
           customer: item.customer,
           billingType: item.billingType,
@@ -1364,6 +1366,7 @@ const installmentResult = totalAmount / installmentCount;
     } else {
       // Se não for um array, salva apenas um item
       const creditCard = new CreditCard({
+        orderId: response.data.id,
         custumerId: custumerId, // Agora é uma string
         customer: response.data.customer,
         billingType: response.data.billingType,
@@ -1808,83 +1811,57 @@ router.post('/traking/code/:orderId', async (req, res) => {
 });
 
 
-router.get('/order/:customerId', async (req, res) => {
-  const customerId = req.params.customerId;
+
+router.get('/orders/:customer', async (req, res) => {
+  const customer= req.params.customer;
   
   try {
-    // Find the customer's data in other schemas
-    const boletoData = await Boleto.find({ customerId: customerId });
-    const creditCardData = await CreditCard.find({ custumerId: customerId });
-    const pixData = await PixQRcode.find({ custumerId: customerId });
-
-    // Find the customer's data in PaymentReports
-    const paymentReports = await PaymentReports.find({ 
-      $or: [
-        { 'creditCard.creditCardNumber': { $in: creditCardData.map(card => card.creditCardNumber) } },
-        { 'boleto.id': { $in: boletoData.map(boleto => boleto.id) } },
-        { 'pix.id': { $in: pixData.map(pix => pix.id) } }
-      ]
-    });
-
-    const responseData = {
-      boleto: boletoData,
-      creditCard: creditCardData,
-      pix: pixData,
-      paymentReports: paymentReports
-
-    };
-
-    res.json(responseData);
-  } catch (error) {
-    console.error('Erro ao buscar dados:', error);
-    res.status(500).json({ error: 'Erro ao buscar dados' });
-  }
-});
-
-
-
-
-// Rota para procurar uma ordem por ID e customerId
-router.get('/order/:customerId/:orderId', async (req, res) => {
-  const customerId = req.params.customerId;
-  const orderId = req.params.orderId;
+  // Find payment reports for the customer
+  const paymentReports = await PaymentReports.find({ 'payment.customer': customer});
   
-  try {
-    let orderData;
 
-    // Procurar ordem em Boleto por customerId e orderId
-    orderData = await Boleto.findOne({ customerId: customerId, _id: orderId });
-
-    // Se não encontrou em Boleto, procurar em CreditCard
-    if (!orderData) {
-      orderData = await CreditCard.findOne({ custumerId: customerId, _id: orderId });
-    }
-
-    // Se ainda não encontrou, procurar em PixQRcode
-    if (!orderData) {
-      orderData = await PixQRcode.findOne({ custumerId: customerId, _id: orderId });
-    }
-
-    // Se encontrou a ordem, enviar a resposta
-    if (orderData) {
-      res.json(orderData);
-    } else {
-      // Se não encontrou em nenhum modelo, enviar mensagem de ordem não encontrada
-      res.status(404).json({ message: 'Ordem não encontrada para o customerId e orderId fornecidos.' });
-    }
+  res.json(paymentReports);
+  
+  
+  
   } catch (error) {
-    console.error('Erro ao procurar ordem:', error);
-    res.status(500).json({ error: 'Erro ao procurar ordem' });
+  console.error('Erro ao buscar dados:', error);
+  res.status(500).json({ error: 'Erro ao buscar dados' });
   }
-});
+  });
 
 
 
-
-
-
-
-
+  router.get('/order/:customerId/:orderId', async (req, res) => {
+    const customerId = req.params.customerId;
+    const orderId = req.params.orderId;
+    
+    try {
+      // Encontre o asaasCustomerId com base no custumerId
+      const customer = await Customer.findOne({ custumerId: customerId });
+  
+      if (!customer) {
+        return res.status(404).json({ error: 'Customer not found' });
+      }
+  
+      const asaasCustomerId = customer.asaasCustomerId;
+  
+      // Encontre a ordem específica
+      const order = await PaymentReports.findOne({ 
+        'payment.id': orderId,
+        'payment.customer': asaasCustomerId 
+      });
+  
+      if (!order) {
+        return res.status(404).json({ error: 'Order not found' });
+      }
+  
+      res.json(order);
+    } catch (error) {
+      console.error('Erro ao buscar a ordem:', error);
+      res.status(500).json({ error: 'Erro ao buscar a ordem' });
+    }
+  });
 
 
 
