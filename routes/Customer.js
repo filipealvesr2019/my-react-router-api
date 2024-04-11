@@ -1821,14 +1821,11 @@ router.post('/traking/code/:orderId', async (req, res) => {
     return res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
-
-
-
 router.get('/orders/:customerId', async (req, res) => {
   const customerId = req.params.customerId;
   
   try {
-    // Encontre o asaasCustomerId com base no custumerId
+    // Encontre o asaasCustomerId com base no customerId
     const customer = await Customer.findOne({ custumerId: customerId });
 
     if (!customer) {
@@ -1838,7 +1835,10 @@ router.get('/orders/:customerId', async (req, res) => {
     const asaasCustomerId = customer.asaasCustomerId;
 
     // Encontre todos os pedidos correspondentes
-    const paymentReports = await PaymentReports.find({ 'payment.customer': asaasCustomerId });
+    let paymentReports = await PaymentReports.find({ 'payment.customer': asaasCustomerId });
+
+    // Ordenar os resultados por data decrescente
+    paymentReports = paymentReports.sort((a, b) => b.createdAt - a.createdAt);
 
     res.json(paymentReports);
   } catch (error) {
@@ -1846,8 +1846,6 @@ router.get('/orders/:customerId', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar dados' });
   }
 });
-
-
 
   router.get('/order/:customerId/:orderId', async (req, res) => {
     const customerId = req.params.customerId;

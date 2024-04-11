@@ -74,6 +74,10 @@ const paymentReportsSchema = new mongoose.Schema({
  },
  refunds: String,
 
+ createdAt: {
+   type: Date,
+   default: Date.now // Define o valor padrão como a data atual
+ }
 
 }
 
