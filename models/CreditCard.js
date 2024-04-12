@@ -53,6 +53,12 @@ const customerSchema = new mongoose.Schema({
   bankSlipUrl: {
     type: String
   },
+  installmentCount: {
+    type: String
+  },
+  installmentValue: {
+    type: String
+  },
   dueDate: {
     type: Date,
     required: true,
@@ -90,6 +96,10 @@ const customerSchema = new mongoose.Schema({
       color: {
         type: String,
         default: "",
+      },
+      image: { // Adicionando o campo de imagem
+        type: String,
+        default: " ",
       },
     },
   ],

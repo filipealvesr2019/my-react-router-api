@@ -372,7 +372,7 @@ router.post("/add-to-cart/:custumerId",isAuthenticated, isCustumer,  async (req,
   try {
     const custumerId = req.params.custumerId;
 
-    const { productId, quantity, size, color } = req.body;
+    const { productId, quantity, size, color, image } = req.body;
 
     // Encontra o cliente associado ao atendente
     const customer = await Customer.findOne({ custumerId: custumerId });
@@ -402,6 +402,7 @@ router.post("/add-to-cart/:custumerId",isAuthenticated, isCustumer,  async (req,
       quantity: quantity,
       size: size,
       color: color,
+      image: image
     });
     await cart.save();
 
@@ -1020,7 +1021,9 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
         productId: product.productId._id,
         quantity: product.quantity,
         size: product.size,
-        color: product.color
+        color: product.color,
+        image: product.image,
+
       }))
     };
 
@@ -1323,7 +1326,9 @@ const installmentResult = totalAmount / installmentCount;
         productId: product.productId._id,
         quantity: product.quantity,
         size: product.size,
-        color: product.color
+        color: product.color,
+        image: product.image,
+
       }))
     };
 
@@ -1686,7 +1691,8 @@ router.post("/pixQRcodeStatico/:custumerId",isAuthenticated, isCustumer,  async 
         productId: product.productId._id,
         quantity: product.quantity,
         size: product.size,
-        color: product.color
+        color: product.color,
+        image: product.image,
       }))
     };
 
@@ -1821,9 +1827,10 @@ router.post('/traking/code/:orderId', async (req, res) => {
     return res.status(500).json({ error: 'Erro interno do servidor.' });
   }
 });
+
 router.get('/orders/:customerId', async (req, res) => {
   const customerId = req.params.customerId;
-  
+
   try {
     // Encontre o asaasCustomerId com base no customerId
     const customer = await Customer.findOne({ custumerId: customerId });
@@ -1837,8 +1844,22 @@ router.get('/orders/:customerId', async (req, res) => {
     // Encontre todos os pedidos correspondentes
     let paymentReports = await PaymentReports.find({ 'payment.customer': asaasCustomerId });
 
-    // Ordenar os resultados por data decrescente
-    paymentReports = paymentReports.sort((a, b) => b.createdAt - a.createdAt);
+    // Defina a ordem de prioridade dos status
+    const statusPriority = {
+      'RECEIVED': 1,
+      'CONFIRMED': 2,
+      'PENDING': 3,
+      'OVERDUE': 4
+    };
+
+    // Ordenar os resultados com base no status
+    paymentReports = paymentReports.sort((a, b) => {
+      const statusA = a.payment.status;
+      const statusB = b.payment.status;
+
+      // Compare os status com base na ordem de prioridade
+      return statusPriority[statusA] - statusPriority[statusB];
+    });
 
     res.json(paymentReports);
   } catch (error) {
@@ -1846,6 +1867,7 @@ router.get('/orders/:customerId', async (req, res) => {
     res.status(500).json({ error: 'Erro ao buscar dados' });
   }
 });
+
 
   router.get('/order/:customerId/:orderId', async (req, res) => {
     const customerId = req.params.customerId;
@@ -1909,7 +1931,7 @@ router.get('/orders/:customerId', async (req, res) => {
   
 // ver os pedidos de um usuario cadastrado no meu sistema
 
-router.get('/order/:customerId', async (req, res) => {
+router.get('/pedidos/:customerId', async (req, res) => {
   const customerId = req.params.customerId;
   
   try {

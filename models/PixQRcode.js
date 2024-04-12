@@ -78,6 +78,10 @@ const PixQRcodeSchema = new mongoose.Schema({
         type: String,
         default: "",
       },
+      image: { // Adicionando o campo de imagem
+        type: String,
+        default: " ",
+      },
     },
   ],
 
