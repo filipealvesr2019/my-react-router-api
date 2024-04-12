@@ -9,14 +9,14 @@ const boletoSchema = new mongoose.Schema({
   },
   customer: {
     type: String,
-    required: true
+    required: true,
   },
-  billingType: {type:String,    enum: ['BOLETO', 'CREDIT_CARD', 'PIX']},
-  
+  billingType: { type: String, enum: ["BOLETO", "CREDIT_CARD", "PIX"] },
+
   value: { type: Number, required: true },
   externalReference: {
     type: String,
-  }, 
+  },
   invoiceUrl: {
     type: String,
   },
@@ -27,11 +27,11 @@ const boletoSchema = new mongoose.Schema({
     type: Date,
     required: true,
     default: Date.now,
-  }, 
+  },
   shippingFee: {
     type: Number,
     required: true,
-    default: 0.0
+    default: 0.0,
   },
   shippingFeeData: {
     transportadora: {
@@ -42,7 +42,7 @@ const boletoSchema = new mongoose.Schema({
       type: String,
       default: "",
     },
-    shippingFeePrice:{
+    shippingFeePrice: {
       type: String,
       default: "",
     },
@@ -65,7 +65,8 @@ const boletoSchema = new mongoose.Schema({
         type: String,
         default: "",
       },
-      image: { // Adicionando o campo de imagem
+      image: {
+        // Adicionando o campo de imagem
         type: String,
         default: " ",
       },

@@ -970,6 +970,9 @@ router.post("/boleto/:custumerId", isAuthenticated, isCustumer,  async (req, res
     if (!cart) {
       return res.status(404).json({ message: "Carrinho não encontrado." });
     }
+    if (!cart) {
+      return res.status(404).json({ message: "Erro ao gerar boleto." });
+    }
 
     // Remove todos os produtos do carrinho
     const result = await Cart.deleteMany({ customer: customer._id });
@@ -1937,15 +1940,15 @@ router.get('/pedidos/:customerId', async (req, res) => {
   try {
     // Find the customer's data in other schemas
     const boletoData = await Boleto.find({ customerId: customerId });
-    const creditCardData = await CreditCard.find({ custumerId: customerId });
-    const pixData = await PixQRcode.find({ custumerId: customerId });
+    const creditCardData = await CreditCard.find({ custumerId: customerId});
+    const pixData = await PixQRcode.find({ custumerId: customerId});
 
 
     const responseData = {
       boleto: boletoData,
       creditCard: creditCardData,
       pix: pixData,
-
+      
     };
 
     res.json(responseData);
@@ -1955,6 +1958,76 @@ router.get('/pedidos/:customerId', async (req, res) => {
   }
 });
 
-  
+
+
+
+
+
+
+// Rota para encontrar uma cobrança específica por ID e CustomerID
+router.get('/creditCard/:id/:customerId', async (req, res) => {
+  const { id, customerId } = req.params;
+
+  try {
+    const CreditCard = await CreditCard.findOne({ _id: id, custumerId: customerId });
+
+    if (!CreditCard) {
+      return res.status(404).json({ error: 'Cobrança não encontrada' });
+    }
+
+    res.json(CreditCard);
+  } catch (error) {
+    console.error('Erro ao buscar cobrança:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+
+
+
+
+
+
+
+// Rota para encontrar uma cobrança específica por ID e CustomerID
+router.get('/boleto/:id/:customerId', async (req, res) => {
+  const { id, customerId } = req.params;
+
+  try {
+    const boleto = await Boleto.findOne({ _id: id, custumerId: customerId });
+
+    if (!boleto) {
+      return res.status(404).json({ error: 'Cobrança não encontrada' });
+    }
+
+    res.json(boleto);
+  } catch (error) {
+    console.error('Erro ao buscar cobrança:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
+
+// Rota para encontrar uma cobrança específica por ID e CustomerID
+router.get('/pix/:id/:customerId', async (req, res) => {
+  const { id, customerId } = req.params;
+
+  try {
+    const pix = await PixQRcode.findOne({ _id: id, custumerId: customerId });
+
+    if (!pix) {
+      return res.status(404).json({ error: 'Cobrança não encontrada' });
+    }
+
+    res.json(pix);
+  } catch (error) {
+    console.error('Erro ao buscar cobrança:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
+  }
+});
+
+
 
 module.exports = router;
