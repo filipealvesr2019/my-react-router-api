@@ -32,7 +32,7 @@ const cartSchema = new Schema({
   ],
   shippingFee: {
     type: Number,
-    default: 0.0,
+    default: 0,
   },
   transportadora: {
     nome: {
