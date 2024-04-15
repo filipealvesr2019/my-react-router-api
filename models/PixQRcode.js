@@ -86,6 +86,10 @@ const PixQRcodeSchema = new mongoose.Schema({
   ],
 
   trackingCode: { type: String },
+  status: {
+    type: String,
+    default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+  }
 });
 
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);

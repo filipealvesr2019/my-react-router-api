@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Boleto = require('./Boleto');
 
 
 const paymentReportsSchema = new mongoose.Schema({
@@ -82,6 +83,14 @@ const paymentReportsSchema = new mongoose.Schema({
 }
 
 );
+
+
+
+
+
+
+
 const PaymentReports = mongoose.model('PaymentReports', paymentReportsSchema);
+
 
 module.exports = PaymentReports;

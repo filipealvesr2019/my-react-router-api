@@ -14,7 +14,7 @@ const creditCardData = require("../models/creditCardData");
 const { isAuthenticated, isCustumer } = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
-const CustomerController = require("../controllers/CustomerController")
+const CustomerController = require("../controllers/CustomerController");
 
 // Rota para criar um novo usuário
 
@@ -1964,30 +1964,36 @@ router.get('/pedidos/:customerId', async (req, res) => {
 
 
 
-// Rota para encontrar uma cobrança específica por ID e CustomerID
-router.get('/creditCard/:id/:customerId', async (req, res) => {
+router.get('/creditCard/:id/:custumerId', async (req, res) => {
   const { id, customerId } = req.params;
 
   try {
-    const CreditCard = await CreditCard.findOne({ _id: id, custumerId: customerId });
+    const creditCard = await CreditCard.findOne({ _id: id, customerId: customerId });
 
-    if (!CreditCard) {
+    if (!creditCard) {
       return res.status(404).json({ error: 'Cobrança não encontrada' });
     }
+    const orderId = creditCard.orderId;
 
-    res.json(CreditCard);
+    // Encontre o relatório de pagamento com base no orderId do boleto
+    const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+
+    if (!paymentReport) {
+      return res.status(404).json({ error: 'Relatório de pagamento não encontrado' });
+    }
+
+      // Atualize o status no objeto boleto com base no status do paymentReport
+      creditCard.status = paymentReport.payment.status;
+
+      // Salve as alterações
+      await creditCard.save();
+
+    res.json(creditCard);
   } catch (error) {
     console.error('Erro ao buscar cobrança:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
-
-
-
-
-
-
-
 
 router.get('/boleto/:id/:customerId', async (req, res) => {
   const { id, customerId } = req.params;
@@ -1998,9 +2004,32 @@ router.get('/boleto/:id/:customerId', async (req, res) => {
     if (!boleto) {
       return res.status(404).json({ error: 'Cobrança não encontrada' });
     }
-    const boletoData = {
-      boleto: boleto
+
+
+    const orderId = boleto.orderId;
+
+    // Encontre o relatório de pagamento com base no orderId do boleto
+    const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+
+    if (!paymentReport) {
+      return res.status(404).json({ error: 'Relatório de pagamento não encontrado' });
     }
+
+    console.log('PaymentReport status:', paymentReport.payment.status);
+
+    // Atualize o status no objeto boleto com base no status do paymentReport
+    boleto.status = paymentReport.payment.status;
+
+    // Salve as alterações
+    await boleto.save();
+
+    const boletoData = {
+      boleto: boleto,
+      orderId,
+      paymentId: paymentReport.payment.id,
+      status: boleto.status // Certifique-se de que esta linha está incluindo o status
+
+    };
 
     res.json(boletoData);
   } catch (error) {
@@ -2012,8 +2041,9 @@ router.get('/boleto/:id/:customerId', async (req, res) => {
 
 
 
+
 // Rota para encontrar uma cobrança específica por ID e CustomerID
-router.get('/pix/:id/:customerId', async (req, res) => {
+router.get('/pix/:id/:custumerId', async (req, res) => {
   const { id, customerId } = req.params;
 
   try {
@@ -2022,6 +2052,21 @@ router.get('/pix/:id/:customerId', async (req, res) => {
     if (!pix) {
       return res.status(404).json({ error: 'Cobrança não encontrada' });
     }
+
+    const pixId  = pix.customer
+    const orderId = pix.id;
+
+    // Encontre o relatório de pagamento com base no orderId do boleto
+    const paymentReport = await PaymentReports.findOne({ "payment.customer": pixId });
+
+    if (!paymentReport) {
+      return res.status(404).json({ error: 'Relatório de pagamento não encontrado' });
+    }
+
+      // Atualize o status no objeto boleto com base no status do paymentReport
+      pix.status = paymentReport.payment.status;
+      
+      await pix.save();
 
     res.json(pix);
   } catch (error) {

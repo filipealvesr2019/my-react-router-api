@@ -106,6 +106,10 @@ const customerSchema = new mongoose.Schema({
   typeOrder: {
     type: String,
   },
+  status: {
+    type: String,
+    default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+  }
 });
 
 const CreditCard = mongoose.model('CreditCard', customerSchema);

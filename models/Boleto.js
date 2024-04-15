@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const PaymentReports = require("./paymentReports");
 
 const boletoSchema = new mongoose.Schema({
   orderId: {
@@ -72,8 +73,18 @@ const boletoSchema = new mongoose.Schema({
       },
     },
   ],
+  status: {
+    type: String,
+    default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+  }
 });
 
+
+
+
+
+
 const Boleto = mongoose.model("Boleto", boletoSchema);
+
 
 module.exports = Boleto;
