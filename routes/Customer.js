@@ -1989,24 +1989,26 @@ router.get('/creditCard/:id/:customerId', async (req, res) => {
 
 
 
-
-// Rota para encontrar uma cobrança específica por ID e CustomerID
 router.get('/boleto/:id/:customerId', async (req, res) => {
   const { id, customerId } = req.params;
 
   try {
-    const boleto = await Boleto.findOne({ _id: id, custumerId: customerId });
+    const boleto = await Boleto.findOne({ _id: id, customerId: customerId });
 
     if (!boleto) {
       return res.status(404).json({ error: 'Cobrança não encontrada' });
     }
+    const boletoData = {
+      boleto: boleto
+    }
 
-    res.json(boleto);
+    res.json(boletoData);
   } catch (error) {
     console.error('Erro ao buscar cobrança:', error);
     res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
 
 
 
