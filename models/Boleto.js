@@ -5,7 +5,7 @@ const boletoSchema = new mongoose.Schema({
   orderId: {
     type: String,
   },
-  customerId: {
+  custumerId: {
     type: String,
   },
   customer: {

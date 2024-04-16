@@ -64,5 +64,31 @@ router.post('/signup', async (req, res) => {
 });
 
 
+// Função para obter produtos por palavra-chave
+exports.getOrdersByKeyword = async (req, res) => {
+  try {
+    const { keyword } = req.query;
+
+    if (!keyword) {
+      return res.status(400).json({ message: 'Palavra-chave não fornecida' });
+    }
+
+    const regex = new RegExp(keyword, 'i');
+
+    const boletos = await Boleto.find({ name: regex });
+    const creditCard = await CreditCard.find({ name: regex });
+    const PixQRcode = await Boleto.find({ name: regex });
+    const resposeData = {
+      boletos: boletos,
+      creditCard: creditCard,
+      PixQRcode: PixQRcode
+    }
+    res.json(resposeData);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
 // Exportar o roteador
 module.exports = router;

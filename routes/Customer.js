@@ -1983,6 +1983,19 @@ router.get("/allOrders", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ver todos os usuarios cadastrados no meu sistema
 
 router.get("/customers/data", async (req, res) => {
@@ -1997,23 +2010,61 @@ router.get("/customers/data", async (req, res) => {
   }
 });
 
-// ver os pedidos de um usuario cadastrado no meu sistema
 
-router.get("/pedidos/:customerId", async (req, res) => {
+
+
+
+router.get("/allOrders/:custumerId", async (req, res) => {
   const customerId = req.params.customerId;
 
   try {
     // Find the customer's data in other schemas
     const boletoData = await Boleto.find({ customerId: customerId });
-    const creditCardData = await CreditCard.find({ custumerId: customerId });
-    const pixData = await PixQRcode.find({ custumerId: customerId });
+    const creditCardData = await CreditCard.find({ customerId: customerId });
+    const pixData = await PixQRcode.find({ customerId: customerId });
+
+    // Check if any data is found for the customer
+    if (!boletoData || !creditCardData || !pixData) {
+      return res.status(404).json({ error: "Dados do cliente não encontrados" });
+    }
+
+    // Update statuses for Boleto orders
+    for (const boletoOrder of boletoData) {
+      const orderId = boletoOrder.orderId;
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      if (paymentReport) {
+        boletoOrder.status = paymentReport.payment.status;
+        await boletoOrder.save();
+      }
+    }
+
+    // Update statuses for Credit Card orders
+    for (const creditCardOrder of creditCardData) {
+      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      if (paymentReport) {
+        creditCardOrder.status = paymentReport.payment.status;
+        await creditCardOrder.save();
+      }
+    }
+
+    // Update statuses for Pix orders
+    for (const pixOrder of pixData) {
+      const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      if (paymentReport) {
+        pixOrder.status = paymentReport.payment.status;
+        await pixOrder.save();
+      }
+    }
 
     const responseData = {
       boleto: boletoData,
       creditCard: creditCardData,
-      pix: pixData,
+      pix: pixData
     };
 
+    // Send the response after updating all orders
     res.json(responseData);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2021,123 +2072,92 @@ router.get("/pedidos/:customerId", async (req, res) => {
   }
 });
 
-router.get("/creditCard/:id/:custumerId", async (req, res) => {
-  const { id, customerId } = req.params;
 
+
+
+
+
+router.get('/orders/search', CustomerController);
+
+// Rota para paginação de produtos
+router.get('/orders/pagination', async (req, res) => {
   try {
-    const creditCard = await CreditCard.findOne({
-      _id: id,
-      customerId: customerId,
-    });
+    const { page = 1, pageSize = 10 } = req.query;
 
-    if (!creditCard) {
-      return res.status(404).json({ error: "Cobrança não encontrada" });
+    const skip = (page - 1) * pageSize;
+
+    const boletos = await Boleto.find({})
+      .skip(skip)
+      .limit(parseInt(pageSize));
+
+
+      const creditCard = await CreditCard.find({})
+      .skip(skip)
+      .limit(parseInt(pageSize));
+
+      const pix = await PixQRcode.find({})
+      .skip(skip)
+      .limit(parseInt(pageSize));
+      
+   
+    const resposeData = {
+      boletos: boletos,
+      creditCard: creditCard,
+      pix: pix
     }
-    const orderId = creditCard.orderId;
-
-    // Encontre o relatório de pagamento com base no orderId do boleto
-    const paymentReport = await PaymentReports.findOne({
-      "payment.id": orderId,
-    });
-
-    if (!paymentReport) {
-      return res
-        .status(404)
-        .json({ error: "Relatório de pagamento não encontrado" });
-    }
-
-    // Atualize o status no objeto boleto com base no status do paymentReport
-    creditCard.status = paymentReport.payment.status;
-
-    // Salve as alterações
-    await creditCard.save();
-
-    res.json(creditCard);
+    res.json(resposeData);
   } catch (error) {
-    console.error("Erro ao buscar cobrança:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error('Erro na paginação de produtos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
 
-router.get("/boleto/:id/:customerId", async (req, res) => {
-  const { id, customerId } = req.params;
 
+
+
+
+
+
+
+
+
+
+router.get("/boletos", async (req, res) => {
   try {
-    const boleto = await Boleto.findOne({ _id: id, customerId: customerId });
+    // Encontre todos os pedidos
+    const allOrders = await Boleto.find();
 
-    if (!boleto) {
-      return res.status(404).json({ error: "Cobrança não encontrada" });
-    }
-
-    const orderId = boleto.orderId;
-
-    // Encontre o relatório de pagamento com base no orderId do boleto
-    const paymentReport = await PaymentReports.findOne({
-      "payment.id": orderId,
-    });
-
-    if (!paymentReport) {
-      return res
-        .status(404)
-        .json({ error: "Relatório de pagamento não encontrado" });
-    }
-
-    console.log("PaymentReport status:", paymentReport.payment.status);
-
-    // Atualize o status no objeto boleto com base no status do paymentReport
-    boleto.status = paymentReport.payment.status;
-
-    // Salve as alterações
-    await boleto.save();
-
-    const boletoData = {
-      boleto: boleto,
-      orderId,
-      paymentId: paymentReport.payment.id,
-      status: boleto.status, // Certifique-se de que esta linha está incluindo o status
-    };
-
-    res.json(boletoData);
+    res.json(allOrders);
   } catch (error) {
-    console.error("Erro ao buscar cobrança:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
 
-// Rota para encontrar uma cobrança específica por ID e CustomerID
-router.get("/pix/:id/:custumerId", async (req, res) => {
-  const { id, customerId } = req.params;
 
+
+
+router.get("/pix", async (req, res) => {
   try {
-    const pix = await PixQRcode.findOne({ _id: id, custumerId: customerId });
+    // Encontre todos os pedidos
+    const allOrders = await PixQRcode.find();
 
-    if (!pix) {
-      return res.status(404).json({ error: "Cobrança não encontrada" });
-    }
-
-    const pixId = pix.customer;
-    const orderId = pix.id;
-
-    // Encontre o relatório de pagamento com base no orderId do boleto
-    const paymentReport = await PaymentReports.findOne({
-      "payment.customer": pixId,
-    });
-
-    if (!paymentReport) {
-      return res
-        .status(404)
-        .json({ error: "Relatório de pagamento não encontrado" });
-    }
-
-    // Atualize o status no objeto boleto com base no status do paymentReport
-    pix.status = paymentReport.payment.status;
-
-    await pix.save();
-
-    res.json(pix);
+    res.json(allOrders);
   } catch (error) {
-    console.error("Erro ao buscar cobrança:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
+  }
+});
+
+router.get("/creditCard", async (req, res) => {
+  try {
+    // Encontre todos os pedidos
+    const allOrders = await CreditCard.find();
+
+    res.json(allOrders);
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
 
