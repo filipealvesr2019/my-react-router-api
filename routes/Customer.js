@@ -2161,4 +2161,75 @@ router.get("/creditCard", async (req, res) => {
   }
 });
 
+
+
+
+router.get("/boleto/:id", async (req, res) => {
+  try {
+    // Acesse o id do parâmetro da rota
+    const id = req.params.id;
+    
+    // Encontre o pedido com o ID fornecido
+    const order = await Boleto.findById(id);
+
+    // Verifique se o pedido existe
+    if (!order) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
+  }
+});
+
+
+router.get("/creditCard/:id", async (req, res) => {
+  try {
+    // Acesse o id do parâmetro da rota
+    const id = req.params.id;
+    
+    // Encontre o pedido com o ID fornecido
+    const order = await CreditCard.findById(id);
+
+    // Verifique se o pedido existe
+    if (!order) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
+  }
+});
+
+
+
+
+
+
+
+router.get("/pix/:id", async (req, res) => {
+  try {
+    // Acesse o id do parâmetro da rota
+    const id = req.params.id;
+    
+    // Encontre o pedido com o ID fornecido
+    const order = await PixQRcode.findById(id);
+
+    // Verifique se o pedido existe
+    if (!order) {
+      return res.status(404).json({ error: "Pedido não encontrado" });
+    }
+
+    res.json(order);
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
+  }
+});
+
+
 module.exports = router;
