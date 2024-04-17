@@ -1095,6 +1095,8 @@ router.post(
           color: product.color,
           image: product.image,
         })),
+        name:customer.name
+
       };
 
       const response = await axios.post(
@@ -1130,6 +1132,8 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
+            name:customer.name
+
           });
 
           await boleto.save();
@@ -1153,6 +1157,8 @@ router.post(
           },
           products: data.products,
           orderId: response.data.id,
+          name:customer.name
+
         });
 
         await boleto.save();
@@ -1393,6 +1399,8 @@ router.post(
           color: product.color,
           image: product.image,
         })),
+        name:customer.name
+
       };
 
       const response = await axios.post(
@@ -1427,6 +1435,8 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
+            name:customer.name
+
           });
 
           await creditCard.save();
@@ -1449,6 +1459,8 @@ router.post(
             shippingFeePrice: cart.shippingFee,
           },
           products: data.products,
+          name:customer.name
+
         });
 
         await creditCard.save();
@@ -1757,6 +1769,7 @@ router.post(
           color: product.color,
           image: product.image,
         })),
+        name:customer.name
       };
 
       const response = await axios.post(
@@ -1792,6 +1805,7 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
+            name:customer.name
           });
 
           await pix.save();
@@ -1816,6 +1830,7 @@ router.post(
             shippingFeePrice: cart.shippingFee,
           },
           products: data.products,
+          name:customer.name
         });
 
         await pix.save();
@@ -2010,6 +2025,20 @@ router.get("/customers/data", async (req, res) => {
   }
 });
 
+router.get("/customers/data/:customer", async (req, res) => {
+  try {
+    const customer = req.params.customer;
+
+    const customers = await Customer.findOne({asaasCustomerId: customer});
+    res.status(200).json({ customers });
+  } catch (error) {
+    console.error("Erro ao pegar clientes:", error);
+    res
+      .status(500)
+      .json({ message: "Erro interno do servidor ao pegar clientes." });
+  }
+});
+
 
 
 
@@ -2170,7 +2199,7 @@ router.get("/boleto/:id", async (req, res) => {
     const id = req.params.id;
     
     // Encontre o pedido com o ID fornecido
-    const order = await Boleto.findById(id);
+    const order = await Boleto.findById(id)
 
     // Verifique se o pedido existe
     if (!order) {

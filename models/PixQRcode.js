@@ -7,9 +7,8 @@ const PixQRcodeSchema = new mongoose.Schema({
   custumerId: {
     type: String,
   },
-  customer: {
+  name: {
     type: String,
-    required: true,
   },
   description: {
     type: String,
@@ -86,9 +85,27 @@ const PixQRcodeSchema = new mongoose.Schema({
   ],
 
   trackingCode: { type: String },
+  totalQuantity: {
+    type: Number,
+    default: 1 // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+  },
   status: {
     type: String,
     default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+  }
+});
+
+
+// Middleware para atualizar o totalQuantity antes de salvar
+PixQRcodeSchema.pre('save', async function(next) {
+  try {
+    // Calcula a quantidade total com base nos produtos do pedido
+    const totalQuantity = this.products.reduce((acc, product) => acc + parseInt(product.quantity || 0), 0);
+    // Atualiza o totalQuantity no documento antes de salvar
+    this.totalQuantity = totalQuantity;
+    next();
+  } catch (error) {
+    next(error);
   }
 });
 
