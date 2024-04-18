@@ -39,9 +39,9 @@ const isCustumer = async (req, res, next) => {
     const user = await User.findById(userId);
 
     // Verifique se o usuário tem a credencial de administrador
-    if (user.role !== 'customer') {
-      return res.status(403).json({ message: 'Acesso negado: apenas customers podem acessar esta rota.' });
-    }
+    // if (user.role !== 'customer') {
+    //   return res.status(403).json({ message: 'Acesso negado: apenas customers podem acessar esta rota.' });
+    // }
 
     // Se o usuário for um administrador, permita o acesso à rota
     next();
@@ -71,6 +71,9 @@ const isAuthenticated = async (req, res, next) => {
         // Verifique se o token é válido
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
     
+        if(!decoded){
+          return res.status(401).json({ message: 'Token de acesso inválido.' });
+        }
         // Verifique se o usuário existe no banco de dados
         const user = await User.findById(decoded.id);
     
