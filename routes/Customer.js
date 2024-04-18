@@ -2251,7 +2251,15 @@ router.get("/boletos", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await Boleto.find();
-
+     // Update statuses for Boleto orders
+     for (const boletoOrder of allOrders) {
+      const orderId = boletoOrder.orderId;
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      if (paymentReport) {
+        boletoOrder.status = paymentReport.payment.status;
+        await boletoOrder.save();
+      }
+    }
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2266,7 +2274,15 @@ router.get("/pix", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await PixQRcode.find();
-
+  // Update statuses for Credit Card orders
+  for (const creditCardOrder of allOrders) {
+    const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+    const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+    if (paymentReport) {
+      creditCardOrder.status = paymentReport.payment.status;
+      await creditCardOrder.save();
+    }
+  }
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2278,6 +2294,16 @@ router.get("/creditCard", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await CreditCard.find();
+
+    // Update statuses for Pix orders
+    for (const pixOrder of allOrders) {
+      const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      if (paymentReport) {
+        pixOrder.status = paymentReport.payment.status;
+        await pixOrder.save();
+      }
+    }
 
     res.json(allOrders);
   } catch (error) {

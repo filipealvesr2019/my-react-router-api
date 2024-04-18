@@ -122,7 +122,7 @@ const customerSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+    default: "CONFIRMED" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
   }
 });
 
