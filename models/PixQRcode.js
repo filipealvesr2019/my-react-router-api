@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const Product = require("../models/product");
 
 const PixQRcodeSchema = new mongoose.Schema({
   billingType: {
@@ -81,6 +82,11 @@ const PixQRcodeSchema = new mongoose.Schema({
         type: String,
         default: " ",
       },
+      name: {
+        // Adicionando o campo de imagem
+        type: String,
+        default: " ",
+      },
     },
   ],
 
@@ -103,6 +109,15 @@ PixQRcodeSchema.pre('save', async function(next) {
     const totalQuantity = this.products.reduce((acc, product) => acc + parseInt(product.quantity || 0), 0);
     // Atualiza o totalQuantity no documento antes de salvar
     this.totalQuantity = totalQuantity;
+
+     // Atualiza o nome dos produtos com base nos IDs antes de salvar
+     for (const product of this.products) {
+      const foundProduct = await Product.findById(product.productId); // Supondo que o modelo do produto seja "Product"
+      if (foundProduct) {
+        product.name = foundProduct.name;
+      }
+    }
+
     next();
   } catch (error) {
     next(error);
