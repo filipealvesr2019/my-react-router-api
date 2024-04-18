@@ -1019,7 +1019,7 @@ router.post(
 router.post(
   "/boleto/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
@@ -1093,6 +1093,7 @@ router.post(
           size: product.size,
           color: product.color,
           image: product.image,
+          name: product.name,
         })),
         name:customer.name
 
@@ -1297,7 +1298,7 @@ router.post(
 router.post(
   "/creditCardWithoutTokenization/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
@@ -1687,7 +1688,7 @@ router.post(
 router.post(
   "/pixQRcodeStatico/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;

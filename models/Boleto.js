@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const PaymentReports = require("./paymentReports");
+const Product = require("../models/product");
 
 const boletoSchema = new mongoose.Schema({
   orderId: {
@@ -74,6 +74,11 @@ const boletoSchema = new mongoose.Schema({
         type: String,
         default: " ",
       },
+      name: {
+        // Adicionando o campo de imagem
+        type: String,
+        default: " ",
+      },
     },
   ],
   totalQuantity: {
@@ -89,18 +94,29 @@ const boletoSchema = new mongoose.Schema({
 
 
 
-// Middleware para atualizar o totalQuantity antes de salvar
+// Middleware para atualizar o totalQuantity e nome dos produtos antes de salvar
 boletoSchema.pre('save', async function(next) {
   try {
     // Calcula a quantidade total com base nos produtos do pedido
     const totalQuantity = this.products.reduce((acc, product) => acc + parseInt(product.quantity || 0), 0);
+    
     // Atualiza o totalQuantity no documento antes de salvar
     this.totalQuantity = totalQuantity;
+
+    // Atualiza o nome dos produtos com base nos IDs antes de salvar
+    for (const product of this.products) {
+      const foundProduct = await Product.findById(product.productId); // Supondo que o modelo do produto seja "Product"
+      if (foundProduct) {
+        product.name = foundProduct.name;
+      }
+    }
+
     next();
   } catch (error) {
     next(error);
   }
 });
+
 
 const Boleto = mongoose.model("Boleto", boletoSchema);
 
