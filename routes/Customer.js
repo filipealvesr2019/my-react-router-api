@@ -243,7 +243,6 @@ router.get(
 
   async (req, res) => {
     try {
-
       // Encontra o usuário com base no clerkUserId
       const existingUser = await Customer.findOne({ custumerId: req.user.id });
 
@@ -415,11 +414,9 @@ router.post(
       }
       // Verifica se o número total de produtos no carrinho já excede quatro
       if (cart.products.length >= 4) {
-        return res
-          .status(400)
-          .json({
-            message: "Você só pode adicionar até quatro produtos por vez.",
-          });
+        return res.status(400).json({
+          message: "Você só pode adicionar até quatro produtos por vez.",
+        });
       }
 
       // Encontra o produto
@@ -542,12 +539,10 @@ router.put(
       }
       // Verifica se a quantidade no carrinho excede a quantidade disponível do produto
       if (quantity > product.quantity) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "A quantidade no carrinho excede a quantidade disponível do produto.",
-          });
+        return res.status(400).json({
+          message:
+            "A quantidade no carrinho excede a quantidade disponível do produto.",
+        });
       }
 
       // Atualiza a quantidade do produto no carrinho
@@ -1095,8 +1090,7 @@ router.post(
           image: product.image,
           name: product.name,
         })),
-        name:customer.name
-
+        name: customer.name,
       };
 
       const response = await axios.post(
@@ -1132,8 +1126,7 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
-            name:customer.name
-
+            name: customer.name,
           });
 
           await boleto.save();
@@ -1157,8 +1150,7 @@ router.post(
           },
           products: data.products,
           orderId: response.data.id,
-          name:customer.name
-
+          name: customer.name,
         });
 
         await boleto.save();
@@ -1399,8 +1391,7 @@ router.post(
           color: product.color,
           image: product.image,
         })),
-        name:customer.name
-
+        name: customer.name,
       };
 
       const response = await axios.post(
@@ -1435,8 +1426,7 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
-            name:customer.name
-
+            name: customer.name,
           });
 
           await creditCard.save();
@@ -1459,8 +1449,7 @@ router.post(
             shippingFeePrice: cart.shippingFee,
           },
           products: data.products,
-          name:customer.name
-
+          name: customer.name,
         });
 
         await creditCard.save();
@@ -1769,7 +1758,7 @@ router.post(
           color: product.color,
           image: product.image,
         })),
-        name:customer.name
+        name: customer.name,
       };
 
       const response = await axios.post(
@@ -1805,7 +1794,7 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
-            name:customer.name
+            name: customer.name,
           });
 
           await pix.save();
@@ -1830,7 +1819,7 @@ router.post(
             shippingFeePrice: cart.shippingFee,
           },
           products: data.products,
-          name:customer.name
+          name: customer.name,
         });
 
         await pix.save();
@@ -1872,8 +1861,6 @@ router.post("/reports", async (req, res) => {
   }
 });
 
-
-
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/boleto/:orderId", async (req, res) => {
   try {
@@ -1895,7 +1882,6 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
-
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1903,22 +1889,15 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
     await order.save();
 
     // Retorna uma resposta de sucesso
-    return res
-      .status(200)
-      .json({
-        message:
-          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
-      });
+    return res.status(200).json({
+      message:
+        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
-
-
-
-
-
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/pix/:orderId", async (req, res) => {
@@ -1941,7 +1920,6 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
-
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1949,20 +1927,15 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
     await order.save();
 
     // Retorna uma resposta de sucesso
-    return res
-      .status(200)
-      .json({
-        message:
-          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
-      });
+    return res.status(200).json({
+      message:
+        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
-
-
-
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/creditCard/:orderId", async (req, res) => {
@@ -1985,7 +1958,6 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
-
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1993,20 +1965,15 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
     await order.save();
 
     // Retorna uma resposta de sucesso
-    return res
-      .status(200)
-      .json({
-        message:
-          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
-      });
+    return res.status(200).json({
+      message:
+        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
-
-
-
 
 router.get("/orders/:customerId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2094,19 +2061,6 @@ router.get("/allOrders", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // ver todos os usuarios cadastrados no meu sistema
 
 router.get("/customers/data", async (req, res) => {
@@ -2125,7 +2079,7 @@ router.get("/customers/data/:customer", async (req, res) => {
   try {
     const customer = req.params.customer;
 
-    const customers = await Customer.findOne({asaasCustomerId: customer});
+    const customers = await Customer.findOne({ asaasCustomerId: customer });
     res.status(200).json({ customers });
   } catch (error) {
     console.error("Erro ao pegar clientes:", error);
@@ -2134,10 +2088,6 @@ router.get("/customers/data/:customer", async (req, res) => {
       .json({ message: "Erro interno do servidor ao pegar clientes." });
   }
 });
-
-
-
-
 
 router.get("/allOrders/:custumerId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2150,13 +2100,17 @@ router.get("/allOrders/:custumerId", async (req, res) => {
 
     // Check if any data is found for the customer
     if (!boletoData || !creditCardData || !pixData) {
-      return res.status(404).json({ error: "Dados do cliente não encontrados" });
+      return res
+        .status(404)
+        .json({ error: "Dados do cliente não encontrados" });
     }
 
     // Update statuses for Boleto orders
     for (const boletoOrder of boletoData) {
       const orderId = boletoOrder.orderId;
-      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
       if (paymentReport) {
         boletoOrder.status = paymentReport.payment.status;
         await boletoOrder.save();
@@ -2166,7 +2120,9 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     // Update statuses for Credit Card orders
     for (const creditCardOrder of creditCardData) {
       const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
-      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
       if (paymentReport) {
         creditCardOrder.status = paymentReport.payment.status;
         await creditCardOrder.save();
@@ -2176,7 +2132,9 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     // Update statuses for Pix orders
     for (const pixOrder of pixData) {
       const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
-      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
       if (paymentReport) {
         pixOrder.status = paymentReport.payment.status;
         await pixOrder.save();
@@ -2186,7 +2144,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     const responseData = {
       boleto: boletoData,
       creditCard: creditCardData,
-      pix: pixData
+      pix: pixData,
     };
 
     // Send the response after updating all orders
@@ -2197,64 +2155,45 @@ router.get("/allOrders/:custumerId", async (req, res) => {
   }
 });
 
-
-
-
-
-
-router.get('/orders/search', CustomerController);
+router.get("/orders/search", CustomerController);
 
 // Rota para paginação de produtos
-router.get('/orders/pagination', async (req, res) => {
+router.get("/orders/pagination", async (req, res) => {
   try {
     const { page = 1, pageSize = 10 } = req.query;
 
     const skip = (page - 1) * pageSize;
 
-    const boletos = await Boleto.find({})
+    const boletos = await Boleto.find({}).skip(skip).limit(parseInt(pageSize));
+
+    const creditCard = await CreditCard.find({})
       .skip(skip)
       .limit(parseInt(pageSize));
 
+    const pix = await PixQRcode.find({}).skip(skip).limit(parseInt(pageSize));
 
-      const creditCard = await CreditCard.find({})
-      .skip(skip)
-      .limit(parseInt(pageSize));
-
-      const pix = await PixQRcode.find({})
-      .skip(skip)
-      .limit(parseInt(pageSize));
-      
-   
     const resposeData = {
       boletos: boletos,
       creditCard: creditCard,
-      pix: pix
-    }
+      pix: pix,
+    };
     res.json(resposeData);
   } catch (error) {
-    console.error('Erro na paginação de produtos:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro na paginação de produtos:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 });
-
-
-
-
-
-
-
-
-
-
 
 router.get("/boletos", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await Boleto.find();
-     // Update statuses for Boleto orders
-     for (const boletoOrder of allOrders) {
+    // Update statuses for Boleto orders
+    for (const boletoOrder of allOrders) {
       const orderId = boletoOrder.orderId;
-      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
       if (paymentReport) {
         boletoOrder.status = paymentReport.payment.status;
         await boletoOrder.save();
@@ -2267,22 +2206,21 @@ router.get("/boletos", async (req, res) => {
   }
 });
 
-
-
-
 router.get("/pix", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await PixQRcode.find();
-  // Update statuses for Credit Card orders
-  for (const creditCardOrder of allOrders) {
-    const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
-    const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
-    if (paymentReport) {
-      creditCardOrder.status = paymentReport.payment.status;
-      await creditCardOrder.save();
+    // Update statuses for Credit Card orders
+    for (const creditCardOrder of allOrders) {
+      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        creditCardOrder.status = paymentReport.payment.status;
+        await creditCardOrder.save();
+      }
     }
-  }
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2298,7 +2236,9 @@ router.get("/creditCard", async (req, res) => {
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {
       const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
-      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
       if (paymentReport) {
         pixOrder.status = paymentReport.payment.status;
         await pixOrder.save();
@@ -2312,16 +2252,13 @@ router.get("/creditCard", async (req, res) => {
   }
 });
 
-
-
-
 router.get("/boleto/:id", async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
-    
+
     // Encontre o pedido com o ID fornecido
-    const order = await Boleto.findById(id)
+    const order = await Boleto.findById(id);
 
     // Verifique se o pedido existe
     if (!order) {
@@ -2335,12 +2272,11 @@ router.get("/boleto/:id", async (req, res) => {
   }
 });
 
-
 router.get("/creditCard/:id", async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
-    
+
     // Encontre o pedido com o ID fornecido
     const order = await CreditCard.findById(id);
 
@@ -2356,17 +2292,11 @@ router.get("/creditCard/:id", async (req, res) => {
   }
 });
 
-
-
-
-
-
-
 router.get("/pix/:id", async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
-    
+
     // Encontre o pedido com o ID fornecido
     const order = await PixQRcode.findById(id);
 
@@ -2381,6 +2311,5 @@ router.get("/pix/:id", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
-
 
 module.exports = router;
