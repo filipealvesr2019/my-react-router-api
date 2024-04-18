@@ -115,6 +115,7 @@ const customerSchema = new mongoose.Schema({
   typeOrder: {
     type: String,
   },
+  trackingCode: { type: String },
   totalQuantity: {
     type: Number,
     default: 1 // Defina o valor padrão como "PENDENTE" ou outro valor apropriado

@@ -1872,8 +1872,56 @@ router.post("/reports", async (req, res) => {
   }
 });
 
+
+
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
-router.post("/traking/code/:orderId", async (req, res) => {
+router.post("/add/traking/boleto/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { trackingCode } = req.body;
+
+    // Verifica se o código de rastreamento é fornecido
+    if (!trackingCode) {
+      return res
+        .status(400)
+        .json({ error: "Código de rastreamento é obrigatório." });
+    }
+
+    // Procura pelo pedido específico na base de dados
+    const order = await Boleto.findById(orderId);
+
+    // Verifica se o pedido existe
+    if (!order) {
+      return res.status(404).json({ error: "Pedido não encontrado." });
+    }
+
+
+    // Atualiza o código de rastreamento do pedido
+    order.trackingCode = trackingCode;
+
+    // Salva as alterações no banco de dados
+    await order.save();
+
+    // Retorna uma resposta de sucesso
+    return res
+      .status(200)
+      .json({
+        message:
+          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno do servidor." });
+  }
+});
+
+
+
+
+
+
+// Rota para adicionar código de rastreamento a um pedido específico do QR code
+router.post("/add/traking/pix/:orderId", async (req, res) => {
   try {
     const orderId = req.params.orderId;
     const { trackingCode } = req.body;
@@ -1893,6 +1941,7 @@ router.post("/traking/code/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
+
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1904,13 +1953,60 @@ router.post("/traking/code/:orderId", async (req, res) => {
       .status(200)
       .json({
         message:
-          "Código de rastreamento adicionado com sucesso ao pedido do QR code.",
+          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
       });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
+
+
+
+
+// Rota para adicionar código de rastreamento a um pedido específico do QR code
+router.post("/add/traking/creditCard/:orderId", async (req, res) => {
+  try {
+    const orderId = req.params.orderId;
+    const { trackingCode } = req.body;
+
+    // Verifica se o código de rastreamento é fornecido
+    if (!trackingCode) {
+      return res
+        .status(400)
+        .json({ error: "Código de rastreamento é obrigatório." });
+    }
+
+    // Procura pelo pedido específico na base de dados
+    const order = await CreditCard.findById(orderId);
+
+    // Verifica se o pedido existe
+    if (!order) {
+      return res.status(404).json({ error: "Pedido não encontrado." });
+    }
+
+
+    // Atualiza o código de rastreamento do pedido
+    order.trackingCode = trackingCode;
+
+    // Salva as alterações no banco de dados
+    await order.save();
+
+    // Retorna uma resposta de sucesso
+    return res
+      .status(200)
+      .json({
+        message:
+          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Erro interno do servidor." });
+  }
+});
+
+
+
 
 router.get("/orders/:customerId", async (req, res) => {
   const customerId = req.params.customerId;

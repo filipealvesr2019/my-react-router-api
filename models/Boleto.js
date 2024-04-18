@@ -85,6 +85,7 @@ const boletoSchema = new mongoose.Schema({
     type: Number,
     default: 1 // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
   },
+  trackingCode: { type: String },
   status: {
     type: String,
     default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
