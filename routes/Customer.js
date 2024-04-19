@@ -113,7 +113,7 @@ router.post("/signup", async (req, res) => {
 router.put(
   "/update/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const { custumerId } = req.params;
@@ -243,6 +243,7 @@ router.get(
 
   async (req, res) => {
     try {
+
       // Encontra o usuário com base no clerkUserId
       const existingUser = await Customer.findOne({ custumerId: req.user.id });
 
@@ -265,7 +266,7 @@ router.get(
 router.get(
   "/favorites/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       // Extrair ID do usuário do parâmetro da rota
@@ -345,7 +346,7 @@ router.post("/favorites", isAuthenticated, isCustumer, async (req, res) => {
 router.delete(
   "/favorites/:custumerId/:productId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       // Extrair ID do usuário e do produto dos parâmetros da solicitação
@@ -391,7 +392,7 @@ router.delete(
 router.post(
   "/add-to-cart/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -414,9 +415,11 @@ router.post(
       }
       // Verifica se o número total de produtos no carrinho já excede quatro
       if (cart.products.length >= 4) {
-        return res.status(400).json({
-          message: "Você só pode adicionar até quatro produtos por vez.",
-        });
+        return res
+          .status(400)
+          .json({
+            message: "Você só pode adicionar até quatro produtos por vez.",
+          });
       }
 
       // Encontra o produto
@@ -455,7 +458,7 @@ router.post(
 router.get(
   "/cart/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -494,7 +497,7 @@ router.get(
 router.put(
   "/update-quantity/:custumerId/:productId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -539,10 +542,12 @@ router.put(
       }
       // Verifica se a quantidade no carrinho excede a quantidade disponível do produto
       if (quantity > product.quantity) {
-        return res.status(400).json({
-          message:
-            "A quantidade no carrinho excede a quantidade disponível do produto.",
-        });
+        return res
+          .status(400)
+          .json({
+            message:
+              "A quantidade no carrinho excede a quantidade disponível do produto.",
+          });
       }
 
       // Atualiza a quantidade do produto no carrinho
@@ -571,7 +576,7 @@ router.put(
 router.delete(
   "/remove-from-cart/:custumerId/:productId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -632,8 +637,7 @@ router.get("/fretes", isAuthenticated, isCustumer, async (req, res) => {
 
 router.post(
   "/frete/:custumerId",
-  isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.KUNGU_TOKEN;
@@ -738,7 +742,7 @@ router.post(
 router.put(
   "/cart/:custumerId/shippingFee/:freteId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -1090,7 +1094,8 @@ router.post(
           image: product.image,
           name: product.name,
         })),
-        name: customer.name,
+        name:customer.name
+
       };
 
       const response = await axios.post(
@@ -1126,7 +1131,8 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
-            name: customer.name,
+            name:customer.name
+
           });
 
           await boleto.save();
@@ -1150,7 +1156,8 @@ router.post(
           },
           products: data.products,
           orderId: response.data.id,
-          name: customer.name,
+          name:customer.name
+
         });
 
         await boleto.save();
@@ -1285,7 +1292,6 @@ router.post(
     }
   }
 );
-
 // pagar creditCard com checkout transparente
 router.post(
   "/creditCardWithoutTokenization/:custumerId",
@@ -1320,6 +1326,7 @@ router.post(
           .status(404)
           .json({ message: "Nenhum produto encontrado no carrinho." });
       }
+      
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
       const totalPrice = cart.products.reduce(
@@ -1344,118 +1351,106 @@ router.post(
       const requestBody = req.body;
 
       // Extraia o número de parcelas do corpo da requisição
-      const installmentCount = requestBody.installmentCount;
+      const installmentCount = parseInt(requestBody.installmentCount);
 
       // Calcule o valor de cada parcela
-      const installmentResult = totalAmount / installmentCount;
-      // Apaga os registros de frete anteriores
-      const data = {
-        billingType: "CREDIT_CARD",
-        discount: { value: 0, dueDateLimitDays: 0 },
-        interest: { value: 0 },
-        fine: { value: 0 },
-        customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
-        dueDate: new Date(), // Define a data atual como a data de vencimento
-        value: totalAmount,
-        description: "",
-        daysAfterDueDateToCancellationRegistration: 1,
-        externalReference: externalReferences,
-        postalService: false,
-        installmentCount: req.body.installmentCount,
-        installmentValue: installmentResult,
-        creditCard: {
-          holderName: customer.name,
-          number: req.body.number,
-          expiryMonth: req.body.expiryMonth,
-          expiryYear: req.body.expiryYear,
-          ccv: req.body.ccv,
-        },
-        creditCardHolderInfo: {
-          name: customer.name,
-          email: customer.email,
-          cpfCnpj: customer.cpfCnpj,
-          postalCode: customer.postalCode,
-          addressNumber: customer.addressNumber,
-          addressComplement: null,
-          phone: customer.mobilePhone,
-        },
-        shippingFeeData: {
-          transportadora: cart.transportadora.nome || "",
-          logo: cart.logo.img || "",
-          shippingFeePrice: cart.shippingFee,
-        },
-        products: cart.products.map((product) => ({
-          productId: product.productId._id,
-          quantity: product.quantity,
-          size: product.size,
-          color: product.color,
-          image: product.image,
-        })),
-        name: customer.name,
-      };
+      const installmentValue = totalAmount / installmentCount;
 
-      const response = await axios.post(
-        "https://sandbox.asaas.com/api/v3/payments",
-        data,
-        {
-          headers: {
-            accept: " 'application/json'",
-            "content-type": "application/json",
-            access_token: token,
+      // Define a data de vencimento base
+      const dueDate = new Date();
+
+      // Itera sobre o número de parcelas e cria uma cobrança para cada uma
+      const payments = [];
+      for (let i = 0; i < installmentCount; i++) {
+        // Ajusta a data de vencimento para cada parcela, por exemplo, 30 dias após a data atual
+        const newDueDate = new Date();
+        newDueDate.setDate(dueDate.getDate() + (30 * (i + 1)));
+
+        const paymentData = {
+          billingType: "CREDIT_CARD",
+          discount: { value: 0, dueDateLimitDays: 0 },
+          interest: { value: 0 },
+          fine: { value: 0 },
+          customer: asaasCustomerId,
+          dueDate: newDueDate,
+          value: installmentValue,
+          description: "",
+          daysAfterDueDateToCancellationRegistration: 1,
+          externalReference: externalReferences,
+          postalService: false,
+          installmentCount: 1,
+          installmentValue: installmentValue,
+          creditCard: {
+            holderName: customer.name,
+            number: req.body.number,
+            expiryMonth: req.body.expiryMonth,
+            expiryYear: req.body.expiryYear,
+            ccv: req.body.ccv,
           },
-        }
-      );
-
-      // Verifica se a resposta é um array
-      if (Array.isArray(response.data)) {
-        // Se for um array, faz um loop sobre os itens e salva cada um
-        for (const item of response.data) {
-          const creditCard = new CreditCard({
-            orderId: item.id,
-            custumerId: custumerId, // Agora é uma string
-            customer: item.customer,
-            billingType: item.billingType,
-            value: item.value,
-            externalReference: item.externalReference,
-            invoiceUrl: item.invoiceUrl,
-            bankSlipUrl: item.bankSlipUrl,
-            dueDate: item.dueDate,
-            shippingFeeData: {
-              transportadora: cart.transportadora.nome,
-              logo: cart.logo.img,
-              shippingFeePrice: cart.shippingFee,
-            },
-            products: data.products,
+          creditCardHolderInfo: {
             name: customer.name,
-          });
+            email: customer.email,
+            cpfCnpj: customer.cpfCnpj,
+            postalCode: customer.postalCode,
+            addressNumber: customer.addressNumber,
+            addressComplement: null,
+            phone: customer.mobilePhone,
+          },
+          shippingFeeData: {
+            transportadora: cart.transportadora.nome || "",
+            logo: cart.logo.img || "",
+            shippingFeePrice: cart.shippingFee,
+          },
+          products: cart.products.map((product) => ({
+            productId: product.productId._id,
+            quantity: product.quantity,
+            size: product.size,
+            color: product.color,
+            image: product.image,
+          })),
+          name: customer.name,
+        };
 
-          await creditCard.save();
-        }
-      } else {
-        // Se não for um array, salva apenas um item
+        const response = await axios.post(
+          "https://sandbox.asaas.com/api/v3/payments",
+          paymentData,
+          {
+            headers: {
+              accept: "application/json",
+              "content-type": "application/json",
+              access_token: token,
+            },
+          }
+        );
+
+        payments.push(response.data);
+      }
+
+      // Salva as informações de cobrança no banco de dados
+      for (const payment of payments) {
         const creditCard = new CreditCard({
-          orderId: response.data.id,
-          custumerId: custumerId, // Agora é uma string
-          customer: response.data.customer,
-          billingType: response.data.billingType,
-          value: response.data.value,
-          externalReference: response.data.externalReference,
-          invoiceUrl: response.data.invoiceUrl,
-          bankSlipUrl: response.data.bankSlipUrl,
-          dueDate: response.data.dueDate,
+          orderId: payment.id,
+          custumerId: custumerId,
+          customer: payment.customer,
+          billingType: payment.billingType,
+          value: payment.value,
+          externalReference: payment.externalReference,
+          invoiceUrl: payment.invoiceUrl,
+          bankSlipUrl: payment.bankSlipUrl,
+          dueDate: payment.dueDate,
           shippingFeeData: {
             transportadora: cart.transportadora.nome,
             logo: cart.logo.img,
             shippingFeePrice: cart.shippingFee,
           },
-          products: data.products,
+          products: payment.products,
           name: customer.name,
         });
 
         await creditCard.save();
       }
 
-      res.json(response.data);
+      res.json(payments);
     } catch (error) {
       console.error("Error fetching data:", error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -1758,7 +1753,7 @@ router.post(
           color: product.color,
           image: product.image,
         })),
-        name: customer.name,
+        name:customer.name
       };
 
       const response = await axios.post(
@@ -1794,7 +1789,7 @@ router.post(
               shippingFeePrice: cart.shippingFee,
             },
             products: data.products,
-            name: customer.name,
+            name:customer.name
           });
 
           await pix.save();
@@ -1819,7 +1814,7 @@ router.post(
             shippingFeePrice: cart.shippingFee,
           },
           products: data.products,
-          name: customer.name,
+          name:customer.name
         });
 
         await pix.save();
@@ -1861,6 +1856,8 @@ router.post("/reports", async (req, res) => {
   }
 });
 
+
+
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/boleto/:orderId", async (req, res) => {
   try {
@@ -1882,6 +1879,7 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
+
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1889,15 +1887,22 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
     await order.save();
 
     // Retorna uma resposta de sucesso
-    return res.status(200).json({
-      message:
-        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
-    });
+    return res
+      .status(200)
+      .json({
+        message:
+          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
+
+
+
+
+
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/pix/:orderId", async (req, res) => {
@@ -1920,6 +1925,7 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
+
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1927,15 +1933,20 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
     await order.save();
 
     // Retorna uma resposta de sucesso
-    return res.status(200).json({
-      message:
-        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
-    });
+    return res
+      .status(200)
+      .json({
+        message:
+          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
+
+
+
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/creditCard/:orderId", async (req, res) => {
@@ -1958,6 +1969,7 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
 
+
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -1965,15 +1977,20 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
     await order.save();
 
     // Retorna uma resposta de sucesso
-    return res.status(200).json({
-      message:
-        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
-    });
+    return res
+      .status(200)
+      .json({
+        message:
+          "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+      });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
+
+
+
 
 router.get("/orders/:customerId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2061,6 +2078,19 @@ router.get("/allOrders", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 // ver todos os usuarios cadastrados no meu sistema
 
 router.get("/customers/data", async (req, res) => {
@@ -2079,7 +2109,7 @@ router.get("/customers/data/:customer", async (req, res) => {
   try {
     const customer = req.params.customer;
 
-    const customers = await Customer.findOne({ asaasCustomerId: customer });
+    const customers = await Customer.findOne({asaasCustomerId: customer});
     res.status(200).json({ customers });
   } catch (error) {
     console.error("Erro ao pegar clientes:", error);
@@ -2088,6 +2118,10 @@ router.get("/customers/data/:customer", async (req, res) => {
       .json({ message: "Erro interno do servidor ao pegar clientes." });
   }
 });
+
+
+
+
 
 router.get("/allOrders/:custumerId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2100,17 +2134,13 @@ router.get("/allOrders/:custumerId", async (req, res) => {
 
     // Check if any data is found for the customer
     if (!boletoData || !creditCardData || !pixData) {
-      return res
-        .status(404)
-        .json({ error: "Dados do cliente não encontrados" });
+      return res.status(404).json({ error: "Dados do cliente não encontrados" });
     }
 
     // Update statuses for Boleto orders
     for (const boletoOrder of boletoData) {
       const orderId = boletoOrder.orderId;
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
       if (paymentReport) {
         boletoOrder.status = paymentReport.payment.status;
         await boletoOrder.save();
@@ -2120,9 +2150,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     // Update statuses for Credit Card orders
     for (const creditCardOrder of creditCardData) {
       const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
       if (paymentReport) {
         creditCardOrder.status = paymentReport.payment.status;
         await creditCardOrder.save();
@@ -2132,9 +2160,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     // Update statuses for Pix orders
     for (const pixOrder of pixData) {
       const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
       if (paymentReport) {
         pixOrder.status = paymentReport.payment.status;
         await pixOrder.save();
@@ -2144,7 +2170,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     const responseData = {
       boleto: boletoData,
       creditCard: creditCardData,
-      pix: pixData,
+      pix: pixData
     };
 
     // Send the response after updating all orders
@@ -2155,45 +2181,64 @@ router.get("/allOrders/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/orders/search", CustomerController);
+
+
+
+
+
+router.get('/orders/search', CustomerController);
 
 // Rota para paginação de produtos
-router.get("/orders/pagination", async (req, res) => {
+router.get('/orders/pagination', async (req, res) => {
   try {
     const { page = 1, pageSize = 10 } = req.query;
 
     const skip = (page - 1) * pageSize;
 
-    const boletos = await Boleto.find({}).skip(skip).limit(parseInt(pageSize));
-
-    const creditCard = await CreditCard.find({})
+    const boletos = await Boleto.find({})
       .skip(skip)
       .limit(parseInt(pageSize));
 
-    const pix = await PixQRcode.find({}).skip(skip).limit(parseInt(pageSize));
 
+      const creditCard = await CreditCard.find({})
+      .skip(skip)
+      .limit(parseInt(pageSize));
+
+      const pix = await PixQRcode.find({})
+      .skip(skip)
+      .limit(parseInt(pageSize));
+      
+   
     const resposeData = {
       boletos: boletos,
       creditCard: creditCard,
-      pix: pix,
-    };
+      pix: pix
+    }
     res.json(resposeData);
   } catch (error) {
-    console.error("Erro na paginação de produtos:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
+    console.error('Erro na paginação de produtos:', error);
+    res.status(500).json({ error: 'Erro interno do servidor' });
   }
 });
+
+
+
+
+
+
+
+
+
+
 
 router.get("/boletos", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await Boleto.find();
-    // Update statuses for Boleto orders
-    for (const boletoOrder of allOrders) {
+     // Update statuses for Boleto orders
+     for (const boletoOrder of allOrders) {
       const orderId = boletoOrder.orderId;
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
       if (paymentReport) {
         boletoOrder.status = paymentReport.payment.status;
         await boletoOrder.save();
@@ -2206,21 +2251,22 @@ router.get("/boletos", async (req, res) => {
   }
 });
 
+
+
+
 router.get("/pix", async (req, res) => {
   try {
     // Encontre todos os pedidos
     const allOrders = await PixQRcode.find();
-    // Update statuses for Credit Card orders
-    for (const creditCardOrder of allOrders) {
-      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
-      if (paymentReport) {
-        creditCardOrder.status = paymentReport.payment.status;
-        await creditCardOrder.save();
-      }
+  // Update statuses for Credit Card orders
+  for (const creditCardOrder of allOrders) {
+    const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+    const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
+    if (paymentReport) {
+      creditCardOrder.status = paymentReport.payment.status;
+      await creditCardOrder.save();
     }
+  }
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2236,9 +2282,7 @@ router.get("/creditCard", async (req, res) => {
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {
       const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+      const paymentReport = await PaymentReports.findOne({ "payment.id": orderId });
       if (paymentReport) {
         pixOrder.status = paymentReport.payment.status;
         await pixOrder.save();
@@ -2252,13 +2296,16 @@ router.get("/creditCard", async (req, res) => {
   }
 });
 
+
+
+
 router.get("/boleto/:id", async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
-
+    
     // Encontre o pedido com o ID fornecido
-    const order = await Boleto.findById(id);
+    const order = await Boleto.findById(id)
 
     // Verifique se o pedido existe
     if (!order) {
@@ -2272,11 +2319,12 @@ router.get("/boleto/:id", async (req, res) => {
   }
 });
 
+
 router.get("/creditCard/:id", async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
-
+    
     // Encontre o pedido com o ID fornecido
     const order = await CreditCard.findById(id);
 
@@ -2292,11 +2340,17 @@ router.get("/creditCard/:id", async (req, res) => {
   }
 });
 
+
+
+
+
+
+
 router.get("/pix/:id", async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
-
+    
     // Encontre o pedido com o ID fornecido
     const order = await PixQRcode.findById(id);
 
@@ -2311,5 +2365,6 @@ router.get("/pix/:id", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
 
 module.exports = router;
