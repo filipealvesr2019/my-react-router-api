@@ -241,8 +241,8 @@ router.get(
   async (req, res) => {
     try {
       // Encontra o usuário com base no clerkUserId
-      const existingUser = await Customer.findOne({ custumerId: req.user.id });
-
+      const existingUser = await Customer.findOne({ custumerId: req.params.custumerId });
+     
       // Verifica se o usuário existe
       if (!existingUser) {
         return res.status(404).json({ message: "Usuário não encontrado." });
