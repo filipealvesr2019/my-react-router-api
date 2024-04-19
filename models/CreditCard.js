@@ -58,10 +58,13 @@ const customerSchema = new mongoose.Schema({
     type: String
   },
   installmentCount: {
-    type: String
+    type: Number
+  },
+  installmentNumber: {
+    type: Number
   },
   installmentValue: {
-    type: String
+    type: Number
   },
   dueDate: {
     type: Date,

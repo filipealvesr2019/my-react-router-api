@@ -1291,8 +1291,6 @@ router.post(
     }
   }
 );
-
-
 // pagar creditCard com checkout transparente
 router.post(
   "/creditCardWithoutTokenization/:custumerId",
@@ -1366,7 +1364,7 @@ router.post(
         // Ajusta a data de vencimento para cada parcela, por exemplo, 30 dias após a data atual
         const newDueDate = new Date();
         newDueDate.setDate(dueDate.getDate() + (30 * (i + 1)));
-      
+
         const paymentData = {
           billingType: "CREDIT_CARD",
           discount: { value: 0, dueDateLimitDays: 0 },
@@ -1381,7 +1379,6 @@ router.post(
           postalService: false,
           installmentCount: 1,
           installmentValue: installmentValue,
-          installmentNumber: i + 1, // Adiciona o número da parcela
           creditCard: {
             holderName: customer.name,
             number: req.body.number,
@@ -1429,37 +1426,28 @@ router.post(
       }
 
       // Salva as informações de cobrança no banco de dados
-for (let i = 0; i < payments.length; i++) {
-  const payment = payments[i];
-  const installmentNumber = i + 1; // Número da parcela começa em 1
+      for (const payment of payments) {
+        const creditCard = new CreditCard({
+          orderId: payment.id,
+          custumerId: custumerId,
+          customer: payment.customer,
+          billingType: payment.billingType,
+          value: payment.value,
+          externalReference: payment.externalReference,
+          invoiceUrl: payment.invoiceUrl,
+          bankSlipUrl: payment.bankSlipUrl,
+          dueDate: payment.dueDate,
+          shippingFeeData: {
+            transportadora: cart.transportadora.nome,
+            logo: cart.logo.img,
+            shippingFeePrice: cart.shippingFee,
+          },
+          products: payment.products,
+          name: customer.name,
+        });
 
-  const creditCard = new CreditCard({
-    orderId: payment.id,
-    custumerId: custumerId,
-    customer: payment.customer,
-    billingType: payment.billingType,
-    value: payment.value,
-    externalReference: payment.externalReference,
-    invoiceUrl: payment.invoiceUrl,
-    bankSlipUrl: payment.bankSlipUrl,
-    dueDate: payment.dueDate,
-    installmentNumber: installmentNumber, // Usando o número de parcela correto
-    installmentValue: payment.installmentValue,
-    installmentCount: payment.installmentCount,
-    shippingFeeData: {
-      transportadora: cart.transportadora.nome,
-      logo: cart.logo.img,
-      shippingFeePrice: cart.shippingFee,
-    },
-    products: payment.products, // Corrigindo aqui para usar payment.products
-    name: customer.name,
-  });
-
-  await creditCard.save();
-}
-
-
-      
+        await creditCard.save();
+      }
 
       res.json(payments);
     } catch (error) {
@@ -1468,6 +1456,7 @@ for (let i = 0; i < payments.length; i++) {
     }
   }
 );
+
 // pagar boleto com checkout transparente
 router.post(
   "/tokenizeCreditCard",

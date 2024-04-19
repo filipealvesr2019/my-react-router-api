@@ -30,7 +30,7 @@ const isAdmin = async (req, res, next) => {
   
 
 // Middleware para verificar se o usuário autenticado é um administrador
-const isCustumer = async (req, res, next) => {
+const isManager = async (req, res, next) => {
   try {
     // Obtenha o ID do usuário autenticado a partir do token JWT
     const userId = req.user.id;
@@ -39,9 +39,9 @@ const isCustumer = async (req, res, next) => {
     const user = await User.findById(userId);
 
     // Verifique se o usuário tem a credencial de administrador
-    // if (user.role !== 'customer') {
-    //   return res.status(403).json({ message: 'Acesso negado: apenas customers podem acessar esta rota.' });
-    // }
+    if (user.role !== 'Gerente') {
+      return res.status(403).json({ message: 'Acesso negado: apenas Gerentes podem acessar esta rota.' });
+    }
 
     // Se o usuário for um administrador, permita o acesso à rota
     next();
@@ -91,4 +91,4 @@ const isAuthenticated = async (req, res, next) => {
       }
 };
 
-module.exports = { isAuthenticated, isAdmin, isCustumer };
+module.exports = { isAuthenticated, isAdmin, isManager };
