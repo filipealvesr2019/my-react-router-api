@@ -13,7 +13,6 @@ const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
 const {
   isAuthenticated,
-  isCustumer,
 } = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
@@ -225,7 +224,7 @@ router.get("/customersByAsaas", async (req, res) => {
   }
 });
 
-router.get("/customers", isAuthenticated, isCustumer, async (req, res) => {
+router.get("/customers", isAuthenticated, async (req, res) => {
   try {
     const customers = await Customer.find();
     res.status(200).json({ customers });
@@ -293,7 +292,7 @@ router.get(
   }
 );
 
-router.post("/favorites", isAuthenticated, isCustumer, async (req, res) => {
+router.post("/favorites", isAuthenticated, async (req, res) => {
   try {
     // Extrair ID do usuário do corpo da solicitação
     const { custumerId } = req.body;
@@ -625,7 +624,7 @@ router.delete(
   }
 );
 
-router.get("/fretes", isAuthenticated, isCustumer, async (req, res) => {
+router.get("/fretes", isAuthenticated, async (req, res) => {
   try {
     const fretes = await Frete.find();
     res.json(fretes);
@@ -805,7 +804,7 @@ router.put(
 router.get(
   "/cart/:custumerId/total-price",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -851,7 +850,7 @@ router.get(
 router.get(
   "/frete/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -895,7 +894,7 @@ router.get(
 router.post(
   "/pix/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
@@ -1175,7 +1174,7 @@ router.post(
 router.post(
   "/creditCard/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
@@ -1462,7 +1461,7 @@ router.post(
 router.post(
   "/tokenizeCreditCard",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
@@ -1511,7 +1510,7 @@ router.post(
 router.post(
   "/creditCardAndToken/:custumerId",
   isAuthenticated,
-  isCustumer,
+
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
