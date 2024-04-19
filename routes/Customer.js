@@ -250,6 +250,7 @@ router.get(
 
       // Retorna as informações do usuário
       res.status(200).json(existingUser);
+  
     } catch (error) {
       console.error("Erro ao buscar usuário:", error);
       res
