@@ -2361,4 +2361,6 @@ router.get("/pix/:id", async (req, res) => {
   }
 });
 
+
+
 module.exports = router;
