@@ -22,7 +22,7 @@ const customerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product'
   }],
-  isSubscribed: Boolean
+  isSubscribed:{ Boolean}
 });
 
 

@@ -60,6 +60,7 @@ router.post("/signup", async (req, res) => {
       asaasCustomerId,
       cart,
     });
+    newUser.isSubscribed = true;
     const savedUser = await newUser.save();
 
     const token = process.env.ACCESS_TOKEN;
