@@ -247,10 +247,14 @@ router.get(
       if (!existingUser) {
         return res.status(404).json({ message: "Usuário não encontrado." });
       }
-
+      if(existingUser.isSubscribed === 200){
+        return true
+      } else {
+        return false
+      }
       // Retorna as informações do usuário
       res.status(200).json(existingUser);
-  
+     
     } catch (error) {
       console.error("Erro ao buscar usuário:", error);
       res
