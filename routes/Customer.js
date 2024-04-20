@@ -1970,7 +1970,7 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
   }
 });
 
-router.get("/orders/:customerId", async (req, res) => {
+router.get("/orders/:custumerId", async (req, res) => {
   const customerId = req.params.customerId;
 
   try {
@@ -2179,22 +2179,42 @@ router.get("/orders/pagination", async (req, res) => {
   }
 });
 
+
 router.get("/boletos", async (req, res) => {
   try {
     // Encontre todos os pedidos
-    const allOrders = await Boleto.find();
-    // Update statuses for Boleto orders
-    for (const boletoOrder of allOrders) {
-      const orderId = boletoOrder.orderId;
+    const allBoletos = await Boleto.find();
+
+    // Atualize os status para os pedidos de boleto
+    for (const boleto of allBoletos) {
+      const orderId = boleto.orderId;
       const paymentReport = await PaymentReports.findOne({
         "payment.id": orderId,
       });
       if (paymentReport) {
-        boletoOrder.status = paymentReport.payment.status;
-        await boletoOrder.save();
+        boleto.status = paymentReport.payment.status;
+        await boleto.save();
       }
     }
-    res.json(allOrders);
+
+    // Defina a ordem de prioridade dos status
+    const statusPriority = {
+      RECEIVED: 1,
+      CONFIRMED: 2,
+      PENDING: 3,
+      OVERDUE: 4,
+    };
+
+    // Ordenar os resultados com base no status
+    allBoletos.sort((a, b) => {
+      const statusA = a.status;
+      const statusB = b.status;
+
+      // Compare os status com base na ordem de prioridade
+      return statusPriority[statusA] - statusPriority[statusB];
+    });
+
+    res.json(allBoletos);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     res.status(500).json({ error: "Erro ao buscar dados" });
@@ -2216,6 +2236,23 @@ router.get("/pix", async (req, res) => {
         await creditCardOrder.save();
       }
     }
+
+      // Defina a ordem de prioridade dos status
+      const statusPriority = {
+        RECEIVED: 1,
+        CONFIRMED: 2,
+        PENDING: 3,
+        OVERDUE: 4,
+      };
+  
+      // Ordenar os resultados com base no status
+      allOrders.sort((a, b) => {
+        const statusA = a.status;
+        const statusB = b.status;
+  
+        // Compare os status com base na ordem de prioridade
+        return statusPriority[statusA] - statusPriority[statusB];
+      });
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2239,7 +2276,24 @@ router.get("/creditCard", async (req, res) => {
         await pixOrder.save();
       }
     }
+    
 
+     // Defina a ordem de prioridade dos status
+     const statusPriority = {
+      RECEIVED: 1,
+      CONFIRMED: 2,
+      PENDING: 3,
+      OVERDUE: 4,
+    };
+
+    // Ordenar os resultados com base no status
+    allOrders.sort((a, b) => {
+      const statusA = a.status;
+      const statusB = b.status;
+
+      // Compare os status com base na ordem de prioridade
+      return statusPriority[statusA] - statusPriority[statusB];
+    });
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
