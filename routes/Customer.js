@@ -407,7 +407,7 @@ router.post(
         cart = new Cart({ customer: customer._id, products: [] });
       }
       // Verifica se o número total de produtos no carrinho já excede quatro
-      if (cart.products.length >= 4) {
+      if (cart.products.length >= 3) {
         return res.status(400).json({
           message: "Você só pode adicionar até quatro produtos por vez.",
         });
