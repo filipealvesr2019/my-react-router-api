@@ -60,7 +60,6 @@ router.post("/signup", async (req, res) => {
       asaasCustomerId,
       cart,
     });
-
     const savedUser = await newUser.save();
 
     const token = process.env.ACCESS_TOKEN;
@@ -243,15 +242,7 @@ router.get(
       // Encontra o usuário com base no clerkUserId
       const existingUser = await Customer.findOne({ custumerId: req.params.custumerId });
      
-      // Verifica se o usuário existe
-      if (!existingUser) {
-        return res.status(404).json({ message: "Usuário não encontrado." });
-      }
-      if(existingUser.isSubscribed === 200){
-        return true
-      } else {
-        return false
-      }
+     
       // Retorna as informações do usuário
       res.status(200).json(existingUser);
      
