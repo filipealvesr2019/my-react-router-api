@@ -8,6 +8,10 @@ const PixQRcodeSchema = new mongoose.Schema({
   custumerId: {
     type: String,
   },
+  customer: {
+    type: String,
+    required: true,
+  },
   name: {
     type: String,
   },

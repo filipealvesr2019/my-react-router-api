@@ -2179,11 +2179,14 @@ router.get("/orders/pagination", async (req, res) => {
   }
 });
 
-
 router.get("/boletos", async (req, res) => {
   try {
-    // Encontre todos os pedidos
-    const allBoletos = await Boleto.find();
+    const page = parseInt(req.query.page) || 1; // Página atual
+    const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
+    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+
+    // Encontre todos os boletos, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
+    const allBoletos = await Boleto.find().skip(skip).limit(pageSize);
 
     // Atualize os status para os pedidos de boleto
     for (const boleto of allBoletos) {
@@ -2223,8 +2226,13 @@ router.get("/boletos", async (req, res) => {
 
 router.get("/pix", async (req, res) => {
   try {
+
+    const page = parseInt(req.query.page) || 1; // Página atual
+    const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
+    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+
     // Encontre todos os pedidos
-    const allOrders = await PixQRcode.find();
+    const allOrders = await PixQRcode.find().skip(skip).limit(pageSize);
     // Update statuses for Credit Card orders
     for (const creditCardOrder of allOrders) {
       const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
@@ -2262,8 +2270,13 @@ router.get("/pix", async (req, res) => {
 
 router.get("/creditCard", async (req, res) => {
   try {
+
+    const page = parseInt(req.query.page) || 1; // Página atual
+    const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
+    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+
     // Encontre todos os pedidos
-    const allOrders = await CreditCard.find();
+    const allOrders = await CreditCard.find().skip(skip).limit(pageSize);
 
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {
