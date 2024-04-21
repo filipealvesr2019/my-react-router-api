@@ -60,7 +60,7 @@ router.post("/signup", async (req, res) => {
       asaasCustomerId,
       cart,
     });
-    newUser.isSubscribed = true;
+
     const savedUser = await newUser.save();
 
     const token = process.env.ACCESS_TOKEN;
@@ -2150,34 +2150,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
   }
 });
 
-router.get("/orders/search", CustomerController);
 
-// Rota para paginação de produtos
-router.get("/orders/pagination", async (req, res) => {
-  try {
-    const { page = 1, pageSize = 10 } = req.query;
-
-    const skip = (page - 1) * pageSize;
-
-    const boletos = await Boleto.find({}).skip(skip).limit(parseInt(pageSize));
-
-    const creditCard = await CreditCard.find({})
-      .skip(skip)
-      .limit(parseInt(pageSize));
-
-    const pix = await PixQRcode.find({}).skip(skip).limit(parseInt(pageSize));
-
-    const resposeData = {
-      boletos: boletos,
-      creditCard: creditCard,
-      pix: pix,
-    };
-    res.json(resposeData);
-  } catch (error) {
-    console.error("Erro na paginação de produtos:", error);
-    res.status(500).json({ error: "Erro interno do servidor" });
-  }
-});
 
 router.get("/boletos", async (req, res) => {
   try {
