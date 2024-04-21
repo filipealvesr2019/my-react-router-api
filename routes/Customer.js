@@ -2152,14 +2152,23 @@ router.get("/allOrders/:custumerId", async (req, res) => {
 
 
 
+
 router.get("/boletos", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+    const searchQuery = req.query.name; // Query de pesquisa pelo campo "name"
 
-    // Encontre todos os boletos, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
-    const allBoletos = await Boleto.find().skip(skip).limit(pageSize);
+    let query = {}; // Inicialize uma query vazia
+
+    if (searchQuery) {
+      // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
+      query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+    }
+
+    // Encontre todos os boletos que correspondem à query, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
+    const allBoletos = await Boleto.find(query).skip(skip).limit(pageSize);
 
     // Atualize os status para os pedidos de boleto
     for (const boleto of allBoletos) {
@@ -2197,15 +2206,24 @@ router.get("/boletos", async (req, res) => {
   }
 });
 
+
+
 router.get("/pix", async (req, res) => {
   try {
 
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+    const searchQuery = req.query.name; // Query de pesquisa pelo campo "name"
 
+    let query = {}; // Inicialize uma query vazia
+
+    if (searchQuery) {
+      // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
+      query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+    }
     // Encontre todos os pedidos
-    const allOrders = await PixQRcode.find().skip(skip).limit(pageSize);
+    const allOrders = await PixQRcode.find(query).skip(skip).limit(pageSize);
     // Update statuses for Credit Card orders
     for (const creditCardOrder of allOrders) {
       const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
@@ -2247,9 +2265,16 @@ router.get("/creditCard", async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+    const searchQuery = req.query.name; // Query de pesquisa pelo campo "name"
 
+    let query = {}; // Inicialize uma query vazia
+
+    if (searchQuery) {
+      // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
+      query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+    }
     // Encontre todos os pedidos
-    const allOrders = await CreditCard.find().skip(skip).limit(pageSize);
+    const allOrders = await CreditCard.find(query).skip(skip).limit(pageSize);
 
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {
