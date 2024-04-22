@@ -2,12 +2,13 @@
 const express = require('express');
 const router = express.Router();
 const subcategoriesController = require('../controllers/subcategoriesController'); // Substitua pelo caminho real do seu controlador
+const { isAuthenticated, isAdmin } = require('../middleware/middlewares.authMiddleware');
 
 // Rota para adicionar nova categoria
-router.post('/admin/subcategories/new', subcategoriesController.createSubcategory);
-router.get('/admin/subcategories', subcategoriesController.getSubcategories);
-router.delete('/admin/subcategories/:subcategoryId', subcategoriesController.deleteSubcategory);
-router.put('/admin/subcategories/:subcategoryId', subcategoriesController.editSubcategory);
+router.post('/admin/subcategories/new',isAuthenticated, isAdmin, subcategoriesController.createSubcategory);
+router.get('/admin/subcategories',isAuthenticated, isAdmin, subcategoriesController.getSubcategories);
+router.delete('/admin/subcategories/:subcategoryId',isAuthenticated, isAdmin, subcategoriesController.deleteSubcategory);
+router.put('/admin/subcategories/:subcategoryId',isAuthenticated, isAdmin, subcategoriesController.editSubcategory);
 
 
 

@@ -11,7 +11,7 @@ const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
-const { isAuthenticated } = require("../middleware/middlewares.authMiddleware");
+const { isAuthenticated, isAdmin } = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
 const CustomerController = require("../controllers/CustomerController");
@@ -2070,19 +2070,7 @@ router.get("/customers/data", async (req, res) => {
   }
 });
 
-router.get("/customers/data/:customer", async (req, res) => {
-  try {
-    const customer = req.params.customer;
 
-    const customers = await Customer.findOne({ asaasCustomerId: customer });
-    res.status(200).json({ customers });
-  } catch (error) {
-    console.error("Erro ao pegar clientes:", error);
-    res
-      .status(500)
-      .json({ message: "Erro interno do servidor ao pegar clientes." });
-  }
-});
 
 router.get("/allOrders/:custumerId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2150,10 +2138,22 @@ router.get("/allOrders/:custumerId", async (req, res) => {
   }
 });
 
+router.get("/customers/data/:customer",isAuthenticated, isAdmin,  async (req, res) => {
+  try {
+    const customer = req.params.customer;
+
+    const customers = await Customer.findOne({ asaasCustomerId: customer });
+    res.status(200).json({ customers });
+  } catch (error) {
+    console.error("Erro ao pegar clientes:", error);
+    res
+      .status(500)
+      .json({ message: "Erro interno do servidor ao pegar clientes." });
+  }
+});
 
 
-
-router.get("/boletos", async (req, res) => {
+router.get("/boletos", isAuthenticated, isAdmin,  async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
@@ -2208,7 +2208,7 @@ router.get("/boletos", async (req, res) => {
 
 
 
-router.get("/pix", async (req, res) => {
+router.get("/pix", isAuthenticated, isAdmin,  async (req, res) => {
   try {
 
     const page = parseInt(req.query.page) || 1; // Página atual
@@ -2259,7 +2259,7 @@ router.get("/pix", async (req, res) => {
   }
 });
 
-router.get("/creditCard", async (req, res) => {
+router.get("/creditCard", isAuthenticated, isAdmin,  async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página
@@ -2299,7 +2299,7 @@ router.get("/creditCard", async (req, res) => {
   }
 });
 
-router.get("/boleto/:id", async (req, res) => {
+router.get("/boleto/:id", isAuthenticated, isAdmin,  async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
@@ -2319,7 +2319,7 @@ router.get("/boleto/:id", async (req, res) => {
   }
 });
 
-router.get("/creditCard/:id", async (req, res) => {
+router.get("/creditCard/:id", isAuthenticated, isAdmin,  async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
@@ -2339,7 +2339,7 @@ router.get("/creditCard/:id", async (req, res) => {
   }
 });
 
-router.get("/pix/:id", async (req, res) => {
+router.get("/pix/:id", isAuthenticated, isAdmin, async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
