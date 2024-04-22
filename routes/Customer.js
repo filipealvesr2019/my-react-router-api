@@ -2258,6 +2258,7 @@ router.get("/pix", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
 router.get("/creditCard", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
