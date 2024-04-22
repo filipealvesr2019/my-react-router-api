@@ -407,11 +407,11 @@ router.post(
         cart = new Cart({ customer: customer._id, products: [] });
       }
       // Verifica se o número total de produtos no carrinho já excede quatro
-      if (cart.products.length >= 3) {
-        return res.status(400).json({
-          message: "Você só pode adicionar até quatro produtos por vez.",
-        });
-      }
+      // if (cart.products.length >= 3) {
+      //   return res.status(400).json({
+      //     message: "Você só pode adicionar até quatro produtos por vez.",
+      //   });
+      // }
 
       // Encontra o produto
       const product = await Product.findById(productId);
@@ -1060,30 +1060,11 @@ router.post(
       // Apaga os registros de frete anteriores
       const data = {
         billingType: "BOLETO",
-        discount: { value: 0, dueDateLimitDays: 0 },
-        interest: { value: 0 },
-        fine: { value: 0 },
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
-        dueDate: new Date(), // Define a data atual como a data de vencimento
         value: totalAmount,
-        description: "",
-        daysAfterDueDateToCancellationRegistration: 1,
-        externalReference: externalReferences,
-        postalService: false,
-        shippingFeeData: {
-          transportadora: cart.transportadora.nome || "",
-          logo: cart.logo.img || "",
-          shippingFeePrice: cart.shippingFee,
-        },
-        products: cart.products.map((product) => ({
-          productId: product.productId._id,
-          quantity: product.quantity,
-          size: product.size,
-          color: product.color,
-          image: product.image,
-          name: product.name,
-        })),
-        name: customer.name,
+        dueDate: new Date(), // Define a data atual como a data de vencimento
+      
+       
       };
 
       const response = await axios.post(
@@ -1114,12 +1095,20 @@ router.post(
             bankSlipUrl: item.bankSlipUrl,
             dueDate: item.dueDate,
             shippingFeeData: {
-              transportadora: cart.transportadora.nome,
-              logo: cart.logo.img,
+              transportadora: cart.transportadora.nome || "",
+              logo: cart.logo.img || "",
               shippingFeePrice: cart.shippingFee,
             },
-            products: data.products,
+            products: cart.products.map((product) => ({
+              productId: product.productId._id,
+              quantity: product.quantity,
+              size: product.size,
+              color: product.color,
+              image: product.image,
+              name: product.name,
+            })),
             name: customer.name,
+         
           });
 
           await boleto.save();
@@ -1137,11 +1126,19 @@ router.post(
           bankSlipUrl: response.data.bankSlipUrl,
           dueDate: response.data.dueDate,
           shippingFeeData: {
-            transportadora: cart.transportadora.nome,
-            logo: cart.logo.img,
+            transportadora: cart.transportadora.nome || "",
+            logo: cart.logo.img || "",
             shippingFeePrice: cart.shippingFee,
           },
-          products: data.products,
+          products: cart.products.map((product) => ({
+            productId: product.productId._id,
+            quantity: product.quantity,
+            size: product.size,
+            color: product.color,
+            image: product.image,
+            name: product.name,
+          })),
+          name: customer.name,
           orderId: response.data.id,
           name: customer.name,
         });
@@ -1368,36 +1365,7 @@ router.post(
           installmentCount: 1,
           installmentValue: installmentValue,
           installmentNumber: i + 1, // Adiciona o número da parcela
-          creditCard: {
-            holderName: customer.name,
-            number: req.body.number,
-            expiryMonth: req.body.expiryMonth,
-            expiryYear: req.body.expiryYear,
-            ccv: req.body.ccv,
-          },
-          creditCardHolderInfo: {
-            name: customer.name,
-            email: customer.email,
-            cpfCnpj: customer.cpfCnpj,
-            postalCode: customer.postalCode,
-            addressNumber: customer.addressNumber,
-            addressComplement: null,
-            phone: customer.mobilePhone,
-          },
-          shippingFeeData: {
-            transportadora: cart.transportadora.nome || "",
-            logo: cart.logo.img || "",
-            shippingFeePrice: cart.shippingFee,
-          },
-          products: cart.products.map((product) => ({
-            productId: product.productId._id,
-            quantity: product.quantity,
-            size: product.size,
-            color: product.color,
-            image: product.image,
-          })),
-
-          name: customer.name,
+         
         };
 
         const response = await axios.post(
@@ -1433,9 +1401,25 @@ router.post(
           installmentNumber: installmentNumber, // Usando o número de parcela correto
           installmentValue: payment.installmentValue,
           installmentCount: payment.installmentCount,
+          creditCard: {
+            holderName: customer.name,
+            number: req.body.number,
+            expiryMonth: req.body.expiryMonth,
+            expiryYear: req.body.expiryYear,
+            ccv: req.body.ccv,
+          },
+          creditCardHolderInfo: {
+            name: customer.name,
+            email: customer.email,
+            cpfCnpj: customer.cpfCnpj,
+            postalCode: customer.postalCode,
+            addressNumber: customer.addressNumber,
+            addressComplement: null,
+            phone: customer.mobilePhone,
+          },
           shippingFeeData: {
-            transportadora: cart.transportadora.nome,
-            logo: cart.logo.img,
+            transportadora: cart.transportadora.nome || "",
+            logo: cart.logo.img || "",
             shippingFeePrice: cart.shippingFee,
           },
           products: cart.products.map((product) => ({
@@ -1444,8 +1428,8 @@ router.post(
             size: product.size,
             color: product.color,
             image: product.image,
-            name: product.name, // Adicione o nome do produto
           })),
+
           name: customer.name,
         });
         await creditCard.save();
@@ -1736,24 +1720,11 @@ router.post(
         addressKey: addressKey,
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         value: totalAmount,
-        description: "",
         format: "ALL",
         expirationDate: new Date(), // Define a data atual como a data de vencimento
         allowsMultiplePayments: true,
-        externalReference: externalReferences,
-        shippingFeeData: {
-          transportadora: cart.transportadora.nome || "",
-          logo: cart.logo.img || "",
-          shippingFeePrice: cart.shippingFee,
-        },
-        products: cart.products.map((product) => ({
-          productId: product.productId._id,
-          quantity: product.quantity,
-          size: product.size,
-          color: product.color,
-          image: product.image,
-        })),
-        name: customer.name,
+
+       
       };
 
       const response = await axios.post(
@@ -1784,12 +1755,19 @@ router.post(
             encodedImage: item.encodedImage,
             id: item.id,
             shippingFeeData: {
-              transportadora: cart.transportadora.nome,
-              logo: cart.logo.img,
+              transportadora: cart.transportadora.nome || "",
+              logo: cart.logo.img || "",
               shippingFeePrice: cart.shippingFee,
             },
-            products: data.products,
+            products: cart.products.map((product) => ({
+              productId: product.productId._id,
+              quantity: product.quantity,
+              size: product.size,
+              color: product.color,
+              image: product.image,
+            })),
             name: customer.name,
+
           });
 
           await pix.save();
@@ -1809,12 +1787,19 @@ router.post(
           encodedImage: response.data.encodedImage,
           id: response.data.id,
           shippingFeeData: {
-            transportadora: cart.transportadora.nome,
-            logo: cart.logo.img,
+            transportadora: cart.transportadora.nome || "",
+            logo: cart.logo.img || "",
             shippingFeePrice: cart.shippingFee,
           },
-          products: data.products,
+          products: cart.products.map((product) => ({
+            productId: product.productId._id,
+            quantity: product.quantity,
+            size: product.size,
+            color: product.color,
+            image: product.image,
+          })),
           name: customer.name,
+      
         });
 
         await pix.save();
@@ -1971,11 +1956,18 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
 });
 
 router.get("/orders/:custumerId", async (req, res) => {
-  const customerId = req.params.customerId;
-
+  const custumerId = req.params.custumerId;
+ 
+  
   try {
+     const page = req.query.page ? parseInt(req.query.page) : 1;
+  if (isNaN(page) || page < 1) {
+    return res.status(400).json({ error: "Invalid page number" });
+  }
+    const pageSize = 5; // Tamanho da página
+    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
     // Encontre o asaasCustomerId com base no customerId
-    const customer = await Customer.findOne({ custumerId: customerId });
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
     if (!customer) {
       return res.status(404).json({ error: "Customer not found" });
@@ -1986,7 +1978,8 @@ router.get("/orders/:custumerId", async (req, res) => {
     // Encontre todos os pedidos correspondentes
     let paymentReports = await PaymentReports.find({
       "payment.customer": asaasCustomerId,
-    });
+    }, { _id: 0, __v: 0 }) // Projeção para excluir campos não necessários
+    .skip(skip).limit(pageSize);
 
     // Defina a ordem de prioridade dos status
     const statusPriority = {
@@ -2011,6 +2004,7 @@ router.get("/orders/:custumerId", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
 
 router.get("/order/:customerId/:orderId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2073,19 +2067,21 @@ router.get("/customers/data", async (req, res) => {
 
 
 router.get("/allOrders/:custumerId", async (req, res) => {
-  const customerId = req.params.customerId;
+  const custumerId = req.params.custumerId;
+  const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
   try {
+    const pageSize = 10; // Tamanho da página
+    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
     // Find the customer's data in other schemas
-    const boletoData = await Boleto.find({ customerId: customerId });
-    const creditCardData = await CreditCard.find({ customerId: customerId });
-    const pixData = await PixQRcode.find({ customerId: customerId });
+    const boletoData = await Boleto.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
+    const creditCardData = await CreditCard.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
+    const pixData = await PixQRcode.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
+ 
 
     // Check if any data is found for the customer
-    if (!boletoData || !creditCardData || !pixData) {
-      return res
-        .status(404)
-        .json({ error: "Dados do cliente não encontrados" });
+    if (!boletoData.length && !creditCardData.length && !pixData.length) {
+      return res.status(404).json({ error: "Dados do cliente não encontrados" });
     }
 
     // Update statuses for Boleto orders
@@ -2137,6 +2133,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
 
 router.get("/customers/data/:customer",isAuthenticated, isAdmin,  async (req, res) => {
   try {
