@@ -2258,12 +2258,10 @@ router.get("/pix", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
-
 router.get("/creditCard", async (req, res) => {
   try {
-
     const page = parseInt(req.query.page) || 1; // Página atual
-    const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
+    const pageSize = 10; // Tamanho da página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
     const searchQuery = req.query.name; // Query de pesquisa pelo campo "name"
 
@@ -2273,8 +2271,12 @@ router.get("/creditCard", async (req, res) => {
       // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
       query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
     }
-    // Encontre todos os pedidos
-    const allOrders = await CreditCard.find(query).skip(skip).limit(pageSize);
+
+    // Encontre todos os pedidos ordenados pelo status de forma descendente
+    const allOrders = await CreditCard.find(query)
+                                      .sort({ status: -1 })
+                                      .skip(skip)
+                                      .limit(pageSize);
 
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {
@@ -2287,25 +2289,9 @@ router.get("/creditCard", async (req, res) => {
         await pixOrder.save();
       }
     }
-    
 
-     // Defina a ordem de prioridade dos status
-     const statusPriority = {
-      RECEIVED: 1,
-      CONFIRMED: 2,
-      PENDING: 3,
-      OVERDUE: 4,
-    };
-
-    // Ordenar os resultados com base no status
-    allOrders.sort((a, b) => {
-      const statusA = a.status;
-      const statusB = b.status;
-
-      // Compare os status com base na ordem de prioridade
-      return statusPriority[statusA] - statusPriority[statusB];
-    });
     res.json(allOrders);
+
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     res.status(500).json({ error: "Erro ao buscar dados" });
