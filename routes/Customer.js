@@ -1086,7 +1086,7 @@ router.post(
           const boleto = new Boleto({
             orderId: item.id,
             billingType: "BOLETO",
-            customerId: custumerId, // Agora é uma string
+            custumerId: custumerId, // Agora é uma string
             customer: item.customer,
             billingType: item.billingType,
             value: item.value,
@@ -1117,7 +1117,7 @@ router.post(
         // Se não for um array, salva apenas um item
         const boleto = new Boleto({
           billingType: "BOLETO",
-          customerId: custumerId, // Agora é uma string
+          custumerId: custumerId, // Agora é uma string
           customer: response.data.customer,
           billingType: response.data.billingType,
           value: response.data.value,
@@ -1352,15 +1352,12 @@ router.post(
 
         const paymentData = {
           billingType: "CREDIT_CARD",
-     
           customer: asaasCustomerId,
           dueDate: newDueDate,
           value: installmentValue,
-  
           daysAfterDueDateToCancellationRegistration: 1,
-    
           postalService: false,
-          installmentCount: 1,
+          installmentCount: i + 1,
           installmentValue: installmentValue,
           installmentNumber: i + 1, // Adiciona o número da parcela
           creditCard: {
