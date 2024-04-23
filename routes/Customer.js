@@ -1352,19 +1352,33 @@ router.post(
 
         const paymentData = {
           billingType: "CREDIT_CARD",
-          discount: { value: 0, dueDateLimitDays: 0 },
-          interest: { value: 0 },
-          fine: { value: 0 },
+     
           customer: asaasCustomerId,
           dueDate: newDueDate,
           value: installmentValue,
-          description: "",
+  
           daysAfterDueDateToCancellationRegistration: 1,
-          externalReference: externalReferences,
+    
           postalService: false,
           installmentCount: 1,
           installmentValue: installmentValue,
           installmentNumber: i + 1, // Adiciona o número da parcela
+          creditCard: {
+            holderName: customer.name,
+            number: req.body.number,
+            expiryMonth: req.body.expiryMonth,
+            expiryYear: req.body.expiryYear,
+            ccv: req.body.ccv,
+          },
+          creditCardHolderInfo: {
+            name: customer.name,
+            email: customer.email,
+            cpfCnpj: customer.cpfCnpj,
+            postalCode: customer.postalCode,
+            addressNumber: customer.addressNumber,
+            addressComplement: null,
+            phone: customer.mobilePhone,
+          }
          
         };
 
@@ -1401,22 +1415,6 @@ router.post(
           installmentNumber: installmentNumber, // Usando o número de parcela correto
           installmentValue: payment.installmentValue,
           installmentCount: payment.installmentCount,
-          creditCard: {
-            holderName: customer.name,
-            number: req.body.number,
-            expiryMonth: req.body.expiryMonth,
-            expiryYear: req.body.expiryYear,
-            ccv: req.body.ccv,
-          },
-          creditCardHolderInfo: {
-            name: customer.name,
-            email: customer.email,
-            cpfCnpj: customer.cpfCnpj,
-            postalCode: customer.postalCode,
-            addressNumber: customer.addressNumber,
-            addressComplement: null,
-            phone: customer.mobilePhone,
-          },
           shippingFeeData: {
             transportadora: cart.transportadora.nome || "",
             logo: cart.logo.img || "",
@@ -1720,6 +1718,7 @@ router.post(
         addressKey: addressKey,
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         value: totalAmount,
+
         format: "ALL",
         expirationDate: new Date(), // Define a data atual como a data de vencimento
         allowsMultiplePayments: true,
