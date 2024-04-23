@@ -2042,7 +2042,7 @@ router.get("/allOrders/:custumerId",  isAuthenticated, async (req, res) => {
   const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
   try {
-    const pageSize = 10; // Tamanho da página
+    const pageSize = 2; // Tamanho da página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
     // Find the customer's data in other schemas
     const boletoData = await Boleto.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
