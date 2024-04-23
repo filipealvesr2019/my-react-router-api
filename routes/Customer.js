@@ -2138,15 +2138,13 @@ router.get("/allOrders/:custumerId/:id", async (req, res) => {
   const custumerId = req.params.custumerId;
   const id = req.params.id;
 
-  const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
   try {
-    const pageSize = 10; // Tamanho da página
-    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+  
     // Find the customer's data in other schemas
-    const boletoData = await Boleto.find({ custumerId: custumerId, _id: id }).skip(skip).limit(pageSize);
-    const creditCardData = await CreditCard.find({ custumerId: custumerId, _id: id }).skip(skip).limit(pageSize);
-    const pixData = await PixQRcode.find({ custumerId: custumerId, _id: id }).skip(skip).limit(pageSize);
+    const boletoData = await Boleto.find({ custumerId: custumerId, _id: id });
+    const creditCardData = await CreditCard.find({ custumerId: custumerId, _id: id });
+    const pixData = await PixQRcode.find({ custumerId: custumerId, _id: id });
  
 
     // Check if any data is found for the customer
