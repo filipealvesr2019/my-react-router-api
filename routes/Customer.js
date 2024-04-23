@@ -2033,36 +2033,11 @@ router.get("/order/:customerId/:orderId", async (req, res) => {
   }
 });
 
-// ver os status de todos os pedidos de pix boleto e cartao de credito do sistema do asaas
-router.get("/allOrders", async (req, res) => {
-  try {
-    // Encontre todos os pedidos
-    const allOrders = await PaymentReports.find();
-
-    res.json(allOrders);
-  } catch (error) {
-    console.error("Erro ao buscar dados:", error);
-    res.status(500).json({ error: "Erro ao buscar dados" });
-  }
-});
-
-// ver todos os usuarios cadastrados no meu sistema
-
-router.get("/customers/data", async (req, res) => {
-  try {
-    const customers = await Customer.find();
-    res.status(200).json({ customers });
-  } catch (error) {
-    console.error("Erro ao pegar clientes:", error);
-    res
-      .status(500)
-      .json({ message: "Erro interno do servidor ao pegar clientes." });
-  }
-});
 
 
 
-router.get("/allOrders/:custumerId", async (req, res) => {
+
+router.get("/allOrders/:custumerId",  isAuthenticated, async (req, res) => {
   const custumerId = req.params.custumerId;
   const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
@@ -2134,7 +2109,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
 
 
 
-router.get("/allOrders/:custumerId/:id", async (req, res) => {
+router.get("/allOrders/:custumerId/:id",  isAuthenticated, async (req, res) => {
   const custumerId = req.params.custumerId;
   const id = req.params.id;
 
