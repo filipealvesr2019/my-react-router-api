@@ -2131,6 +2131,86 @@ router.get("/allOrders/:custumerId", async (req, res) => {
 });
 
 
+
+
+
+router.get("/allOrders/:custumerId/:id", async (req, res) => {
+  const custumerId = req.params.custumerId;
+  const id = req.params.id;
+
+  const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
+
+  try {
+    const pageSize = 10; // Tamanho da página
+    const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+    // Find the customer's data in other schemas
+    const boletoData = await Boleto.find({ custumerId: custumerId, _id: id }).skip(skip).limit(pageSize);
+    const creditCardData = await CreditCard.find({ custumerId: custumerId, _id: id }).skip(skip).limit(pageSize);
+    const pixData = await PixQRcode.find({ custumerId: custumerId, _id: id }).skip(skip).limit(pageSize);
+ 
+
+    // Check if any data is found for the customer
+    if (!boletoData.length && !creditCardData.length && !pixData.length) {
+      return res.status(404).json({ error: "Dados do cliente não encontrados" });
+    }
+
+    // Update statuses for Boleto orders
+    for (const boletoOrder of boletoData) {
+      const orderId = boletoOrder.orderId;
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        boletoOrder.status = paymentReport.payment.status;
+        await boletoOrder.save();
+      }
+    }
+
+    // Update statuses for Credit Card orders
+    for (const creditCardOrder of creditCardData) {
+      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        creditCardOrder.status = paymentReport.payment.status;
+        await creditCardOrder.save();
+      }
+    }
+
+    // Update statuses for Pix orders
+    for (const pixOrder of pixData) {
+      const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        pixOrder.status = paymentReport.payment.status;
+        await pixOrder.save();
+      }
+    }
+
+    const responseData = {
+      boleto: boletoData,
+      creditCard: creditCardData,
+      pix: pixData,
+    };
+
+    // Send the response after updating all orders
+    res.json(responseData);
+  } catch (error) {
+    console.error("Erro ao buscar dados:", error);
+    res.status(500).json({ error: "Erro ao buscar dados" });
+  }
+});
+
+
+
+
+
+
+
+
 router.get("/customers/data/:customer",isAuthenticated, isAdmin,  async (req, res) => {
   try {
     const customer = req.params.customer;
