@@ -1370,7 +1370,7 @@ router.post(
           value: installmentValue,
           daysAfterDueDateToCancellationRegistration: 1,
           postalService: false,
-          installmentCount: i + 1,
+          installmentCount: 1,
           installmentValue: installmentValue,
           installmentNumber: i + 1, // Adiciona o número da parcela
           creditCard: {
