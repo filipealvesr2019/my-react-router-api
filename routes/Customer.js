@@ -606,7 +606,7 @@ router.delete(
       // Retorna informações sobre o produto removido
       const removedProduct = await Product.findById(productId);
       res.status(200).json({
-        cart: cart,
+       
         removedProductId: removedProduct._id,
         message: "Produto removido do carrinho com sucesso.",
       });
