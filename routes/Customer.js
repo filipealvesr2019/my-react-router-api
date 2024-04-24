@@ -11,7 +11,10 @@ const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
-const { isAuthenticated, isAdmin } = require("../middleware/middlewares.authMiddleware");
+const {
+  isAuthenticated,
+  isAdmin,
+} = require("../middleware/middlewares.authMiddleware");
 const PixQRcode = require("../models/PixQRcode");
 const PaymentReports = require("../models/paymentReports");
 const CustomerController = require("../controllers/CustomerController");
@@ -241,12 +244,12 @@ router.get(
   async (req, res) => {
     try {
       // Encontra o usuário com base no clerkUserId
-      const existingUser = await Customer.findOne({ custumerId: req.params.custumerId });
-     
-     
+      const existingUser = await Customer.findOne({
+        custumerId: req.params.custumerId,
+      });
+
       // Retorna as informações do usuário
       res.status(200).json(existingUser);
-     
     } catch (error) {
       console.error("Erro ao buscar usuário:", error);
       res
@@ -1063,8 +1066,6 @@ router.post(
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         value: totalAmount,
         dueDate: new Date(), // Define a data atual como a data de vencimento
-      
-       
       };
 
       const response = await axios.post(
@@ -1108,7 +1109,6 @@ router.post(
               name: product.name,
             })),
             name: customer.name,
-         
           });
 
           await boleto.save();
@@ -1301,7 +1301,20 @@ router.post(
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
-
+      // Valida se todos os campos necessários estão presentes no corpo da requisição
+      if (
+        !req.body.number ||
+        !req.body.expiryMonth ||
+        !req.body.expiryYear ||
+        !req.body.ccv
+      ) {
+        return res
+          .status(400)
+          .json({
+            message:
+              "Campos de cartão de crédito incompletos. Todos os campos são necessários.",
+          });
+      }
       // Remove todos os produtos do carrinho
       const result = await Cart.deleteMany({ customer: customer._id });
 
@@ -1375,8 +1388,7 @@ router.post(
             addressNumber: customer.addressNumber,
             addressComplement: null,
             phone: customer.mobilePhone,
-          }
-         
+          },
         };
 
         const response = await axios.post(
@@ -1437,6 +1449,7 @@ router.post(
     }
   }
 );
+
 // pagar boleto com checkout transparente
 router.post(
   "/tokenizeCreditCard",
@@ -1719,8 +1732,6 @@ router.post(
         format: "ALL",
         expirationDate: new Date(), // Define a data atual como a data de vencimento
         allowsMultiplePayments: true,
-
-       
       };
 
       const response = await axios.post(
@@ -1763,7 +1774,6 @@ router.post(
               image: product.image,
             })),
             name: customer.name,
-
           });
 
           await pix.save();
@@ -1795,7 +1805,6 @@ router.post(
             image: product.image,
           })),
           name: customer.name,
-      
         });
 
         await pix.save();
@@ -1953,13 +1962,12 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
 
 router.get("/orders/:custumerId", async (req, res) => {
   const custumerId = req.params.custumerId;
- 
-  
+
   try {
-     const page = req.query.page ? parseInt(req.query.page) : 1;
-  if (isNaN(page) || page < 1) {
-    return res.status(400).json({ error: "Invalid page number" });
-  }
+    const page = req.query.page ? parseInt(req.query.page) : 1;
+    if (isNaN(page) || page < 1) {
+      return res.status(400).json({ error: "Invalid page number" });
+    }
     const pageSize = 5; // Tamanho da página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
     // Encontre o asaasCustomerId com base no customerId
@@ -1972,10 +1980,14 @@ router.get("/orders/:custumerId", async (req, res) => {
     const asaasCustomerId = customer.asaasCustomerId;
 
     // Encontre todos os pedidos correspondentes
-    let paymentReports = await PaymentReports.find({
-      "payment.customer": asaasCustomerId,
-    }, { _id: 0, __v: 0 }) // Projeção para excluir campos não necessários
-    .skip(skip).limit(pageSize);
+    let paymentReports = await PaymentReports.find(
+      {
+        "payment.customer": asaasCustomerId,
+      },
+      { _id: 0, __v: 0 }
+    ) // Projeção para excluir campos não necessários
+      .skip(skip)
+      .limit(pageSize);
 
     // Defina a ordem de prioridade dos status
     const statusPriority = {
@@ -2000,7 +2012,6 @@ router.get("/orders/:custumerId", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
-
 
 router.get("/order/:customerId/:orderId", async (req, res) => {
   const customerId = req.params.customerId;
@@ -2033,11 +2044,7 @@ router.get("/order/:customerId/:orderId", async (req, res) => {
   }
 });
 
-
-
-
-
-router.get("/allOrders/:custumerId",  isAuthenticated, async (req, res) => {
+router.get("/allOrders/:custumerId", isAuthenticated, async (req, res) => {
   const custumerId = req.params.custumerId;
   const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
@@ -2045,14 +2052,21 @@ router.get("/allOrders/:custumerId",  isAuthenticated, async (req, res) => {
     const pageSize = 2; // Tamanho da página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
     // Find the customer's data in other schemas
-    const boletoData = await Boleto.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
-    const creditCardData = await CreditCard.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
-    const pixData = await PixQRcode.find({ custumerId: custumerId }).skip(skip).limit(pageSize);
- 
+    const boletoData = await Boleto.find({ custumerId: custumerId })
+      .skip(skip)
+      .limit(pageSize);
+    const creditCardData = await CreditCard.find({ custumerId: custumerId })
+      .skip(skip)
+      .limit(pageSize);
+    const pixData = await PixQRcode.find({ custumerId: custumerId })
+      .skip(skip)
+      .limit(pageSize);
 
     // Check if any data is found for the customer
     if (!boletoData.length && !creditCardData.length && !pixData.length) {
-      return res.status(404).json({ error: "Dados do cliente não encontrados" });
+      return res
+        .status(404)
+        .json({ error: "Dados do cliente não encontrados" });
     }
 
     // Update statuses for Boleto orders
@@ -2105,26 +2119,24 @@ router.get("/allOrders/:custumerId",  isAuthenticated, async (req, res) => {
   }
 });
 
-
-
-
-
-router.get("/allOrders/:custumerId/:id",  isAuthenticated, async (req, res) => {
+router.get("/allOrders/:custumerId/:id", isAuthenticated, async (req, res) => {
   const custumerId = req.params.custumerId;
   const id = req.params.id;
 
-
   try {
-  
     // Find the customer's data in other schemas
     const boletoData = await Boleto.find({ custumerId: custumerId, _id: id });
-    const creditCardData = await CreditCard.find({ custumerId: custumerId, _id: id });
+    const creditCardData = await CreditCard.find({
+      custumerId: custumerId,
+      _id: id,
+    });
     const pixData = await PixQRcode.find({ custumerId: custumerId, _id: id });
- 
 
     // Check if any data is found for the customer
     if (!boletoData.length && !creditCardData.length && !pixData.length) {
-      return res.status(404).json({ error: "Dados do cliente não encontrados" });
+      return res
+        .status(404)
+        .json({ error: "Dados do cliente não encontrados" });
     }
 
     // Update statuses for Boleto orders
@@ -2177,29 +2189,26 @@ router.get("/allOrders/:custumerId/:id",  isAuthenticated, async (req, res) => {
   }
 });
 
+router.get(
+  "/customers/data/:customer",
+  isAuthenticated,
+  isAdmin,
+  async (req, res) => {
+    try {
+      const customer = req.params.customer;
 
-
-
-
-
-
-
-router.get("/customers/data/:customer",isAuthenticated, isAdmin,  async (req, res) => {
-  try {
-    const customer = req.params.customer;
-
-    const customers = await Customer.findOne({ asaasCustomerId: customer });
-    res.status(200).json({ customers });
-  } catch (error) {
-    console.error("Erro ao pegar clientes:", error);
-    res
-      .status(500)
-      .json({ message: "Erro interno do servidor ao pegar clientes." });
+      const customers = await Customer.findOne({ asaasCustomerId: customer });
+      res.status(200).json({ customers });
+    } catch (error) {
+      console.error("Erro ao pegar clientes:", error);
+      res
+        .status(500)
+        .json({ message: "Erro interno do servidor ao pegar clientes." });
+    }
   }
-});
+);
 
-
-router.get("/boletos", isAuthenticated, isAdmin,  async (req, res) => {
+router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
@@ -2210,7 +2219,7 @@ router.get("/boletos", isAuthenticated, isAdmin,  async (req, res) => {
 
     if (searchQuery) {
       // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
-      query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+      query = { name: { $regex: searchQuery, $options: "i" } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
     }
 
     // Encontre todos os boletos que correspondem à query, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
@@ -2252,11 +2261,8 @@ router.get("/boletos", isAuthenticated, isAdmin,  async (req, res) => {
   }
 });
 
-
-
-router.get("/pix", isAuthenticated, isAdmin,  async (req, res) => {
+router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
   try {
-
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página, ou seja, o número máximo de boletos por página
     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
@@ -2266,7 +2272,7 @@ router.get("/pix", isAuthenticated, isAdmin,  async (req, res) => {
 
     if (searchQuery) {
       // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
-      query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+      query = { name: { $regex: searchQuery, $options: "i" } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
     }
     // Encontre todos os pedidos
     const allOrders = await PixQRcode.find(query).skip(skip).limit(pageSize);
@@ -2282,22 +2288,22 @@ router.get("/pix", isAuthenticated, isAdmin,  async (req, res) => {
       }
     }
 
-      // Defina a ordem de prioridade dos status
-      const statusPriority = {
-        RECEIVED: 1,
-        CONFIRMED: 2,
-        PENDING: 3,
-        OVERDUE: 4,
-      };
-  
-      // Ordenar os resultados com base no status
-      allOrders.sort((a, b) => {
-        const statusA = a.status;
-        const statusB = b.status;
-  
-        // Compare os status com base na ordem de prioridade
-        return statusPriority[statusA] - statusPriority[statusB];
-      });
+    // Defina a ordem de prioridade dos status
+    const statusPriority = {
+      RECEIVED: 1,
+      CONFIRMED: 2,
+      PENDING: 3,
+      OVERDUE: 4,
+    };
+
+    // Ordenar os resultados com base no status
+    allOrders.sort((a, b) => {
+      const statusA = a.status;
+      const statusB = b.status;
+
+      // Compare os status com base na ordem de prioridade
+      return statusPriority[statusA] - statusPriority[statusB];
+    });
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
@@ -2305,7 +2311,7 @@ router.get("/pix", isAuthenticated, isAdmin,  async (req, res) => {
   }
 });
 
-router.get("/creditCard", isAuthenticated, isAdmin,  async (req, res) => {
+router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
     const pageSize = 10; // Tamanho da página
@@ -2316,14 +2322,14 @@ router.get("/creditCard", isAuthenticated, isAdmin,  async (req, res) => {
 
     if (searchQuery) {
       // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
-      query = { name: { $regex: searchQuery, $options: 'i' } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+      query = { name: { $regex: searchQuery, $options: "i" } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
     }
 
     // Encontre todos os pedidos ordenados pelo status de forma descendente
     const allOrders = await CreditCard.find(query)
-                                      .sort({ status: -1 })
-                                      .skip(skip)
-                                      .limit(pageSize);
+      .sort({ status: -1 })
+      .skip(skip)
+      .limit(pageSize);
 
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {
@@ -2338,14 +2344,13 @@ router.get("/creditCard", isAuthenticated, isAdmin,  async (req, res) => {
     }
 
     res.json(allOrders);
-
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
 
-router.get("/boleto/:id", isAuthenticated, isAdmin,  async (req, res) => {
+router.get("/boleto/:id", isAuthenticated, isAdmin, async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
@@ -2365,7 +2370,7 @@ router.get("/boleto/:id", isAuthenticated, isAdmin,  async (req, res) => {
   }
 });
 
-router.get("/creditCard/:id", isAuthenticated, isAdmin,  async (req, res) => {
+router.get("/creditCard/:id", isAuthenticated, isAdmin, async (req, res) => {
   try {
     // Acesse o id do parâmetro da rota
     const id = req.params.id;
@@ -2404,7 +2409,5 @@ router.get("/pix/:id", isAuthenticated, isAdmin, async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
-
-
 
 module.exports = router;
