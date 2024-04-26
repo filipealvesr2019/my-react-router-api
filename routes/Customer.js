@@ -1368,11 +1368,9 @@ router.post(
           customer: asaasCustomerId,
           dueDate: newDueDate,
           value: installmentValue,
-          daysAfterDueDateToCancellationRegistration: 1,
           postalService: false,
-          installmentCount: 1,
+       
           installmentValue: installmentValue,
-          installmentNumber: i + 1, // Adiciona o número da parcela
           creditCard: {
             holderName: customer.name,
             number: req.body.number,
