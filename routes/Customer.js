@@ -1369,8 +1369,9 @@ router.post(
           dueDate: newDueDate,
           value: installmentValue,
           postalService: false,
-       
+   
           installmentValue: installmentValue,
+          installmentNumber: i + 1, // Adiciona o número da parcela
           creditCard: {
             holderName: customer.name,
             number: req.body.number,
