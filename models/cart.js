@@ -28,6 +28,11 @@ const cartSchema = new Schema({
         type: String,
         default: " ",
       },
+
+      price: { // Adicionando o campo de imagem
+        type: Number,
+       
+      },
     },
   ],
   shippingFee: {
