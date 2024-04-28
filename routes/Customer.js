@@ -799,6 +799,7 @@ router.get(
   "/cart/:custumerId/total-price",
   isAuthenticated,
 
+
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -819,6 +820,13 @@ router.get(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
+       // Calcula o total do preço dos produtos no carrinho
+         // Calcula a quantidade total de produtos no carrinho
+         const TotalQuantity = cart.products.reduce(
+          (total, product) => total + product.quantity,
+          0
+        );
+
       // Calcula o total do preço dos produtos no carrinho
       let totalPrice = cart.products.reduce(
         (total, product) => total + product.productId.price * product.quantity,
@@ -830,6 +838,7 @@ router.get(
       // Retorna o total do preço dos produtos no carrinho
       res.status(200).json({
         totalAmount,
+        TotalQuantity,
         message: "Total do preço dos produtos no carrinho.",
       });
     } catch (error) {
