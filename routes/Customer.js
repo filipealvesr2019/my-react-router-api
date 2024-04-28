@@ -409,18 +409,21 @@ router.post(
       if (!cart) {
         cart = new Cart({ customer: customer._id, products: [] });
       }
-      // Verifica se o número total de produtos no carrinho já excede quatro
-      // if (cart.products.length >= 3) {
-      //   return res.status(400).json({
-      //     message: "Você só pode adicionar até quatro produtos por vez.",
-      //   });
-      // }
+    
 
       // Encontra o produto
       const product = await Product.findById(productId);
-
+     
+      
       if (!product) {
         return res.status(404).json({ message: "Produto não encontrado." });
+      }
+
+      if (quantity > product.quantity) {
+        return res.status(400).json({
+          message:
+            "A quantidade no carrinho excede a quantidade disponível do produto.",
+        });
       }
 
       // Adiciona o produto ao carrinho
@@ -436,6 +439,7 @@ router.post(
 
       // Retorna informações sobre o produto adicionado
       const addedProduct = await Product.findById(productId);
+  
       res.status(200).json({
         cart: cart,
         addedProductId: addedProduct._id,
@@ -498,6 +502,8 @@ router.put(
       const custumerId = req.params.custumerId;
       const productId = req.params.productId;
       const { quantity } = req.body;
+      let exceededQuantity; // Definindo a variável exceededQuantity aqui
+
       if (quantity <= 0) {
         return res
           .status(400)
@@ -513,7 +519,8 @@ router.put(
 
       // Encontra o carrinho do cliente
       let cart = await Cart.findOne({ customer: customer._id });
-
+    
+      
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
@@ -537,12 +544,15 @@ router.put(
       }
       // Verifica se a quantidade no carrinho excede a quantidade disponível do produto
       if (quantity > product.quantity) {
+        // Define exceededQuantity como true
+        // Retorna uma resposta indicando que a quantidade excede a disponibilidade
         return res.status(400).json({
           message:
             "A quantidade no carrinho excede a quantidade disponível do produto.",
         });
       }
 
+      // Se a quantidade estiver dentro da disponibilidade, define exceededQuantity como false
       // Atualiza a quantidade do produto no carrinho
       cart.products[productIndex].quantity = quantity;
       // Zera o shippingFee do carrinho

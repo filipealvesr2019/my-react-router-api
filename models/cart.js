@@ -24,14 +24,15 @@ const cartSchema = new Schema({
         type: String,
         default: " ",
       },
-      image: { // Adicionando o campo de imagem
+      image: {
+        // Adicionando o campo de imagem
         type: String,
         default: " ",
       },
 
-      price: { // Adicionando o campo de imagem
+      price: {
+        // Adicionando o campo de imagem
         type: Number,
-       
       },
     },
   ],
@@ -70,8 +71,10 @@ const cartSchema = new Schema({
   },
   TotalQuantity: {
     type: Number,
-
- 
+  },
+  exceededQuantity: {
+    type: Boolean, // Alterado para Boolean
+    default: false, // Por padrão, não excedeu a quantidade
   },
 });
 
