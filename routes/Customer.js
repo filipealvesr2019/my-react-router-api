@@ -409,12 +409,10 @@ router.post(
       if (!cart) {
         cart = new Cart({ customer: customer._id, products: [] });
       }
-    
 
       // Encontra o produto
       const product = await Product.findById(productId);
-     
-      
+
       if (!product) {
         return res.status(404).json({ message: "Produto não encontrado." });
       }
@@ -433,13 +431,13 @@ router.post(
         size: size,
         color: color,
         image: image,
-        price: price
+        price: price,
       });
       await cart.save();
 
       // Retorna informações sobre o produto adicionado
       const addedProduct = await Product.findById(productId);
-  
+
       res.status(200).json({
         cart: cart,
         addedProductId: addedProduct._id,
@@ -519,8 +517,7 @@ router.put(
 
       // Encontra o carrinho do cliente
       let cart = await Cart.findOne({ customer: customer._id });
-    
-      
+
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
@@ -543,12 +540,11 @@ router.put(
         return res.status(404).json({ message: "Produto não encontrado." });
       }
       // Verifica se a quantidade no carrinho excede a quantidade disponível do produto
-      if (quantity > product.quantity) {
-        // Define exceededQuantity como true
-        // Retorna uma resposta indicando que a quantidade excede a disponibilidade
+      // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
+      if (quantity > cart.products[productIndex].availableQuantity) {
         return res.status(400).json({
           message:
-            "A quantidade no carrinho excede a quantidade disponível do produto.",
+            "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
         });
       }
 
@@ -617,7 +613,6 @@ router.delete(
       // Retorna informações sobre o produto removido
       const removedProduct = await Product.findById(productId);
       res.status(200).json({
-       
         removedProductId: removedProduct._id,
         message: "Produto removido do carrinho com sucesso.",
       });
@@ -809,7 +804,6 @@ router.get(
   "/cart/:custumerId/total-price",
   isAuthenticated,
 
-
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -830,12 +824,12 @@ router.get(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
-       // Calcula o total do preço dos produtos no carrinho
-         // Calcula a quantidade total de produtos no carrinho
-         const TotalQuantity = cart.products.reduce(
-          (total, product) => total + product.quantity,
-          0
-        );
+      // Calcula o total do preço dos produtos no carrinho
+      // Calcula a quantidade total de produtos no carrinho
+      const TotalQuantity = cart.products.reduce(
+        (total, product) => total + product.quantity,
+        0
+      );
 
       // Calcula o total do preço dos produtos no carrinho
       let totalPrice = cart.products.reduce(
@@ -1328,12 +1322,10 @@ router.post(
         !req.body.expiryYear ||
         !req.body.ccv
       ) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "Campos de cartão de crédito incompletos. Todos os campos são necessários.",
-          });
+        return res.status(400).json({
+          message:
+            "Campos de cartão de crédito incompletos. Todos os campos são necessários.",
+        });
       }
       // Remove todos os produtos do carrinho
       const result = await Cart.deleteMany({ customer: customer._id });
@@ -1389,7 +1381,7 @@ router.post(
           dueDate: newDueDate,
           value: installmentValue,
           postalService: false,
-   
+
           installmentValue: installmentValue,
           installmentNumber: i + 1, // Adiciona o número da parcela
           creditCard: {

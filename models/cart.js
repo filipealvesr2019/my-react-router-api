@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
-
+const Product = require("./product");
 const cartSchema = new Schema({
   customer: {
     type: Schema.Types.ObjectId,
@@ -33,6 +33,10 @@ const cartSchema = new Schema({
       price: {
         // Adicionando o campo de imagem
         type: Number,
+      },
+      availableQuantity: {
+        type: Number,
+        default: 0,
       },
     },
   ],
@@ -72,12 +76,22 @@ const cartSchema = new Schema({
   TotalQuantity: {
     type: Number,
   },
-  exceededQuantity: {
-    type: Boolean, // Alterado para Boolean
-    default: false, // Por padrão, não excedeu a quantidade
-  },
 });
 
+// Pré-salvamento para atualizar a quantidade disponível do produto no carrinho
+cartSchema.pre("save", async function (next) {
+  try {
+    for (const product of this.products) {
+      const productDetails = await Product.findById(product.productId);
+      if (productDetails) {
+        product.availableQuantity = productDetails.quantity;
+      }
+    }
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 const Cart = mongoose.model("Cart", cartSchema);
 
 module.exports = Cart;
