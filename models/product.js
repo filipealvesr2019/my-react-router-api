@@ -29,6 +29,11 @@ const productSchema = new mongoose.Schema(
           type: [String],
           required: true,
         },
+        QuantityPerUnit:{
+          type: Number,
+          default: 1,
+        }
+
       },
     ],
   

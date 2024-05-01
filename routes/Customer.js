@@ -416,23 +416,23 @@ router.post(
       if (!product) {
         return res.status(404).json({ message: "Produto não encontrado." });
       }
+   // Verifica se há quantidade suficiente disponível
+   if (quantity > product.quantity) {
+    return res.status(400).json({
+      message:
+        "A quantidade no carrinho excede a quantidade disponível do produto.",
+    });
+  }
 
-      if (quantity > product.quantity) {
-        return res.status(400).json({
-          message:
-            "A quantidade no carrinho excede a quantidade disponível do produto.",
-        });
-      }
-
-      // Adiciona o produto ao carrinho
-      cart.products.push({
-        productId: productId,
-        quantity: quantity,
-        size: size,
-        color: color,
-        image: image,
-        price: price,
-      });
+  // Adiciona o produto ao carrinho
+  cart.products.push({
+    productId: productId,
+    quantity: quantity,
+    size: size,
+    color: color,
+    image: image,
+    price: price,
+  });
       await cart.save();
 
       // Retorna informações sobre o produto adicionado
