@@ -35,7 +35,7 @@ const productSchema = new mongoose.Schema(
           required: [true, "Digite o tamanho do produto"],
         },
         price:{
-          type: Number,
+        type: Number,
           default: 1,
         }, 
          QuantityPerUnit:{
