@@ -1056,11 +1056,16 @@ router.post(
       }
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
+      console.log("Produtos no carrinho:", cart.products);
+
       const totalPrice = cart.products.reduce(
         (total, product) => total + product.productId.price * product.quantity,
         0
       );
+      console.log("Preço total dos produtos:", totalPrice);
+
       const totalAmount = totalPrice + cart.shippingFee;
+      console.log("Valor total incluindo a taxa de envio:", totalAmount);
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
