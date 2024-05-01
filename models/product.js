@@ -9,12 +9,7 @@ const productSchema = new mongoose.Schema(
       trim: true,
       maxLength: [100, "O Produto não pode exceder 100 palavras"],
     },
-    price: {
-      type: Number,
-      required: [true, "Digite o preço"],
-      maxLength: [5, "O preço não pode exceder 5 números"],
-      default: 0.0,
-    },
+  
     description: {
       type: String,
       required: [true, "Digite a descrição"],
@@ -48,10 +43,7 @@ const productSchema = new mongoose.Schema(
       
     ],
   
-    size: {
-      type: String,
-      required: [true, "Digite o tamanho do produto"],
-    },
+   
     category: {
       type: String, // Mudança: altere para String
       required: [true, "Digite a categoria do produto"],
@@ -64,10 +56,7 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    quantity: {
-      type: Number,
-      default: 1,
-    },
+    
     
     createdAt: {
       type: Date,
