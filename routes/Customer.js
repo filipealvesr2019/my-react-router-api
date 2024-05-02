@@ -825,14 +825,9 @@ router.get(
       }
      
 
-      // Calcula o total do preço dos produtos no carrinho
-      let totalPrice = cart.products.reduce(
-        (total, product) => total + product.productId.price * product.quantity,
-        0,
-        console.log(product.quantity)
-      );
+   
 
-      let totalAmount = totalPrice + cart.shippingFee;
+      let totalAmount =  cart.totalAmount;
 
       // Retorna o total do preço dos produtos no carrinho
       res.status(200).json({
