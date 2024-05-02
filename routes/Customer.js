@@ -801,15 +801,15 @@ router.put(
 );
 
 router.get(
-  "/cart/:custumerId/total-price",
+  "/cart/:customerId/total-price",
   isAuthenticated,
 
   async (req, res) => {
     try {
-      const custumerId = req.params.custumerId;
+      const customerId = req.params.customerId;
 
       // Encontra o cliente associado ao atendente
-      const customer = await Customer.findOne({ custumerId: custumerId });
+      const customer = await Customer.findOne({ customerId: customerId });
 
       if (!customer) {
         return res.status(404).json({ message: "Cliente não encontrado." });
@@ -823,18 +823,13 @@ router.get(
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
-
-      // Calcula o total do preço dos produtos no carrinho
-      // Calcula a quantidade total de produtos no carrinho
-      const TotalQuantity = cart.products.reduce(
-        (total, product) => total + product.quantity,
-        0
-      );
+     
 
       // Calcula o total do preço dos produtos no carrinho
       let totalPrice = cart.products.reduce(
         (total, product) => total + product.productId.price * product.quantity,
-        0
+        0,
+        console.log(product.quantity)
       );
 
       let totalAmount = totalPrice + cart.shippingFee;
@@ -842,7 +837,7 @@ router.get(
       // Retorna o total do preço dos produtos no carrinho
       res.status(200).json({
         totalAmount,
-        TotalQuantity,
+        TotalQuantity: cart.TotalQuantity,
         message: "Total do preço dos produtos no carrinho.",
       });
     } catch (error) {
@@ -1058,14 +1053,7 @@ router.post(
       const asaasCustomerId = customer.asaasCustomerId;
       console.log("Produtos no carrinho:", cart.products);
 
-      const totalPrice = cart.products.reduce(
-        (total, product) => total + product.productId.price * product.quantity,
-        0
-      );
-      console.log("Preço total dos produtos:", totalPrice);
-
-      const totalAmount = totalPrice + cart.shippingFee;
-      console.log("Valor total incluindo a taxa de envio:", totalAmount);
+     
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
@@ -1083,7 +1071,7 @@ router.post(
       const data = {
         billingType: "BOLETO",
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
-        value: totalAmount,
+        value: cart.totalAmount,
         dueDate: new Date(), // Define a data atual como a data de vencimento
       };
 
@@ -1343,11 +1331,8 @@ router.post(
 
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
-      const totalPrice = cart.products.reduce(
-        (total, product) => total + product.productId.price * product.quantity,
-        0
-      );
-      const totalAmount = totalPrice + cart.shippingFee;
+     
+      const totalAmount = cart.totalAmount;
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
@@ -1721,12 +1706,7 @@ router.post(
 
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
-      const totalPrice = cart.products.reduce(
-        (total, product) => total + product.productId.price * product.quantity,
-        0
-      );
-      const totalAmount = totalPrice + cart.shippingFee;
-
+ 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
 
@@ -1743,7 +1723,7 @@ router.post(
       const data = {
         addressKey: addressKey,
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
-        value: totalAmount,
+        value: cart.totalAmount,
 
         format: "ALL",
         expirationDate: new Date(), // Define a data atual como a data de vencimento
