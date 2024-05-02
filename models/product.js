@@ -43,10 +43,7 @@ const productSchema = new mongoose.Schema(
       
     ],
   
-    quantity:{
-      type: Number,
-      default: 1,
-    },
+  
     category: {
       type: String, // Mudança: altere para String
       required: [true, "Digite a categoria do produto"],
@@ -57,7 +54,9 @@ const productSchema = new mongoose.Schema(
    
     inStock: {
       type: Boolean,
-      default: true,
+      default: false,
+
+
     },
     
     

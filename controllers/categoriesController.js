@@ -265,7 +265,7 @@ const getAllCategoriesWithProducts = async (req, res) => {
       {
         $match: {
           category: { $exists: true, $ne: null },
-          quantity: { $gt: 0 },
+
           inStock: true, // Adicione esta condição para filtrar apenas produtos em estoque
           discountPercentage: null, // Adicione esta condição para filtrar produtos sem desconto
         },
@@ -316,7 +316,7 @@ const getMixedProductsByCategory = async (req, res) => {
 
     // Opções de filtro
     const { color, size, priceRange } = req.query;
-    const filter = { category, quantity: { $gt: 0 } }; // Adicione a condição para quantidade maior que zero
+    const filter = { category, }; // Adicione a condição para quantidade maior que zero
 
     // Adicionar opções de filtro se fornecidas
     if (color) {

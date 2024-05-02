@@ -62,10 +62,10 @@ router.get('/subcategoriesAndProducts/:category/:subcategory', async (req, res) 
     const page = req.query.page || 1;
     const perPage = 10; // Número de produtos por página
 
-    const totalProducts = await Product.countDocuments({ category, subcategory, quantity: { $gt: 0 } }); // Adicione a condição para quantidade maior que zero
+    const totalProducts = await Product.countDocuments({ category, subcategory,  }); // Adicione a condição para quantidade maior que zero
     const totalPages = Math.ceil(totalProducts / perPage);
 
-    const products = await Product.find({ category, subcategory, quantity: { $gt: 0 } }) // Adicione a condição para quantidade maior que zero
+    const products = await Product.find({ category, subcategory,  }) // Adicione a condição para quantidade maior que zero
       .skip((page - 1) * perPage)
       .limit(perPage);
 
@@ -105,7 +105,7 @@ router.get('/search/product', async (req, res) => {
 
     const skip = (page - 1) * pageSize;
 
-    let query = { quantity: { $gt: 0 } }; // Adicione a condição para quantidade maior que zero
+    let query = {  }; // Adicione a condição para quantidade maior que zero
     if (searchQuery) {
       query.name = new RegExp(searchQuery, 'i');
     }

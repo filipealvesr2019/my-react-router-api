@@ -545,10 +545,10 @@ exports.listNewArrivals = async (req, res) => {
   const startIndex = (page - 1) * perPage; // Índice inicial do produto
   try {
     // Contar o total de produtos com quantidade maior que zero
-    const totalProducts = await Product.countDocuments({ quantity: { $gt: 0 } });
+    const totalProducts = await Product.countDocuments({ });
 
     // Encontrar os produtos da página atual com quantidade maior que zero
-    const newArrivals = await Product.find({ quantity: { $gt: 0 } })
+    const newArrivals = await Product.find({})
       .sort('-createdAt')
       .skip(startIndex)
       .limit(perPage);
@@ -586,7 +586,7 @@ exports.getProductsByFilter = async (req, res) => {
     console.log("Cor:", color);
     console.log("Faixa de Preço:", priceRange);
 
-    const filter = { quantity: { $gt: 0 } }; // Adiciona a condição para filtrar produtos com quantidade maior que zero
+    const filter = {  }; // Adiciona a condição para filtrar produtos com quantidade maior que zero
 
     if (size) {
       filter.size = new RegExp(`\\b${size}\\b`);
@@ -683,7 +683,7 @@ exports.getProductsByCategory = async (req, res) => {
     console.log("Cor:", color);
     console.log("Faixa de Preço:", priceRange);
 
-    const filter = { quantity: { $gt: 0 } };
+    const filter = { };
 
     if (size) {
       filter.size = new RegExp(`\\b${size}\\b`, 'i');
