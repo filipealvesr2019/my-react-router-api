@@ -1332,7 +1332,6 @@ router.post(
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
      
-      const totalAmount = cart.totalAmount;
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
@@ -1351,6 +1350,7 @@ router.post(
 
       // Extraia o número de parcelas do corpo da requisição
       const installmentCount = parseInt(requestBody.installmentCount);
+      const totalAmount = cart.totalAmount;
 
       // Calcule o valor de cada parcela
       const installmentValue = totalAmount / installmentCount;
