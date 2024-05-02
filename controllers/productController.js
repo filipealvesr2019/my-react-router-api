@@ -767,7 +767,6 @@ function generatePriceRanges(min, max, step) {
 
   return ranges;
 }
-
 // Função para obter faixas de preço com base na categoria
 exports.getPriceRangesByCategory = async (req, res) => {
   try {
@@ -793,8 +792,9 @@ exports.getPriceRangesByCategory = async (req, res) => {
     }
 
     // Encontrar valores mínimo e máximo dos preços dos produtos
-    const minPrice = Math.floor(Math.min(...products.map(product => product.price)));
-    const maxPrice = Math.ceil(Math.max(...products.map(product => product.price)));
+    const allPrices = products.flatMap(product => product.variations.map(variation => variation.price));
+    const minPrice = Math.floor(Math.min(...allPrices));
+    const maxPrice = Math.ceil(Math.max(...allPrices));
     console.log('Min Price:', minPrice);
     console.log('Max Price:', maxPrice);
 
