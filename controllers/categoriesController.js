@@ -35,8 +35,13 @@ const getCategoryById = async (req, res, next) => {
       const categoryId = req.params.categoryId;
   
       // Use o método `populate` para preencher os documentos na matriz de subcategorias
-      const category = await Category.findById(categoryId).populate('subcategories').exec();
-  
+      const category = await Category.findById(categoryId).populate({
+        path: 'subcategories',
+        populate: {
+          path: 'products',
+          match: { inStock: true } // Filtra apenas os produtos em estoque
+        }
+      }).exec();  
       if (!category) {
         return res.status(404).json({ message: 'Categoria não encontrada.' });
       }
@@ -316,7 +321,7 @@ const getMixedProductsByCategory = async (req, res) => {
 
     // Opções de filtro
     const { color, size, priceRange } = req.query;
-    const filter = { category, }; // Adicione a condição para quantidade maior que zero
+    const filter = { category, inStock: true }; // Adicione a condição para quantidade maior que zero
 
     // Adicionar opções de filtro se fornecidas
     if (color) {

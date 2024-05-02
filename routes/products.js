@@ -105,7 +105,7 @@ router.get('/search/product', async (req, res) => {
 
     const skip = (page - 1) * pageSize;
 
-    let query = {  }; // Adicione a condição para quantidade maior que zero
+    let query = { inStock: true }; // Adiciona a condição para quantidade maior que zero
     if (searchQuery) {
       query.name = new RegExp(searchQuery, 'i');
     }

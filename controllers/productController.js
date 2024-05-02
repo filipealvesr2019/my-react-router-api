@@ -548,7 +548,7 @@ exports.listNewArrivals = async (req, res) => {
     const totalProducts = await Product.countDocuments({ });
 
     // Encontrar os produtos da página atual com quantidade maior que zero
-    const newArrivals = await Product.find({})
+    const newArrivals = await Product.find({ inStock: true })
       .sort('-createdAt')
       .skip(startIndex)
       .limit(perPage);
