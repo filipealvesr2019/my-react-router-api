@@ -416,23 +416,23 @@ router.post(
       if (!product) {
         return res.status(404).json({ message: "Produto não encontrado." });
       }
-   // Verifica se há quantidade suficiente disponível
-   if (quantity > product.quantity) {
-    return res.status(400).json({
-      message:
-        "A quantidade no carrinho excede a quantidade disponível do produto.",
-    });
-  }
+      // Verifica se há quantidade suficiente disponível
+      if (quantity > product.quantity) {
+        return res.status(400).json({
+          message:
+            "A quantidade no carrinho excede a quantidade disponível do produto.",
+        });
+      }
 
-  // Adiciona o produto ao carrinho
-  cart.products.push({
-    productId: productId,
-    quantity: quantity,
-    size: size,
-    color: color,
-    image: image,
-    price: price,
-  });
+      // Adiciona o produto ao carrinho
+      cart.products.push({
+        productId: productId,
+        quantity: quantity,
+        size: size,
+        color: color,
+        image: image,
+        price: price,
+      });
       await cart.save();
 
       // Retorna informações sobre o produto adicionado
@@ -454,7 +454,7 @@ router.post(
 
 router.get(
   "/cart/:custumerId",
- 
+  isAuthenticated,
 
   async (req, res) => {
     try {
@@ -475,7 +475,6 @@ router.get(
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
-
 
       // Retorna os produtos no carrinho
       res.status(200).json({ cart, message: "Produtos no carrinho." });
@@ -821,11 +820,8 @@ router.get(
       if (!cart) {
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
-     
 
-   
-
-      let totalAmount =  cart.totalAmount;
+      let totalAmount = cart.totalAmount;
 
       // Retorna o total do preço dos produtos no carrinho
       res.status(200).json({
@@ -1045,8 +1041,6 @@ router.post(
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
       console.log("Produtos no carrinho:", cart.products);
-
-     
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
@@ -1324,7 +1318,6 @@ router.post(
 
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
-     
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
@@ -1699,7 +1692,7 @@ router.post(
 
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
- 
+
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
 
