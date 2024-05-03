@@ -122,8 +122,6 @@ cartSchema.pre("save", async function (next) {
       totalPrice += this.taxPrice;
     }
 
-    console.log("Total Quantity Before Save:", totalQuantity);
-    console.log("Total Price Before Save:", totalPrice);
 
     // Define os valores calculados nos campos TotalQuantity e totalAmount
     this.TotalQuantity = totalQuantity;
