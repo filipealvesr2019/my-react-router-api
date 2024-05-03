@@ -84,8 +84,6 @@ const cartSchema = new Schema({
 
 // Pré-salvamento para atualizar a quantidade total de produtos no carrinho e calcular o total do carrinho
 // Pré-salvamento para atualizar a quantidade total de produtos no carrinho e calcular o total do carrinho
-// Pré-salvamento para atualizar a quantidade total de produtos no carrinho e calcular o total do carrinho
-// Pré-salvamento para atualizar a quantidade total de produtos no carrinho e calcular o total do carrinho
 cartSchema.pre("save", async function (next) {
   try {
     let totalQuantity = 0;
