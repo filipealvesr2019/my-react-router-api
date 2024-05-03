@@ -13,6 +13,10 @@ const cartSchema = new Schema({
         type: Schema.Types.ObjectId,
         ref: "Product",
       },
+      variationId: {
+        type: Schema.Types.ObjectId, // Alterado para o tipo ObjectId
+        ref: "Product.variations", // Referenciando a coleção de variações dentro de um produto
+      },
       quantity: {
         type: Number,
         default: 0.0,
@@ -36,6 +40,7 @@ const cartSchema = new Schema({
         type: Number,
         default: 0,
       },
+    
     },
   ],
   shippingFee: {
