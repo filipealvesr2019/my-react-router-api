@@ -454,7 +454,7 @@ router.post(
 
 router.get(
   "/cart/:custumerId",
-  isAuthenticated,
+ 
 
   async (req, res) => {
     try {
@@ -476,8 +476,6 @@ router.get(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
-      // Adiciona o shippingFee ao objeto cart
-      cart.shippingFee = cart.shippingFee;
 
       // Retorna os produtos no carrinho
       res.status(200).json({ cart, message: "Produtos no carrinho." });
