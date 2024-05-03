@@ -393,7 +393,7 @@ router.post(
     try {
       const custumerId = req.params.custumerId;
 
-      const { productId, variationId, quantity, size, color, image, price, QuantityPerUnit } = req.body;
+      const { productId, variationId, quantity, size, color, image, price, availableQuantity } = req.body;
 
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ custumerId: custumerId });
@@ -433,7 +433,7 @@ router.post(
         color: color,
         image: image,
         price: price,
-        availableQuantity: QuantityPerUnit
+        availableQuantity: availableQuantity
       });
       await cart.save();
 
