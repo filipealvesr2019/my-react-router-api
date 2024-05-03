@@ -766,7 +766,18 @@ router.put(
         return res.status(404).json({ message: "Frete não encontrado." });
       }
 
-      
+      // Calcula o total do preço dos produtos no carrinho
+      let totalPrice = cart.products.reduce(
+        (total, product) => total + product.productId.price * product.quantity,
+        0
+      );
+
+      // Atualiza a taxa de envio do carrinho com base na condição
+      if (totalPrice >= 300) {
+        cart.shippingFee = 0;
+      } else {
+        cart.shippingFee = frete.valorFrete;
+      }
 
       cart.transportadora.nome = frete.nomeTransportadora;
       cart.logo.img = frete.logo;
