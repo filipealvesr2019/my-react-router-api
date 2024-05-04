@@ -385,18 +385,25 @@ router.delete(
 );
 
 // Rota para adicionar um produto ao carrinho de um cliente
+// Rota para adicionar um produto ao carrinho de um cliente
+// Rota para adicionar um produto ao carrinho de um cliente
 router.post(
   "/add-to-cart/:custumerId",
   isAuthenticated,
 
   async (req, res) => {
     try {
+
       const custumerId = req.params.custumerId;
+
+   
 
       const { productId, variationId, quantity, size, color, image, price, availableQuantity } = req.body;
 
+
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ custumerId: custumerId });
+
 
       if (!customer) {
         return res.status(404).json({ message: "Cliente não encontrado." });
@@ -405,40 +412,50 @@ router.post(
       // Encontra o carrinho do cliente
       let cart = await Cart.findOne({ customer: customer._id });
 
+
       // Se o carrinho não existir, cria um novo
       if (!cart) {
         cart = new Cart({ customer: customer._id, products: [] });
       }
+      
+      // Verifica se o produto já está no carrinho
+      const existingProductIndex = cart.products.findIndex(product => String(product.productId) === String(productId) && String(product.variationId) === String(variationId));
 
-      // Encontra o produto
-      const product = await Product.findById(productId);
+      if (existingProductIndex !== -1) {
+        // Verifica se a quantidade a ser adicionada excede a quantidade disponível
+        if (cart.products[existingProductIndex].quantity + quantity > availableQuantity) {
+          console.log("Quantidade excede a disponibilidade. Não adicionando ao carrinho.");
+          return res.status(400).json({ message: "A quantidade solicitada excede a disponibilidade do produto." });
+        }
 
-      if (!product) {
-        return res.status(404).json({ message: "Produto não encontrado." });
-      }
-      // Verifica se há quantidade suficiente disponível
-      if (quantity > product.quantity) {
-        return res.status(400).json({
-          message:
-            "A quantidade no carrinho excede a quantidade disponível do produto.",
+        // Se o produto já estiver no carrinho, apenas atualize a quantidade
+        cart.products[existingProductIndex].quantity += quantity;
+      } else {
+         // Verifica se a quantidade a ser adicionada excede a quantidade disponível
+         if (quantity > availableQuantity) {
+          console.log("Quantidade excede a disponibilidade. Não adicionando ao carrinho.");
+          return res.status(400).json({ message: "A quantidade solicitada excede a disponibilidade do produto." });
+        }
+
+        // Se o produto não estiver no carrinho, adicione-o
+        cart.products.push({
+          productId: productId,
+          variationId: variationId,
+          quantity: quantity,
+          size: size,
+          color: color,
+          image: image,
+          price: price,
+          availableQuantity: availableQuantity
         });
       }
 
-      // Adiciona o produto ao carrinho
-      cart.products.push({
-        productId: productId,
-        variationId: variationId,
-        quantity: quantity,
-        size: size,
-        color: color,
-        image: image,
-        price: price,
-        availableQuantity: availableQuantity
-      });
+
       await cart.save();
 
       // Retorna informações sobre o produto adicionado
       const addedProduct = await Product.findById(productId);
+
 
       res.status(200).json({
         cart: cart,
@@ -446,13 +463,14 @@ router.post(
         message: "Produto adicionado ao carrinho com sucesso.",
       });
     } catch (error) {
-      console.error(error);
+      console.error("Erro ao adicionar produto ao carrinho:", error);
       res
         .status(500)
         .json({ message: "Erro ao adicionar produto ao carrinho." });
     }
   }
 );
+
 
 router.get(
   "/cart/:custumerId",
