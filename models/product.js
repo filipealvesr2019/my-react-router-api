@@ -24,18 +24,26 @@ const productSchema = new mongoose.Schema({
         required: true,
       },
 
-      size: {
-        type: String,
-      },
-      price: {
-        type: Number,
-        default: 1,
-      },
-      QuantityPerUnit: {
-        type: Number,
-        default: 1,
-      },
+      sizes: [
+        {
+          size: {
+            type: String,
+            required: true,
+          },
+          price: {
+            type: Number,
+            default: 1,
+          },
+          quantityAvailable: {
+            type: Number,
+            default: 0, // Quantidade inicialmente disponível para este tamanho
+          },
+        },
+      ],
+
+      
     },
+
   ],
 
   category: {
