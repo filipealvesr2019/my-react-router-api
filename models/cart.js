@@ -96,47 +96,33 @@ cartSchema.pre("save", async function (next) {
       let totalQuantity = 0;
       let totalPrice = 0;
       const addedProducts = {};
-
       for (const item of this.products) {
-          totalQuantity += item.quantity;
-
-          const productKey = `${item.productId}_${item.variationId}_${item.size}_${item.color}`;
-
-          console.log(`Processando item: ${productKey}`);
-
-          if (!addedProducts[productKey]) {
-              addedProducts[productKey] = true;
-
-              const product = await Product.findById(item.productId);
-
-              if (product) {
-                  console.log(`Produto encontrado para ${productKey}.`);
-                  const variation = product.variations.find(variation =>
-                      variation._id.toString() === item.variationId.toString()
-                  );
-
-                  if (variation) {
-                      console.log(`Variação encontrada para ${productKey}.`);
-                      console.log(`Preço da variação: ${variation.price}, Preço do item: ${item.price}`);
-
-                      const size = variation.sizes.find(size => size.size === item.size);
-
-                      if (size) {
-                          console.log(`Tamanho encontrado para ${productKey}.`);
-                          console.log(`Preço do tamanho ${item.size}: ${size.price}`);
-                          item.price = size.price;
-                          totalPrice += item.quantity * size.price;
-                      } else {
-                          console.log(`Tamanho não encontrado para ${productKey}.`);
-                      }
-                  } else {
-                      console.log(`Variação não encontrada para ${productKey}.`);
-                  }
-              } else {
-                  console.log(`Produto não encontrado para ${productKey}.`);
-              }
-          }
-      }
+        totalQuantity += item.quantity;
+    
+        const productKey = `${item.productId}_${item.variationId}_${item.size}_${item.color}`;
+    
+        if (!addedProducts[productKey]) {
+            addedProducts[productKey] = true;
+    
+            const product = await Product.findById(item.productId);
+    
+            if (product) {
+                const variation = product.variations.find(variation =>
+                    variation._id.toString() === item.variationId.toString()
+                );
+    
+                if (variation) {
+                    const size = variation.sizes.find(size => size.size === item.size);
+    
+                    if (size) {
+                        // Encontrou o preço do tamanho do produto
+                        totalPrice += size.price * item.quantity;
+                    }
+                }
+            }
+        }
+    }
+    
 
       console.log("Calculando total do carrinho...");
       totalPrice += this.shippingFee || 0;
