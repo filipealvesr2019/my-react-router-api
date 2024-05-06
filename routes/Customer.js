@@ -449,7 +449,7 @@ const productIndex = cart.products.findIndex(
     }
 
     // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-    cart.products[productIndex].quantity = quantity;
+    cart.products[productIndex].quantity += parseInt(quantity);
     // Zera o shippingFee do carrinho
     cart.shippingFee = 0;
     await cart.save();
