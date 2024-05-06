@@ -389,16 +389,17 @@ router.delete(
 // Rota para adicionar um produto ao carrinho de um cliente
 router.post(
   "/add-to-cart/:custumerId",
-  isAuthenticated,
+
 
   async (req, res) => {
     try {
 
       const custumerId = req.params.custumerId;
+    
 
    
 
-      const { productId, variationId, quantity, size, color, image, price, availableQuantity } = req.body;
+      const { productId, variationId,sizeId, quantity, size, image, price } = req.body;
 
 
       // Encontra o cliente associado ao atendente
@@ -418,55 +419,47 @@ router.post(
         cart = new Cart({ customer: customer._id, products: [] });
       }
       
-     
-      // Encontra o produto no banco de dados
-      const product = await Product.findById(productId);
 
-      if (!product) {
-        return res.status(404).json({ message: "Produto não encontrado." });
-      }
 
-      // Encontra a variação do produto
-      const variation = product.variations.find(v => v._id.toString() === variationId);
-
-      if (!variation) {
-        return res.status(404).json({ message: "Variação do produto não encontrada." });
-      }
-
-      // Encontra o tamanho da variação (se houver)
-      const availableSize = variation.sizes.find(s => s.quantityAvailable > 0);
-
-      if (!availableSize) {
-        return res.status(400).json({ message: "Nenhum tamanho disponível para esta variação." });
-      }
-
-      // Verifica se a quantidade solicitada excede a quantidade disponível
-      if (quantity > availableSize.quantityAvailable) {
-        return res.status(400).json({ message: "A quantidade solicitada excede a disponibilidade do produto." });
-      }
-
-      // Calcula o preço total do produto com base na quantidade
-      const totalPrice = quantity * availableSize.price;
-
-      // Adiciona o produto ao carrinho
-      cart.products.push({
-        productId,
-        variationId,
-        quantity,
-        size: productSize, // Usamos o tamanho do produto enviado na solicitação
-        color: variation.color,
-        image: variation.urls[0],
-        price: totalPrice,
-        availableQuantity: availableSize.quantityAvailable
-      });
-
-      await cart.save();
-
-      res.status(200).json({
-        cart,
-        message: "Produto adicionado ao carrinho com sucesso.",
-      });
       
+const product = await Product.findById(productId);
+if (!product) {
+  return res.status(404).json({ message: "Produto não encontrado." });
+}
+
+const variation = product.variations.find(v => v._id.toString() === variationId);
+if (!variation) {
+  return res.status(404).json({ message: "Variação do produto não encontrada." });
+}
+const selectedSize = variation.sizes.find(s => String(s._id) === sizeId);
+
+if (!selectedSize) {
+    return res.status(400).json({ message: "Tamanho do produto não encontrado." });
+}
+
+if (quantity > selectedSize.quantityAvailable) {
+    return res.status(400).json({ message: "A quantidade solicitada excede a disponibilidade do produto." });
+}
+
+
+cart.products.push({
+    productId,
+    variationId,
+    sizeId: selectedSize._id,
+    quantity,
+    size: selectedSize.size,
+    color: variation.color,
+    image: variation.urls[0],
+
+    availableQuantity: selectedSize.quantityAvailable
+});
+
+await cart.save();
+
+res.status(200).json({
+    cart,
+    message: "Produto adicionado ao carrinho com sucesso.",
+});
       } catch (error) {
         console.error("Erro ao adicionar produto ao carrinho:", error);
         res.status(500).json({ message: "Erro ao adicionar produto ao carrinho." });
@@ -1026,7 +1019,7 @@ router.post(
 // pagar boleto com checkout transparente
 router.post(
   "/boleto/:custumerId",
-  isAuthenticated,
+ 
 
   async (req, res) => {
     try {

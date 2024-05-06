@@ -89,80 +89,70 @@ const cartSchema = new Schema({
 });
 
 // Pré-salvamento para atualizar a quantidade total de produtos no carrinho e calcular o total do carrinho
-// Pré-salvamento para atualizar a quantidade total de produtos no carrinho e calcular o total do carrinho
 cartSchema.pre("save", async function (next) {
   try {
-    console.log("Pré-salvamento iniciado...");
-    
-    let totalQuantity = 0;
-    let totalPrice = 0;
-    const addedProducts = {}; 
+      console.log("Pré-salvamento iniciado...");
 
-    for (const item of this.products) {
-      totalQuantity += item.quantity;
-    
-      const productKey = `${item.productId}_${item.variationId}_${item.size}_${item.color}`;
-    
-      console.log(`Processando item: ${productKey}`);
-    
-      if (!addedProducts[productKey]) {
-        addedProducts[productKey] = true;
-    
-        const product = await Product.findById(item.productId);
-    
-        if (product) {
-          console.log(`Produto encontrado para ${productKey}.`);
-          const variation = product.variations.find(variation => 
-            variation._id.toString() === item.variationId.toString()
-          );
-    
-          if (variation) {
-            console.log(`Variação encontrada para ${productKey}.`);
-            console.log(`Preço da variação: ${variation.price}, Preço do item: ${item.price}`);
-            totalPrice += item.quantity * item.price;
-            // Agora podemos acessar a quantidade disponível da variação
-            if (variation.sizes.length > 0) {
-              const size = variation.sizes.find(size => size.size === item.size);
-              if (size) {
-                console.log(`Quantidade disponível para a variação: ${size.quantityAvailable}`);
-                // Atualizamos o preço do item para o preço da variação
-                item.price = size.price;
-                totalPrice += item.quantity * size.price;
+      let totalQuantity = 0;
+      let totalPrice = 0;
+      const addedProducts = {};
+
+      for (const item of this.products) {
+          totalQuantity += item.quantity;
+
+          const productKey = `${item.productId}_${item.variationId}_${item.size}_${item.color}`;
+
+          console.log(`Processando item: ${productKey}`);
+
+          if (!addedProducts[productKey]) {
+              addedProducts[productKey] = true;
+
+              const product = await Product.findById(item.productId);
+
+              if (product) {
+                  console.log(`Produto encontrado para ${productKey}.`);
+                  const variation = product.variations.find(variation =>
+                      variation._id.toString() === item.variationId.toString()
+                  );
+
+                  if (variation) {
+                      console.log(`Variação encontrada para ${productKey}.`);
+                      console.log(`Preço da variação: ${variation.price}, Preço do item: ${item.price}`);
+
+                      const size = variation.sizes.find(size => size.size === item.size);
+
+                      if (size) {
+                          console.log(`Tamanho encontrado para ${productKey}.`);
+                          console.log(`Preço do tamanho ${item.size}: ${size.price}`);
+                          item.price = size.price;
+                          totalPrice += item.quantity * size.price;
+                      } else {
+                          console.log(`Tamanho não encontrado para ${productKey}.`);
+                      }
+                  } else {
+                      console.log(`Variação não encontrada para ${productKey}.`);
+                  }
               } else {
-                console.log(`Tamanho não encontrado para ${productKey}.`);
+                  console.log(`Produto não encontrado para ${productKey}.`);
               }
-            } else {
-              console.log(`Nenhuma informação de tamanho disponível para a variação.`);
-            }
-          } else {
-            console.log(`Variação não encontrada para ${productKey}.`);
           }
-        } else {
-          console.log(`Produto não encontrado para ${productKey}.`);
-        }
       }
-    }
-    
 
-    console.log("Calculando total do carrinho...");
-    totalPrice += this.shippingFee || 0;
-    totalPrice += this.taxPrice || 0;
+      console.log("Calculando total do carrinho...");
+      totalPrice += this.shippingFee || 0;
+      totalPrice += this.taxPrice || 0;
 
-    console.log("Atualizando quantidade total e preço total do carrinho...");
-    this.TotalQuantity = totalQuantity;
-    this.totalAmount = totalPrice;
+      console.log("Atualizando quantidade total e preço total do carrinho...");
+      this.TotalQuantity = totalQuantity;
+      this.totalAmount = totalPrice;
 
-    console.log("Pré-salvamento concluído.");
-    next();
+      console.log("Pré-salvamento concluído.");
+      next();
   } catch (error) {
-    console.error("Erro durante o pré-salvamento:", error);
-    next(error);
+      console.error("Erro durante o pré-salvamento:", error);
+      next(error);
   }
 });
-
-
-
-
 const Cart = mongoose.model("Cart", cartSchema);
 
 module.exports = Cart;
