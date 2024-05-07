@@ -384,19 +384,9 @@ router.delete(
   }
 );
 
-
-
-
-
-
-
-
-
-
 // Rota para atualizar a quantidade de um produto no carrinho de um cliente
 router.put(
   "/update-quantity-from-cart/:custumerId/:productId/:variationId",
-
 
   async (req, res) => {
     try {
@@ -427,40 +417,41 @@ router.put(
       }
 
       // Encontra o produto no carrinho
-    // Encontra o produto no carrinho
-// Encontra o produto no carrinho
-const productIndex = cart.products.findIndex(
-  (product) => product.productId.toString() === productId && product.variationId.toString() === variationId
-);
+      // Encontra o produto no carrinho
+      // Encontra o produto no carrinho
+      const productIndex = cart.products.findIndex(
+        (product) =>
+          product.productId.toString() === productId &&
+          product.variationId.toString() === variationId
+      );
 
+      if (productIndex === -1) {
+        return res
+          .status(404)
+          .json({ message: "Produto não encontrado no carrinho." });
+      }
 
-    if (productIndex === -1) {
-      return res
-        .status(404)
-        .json({ message: "Produto não encontrado no carrinho." });
-    }
+      // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
+      if (quantity > cart.products[productIndex].availableQuantity) {
+        return res.status(400).json({
+          message:
+            "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+        });
+      }
 
-    // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
-    if (quantity > cart.products[productIndex].availableQuantity) {
-      return res.status(400).json({
-        message:
-          "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+      // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
+      cart.products[productIndex].quantity += parseInt(quantity);
+      // Zera o shippingFee do carrinho
+      cart.shippingFee = 0;
+      await cart.save();
+
+      // Retorna informações sobre o produto atualizado
+      const updatedProduct = await Product.findById(productId);
+      res.status(200).json({
+        cart: cart,
+        updatedProductId: updatedProduct._id,
+        message: "Quantidade do produto atualizada no carrinho com sucesso.",
       });
-    }
-
-    // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-    cart.products[productIndex].quantity += parseInt(quantity);
-    // Zera o shippingFee do carrinho
-    cart.shippingFee = 0;
-    await cart.save();
-
-    // Retorna informações sobre o produto atualizado
-    const updatedProduct = await Product.findById(productId);
-    res.status(200).json({
-      cart: cart,
-      updatedProductId: updatedProduct._id,
-      message: "Quantidade do produto atualizada no carrinho com sucesso.",
-    });
     } catch (error) {
       console.error(error);
       res.status(500).json({
@@ -473,21 +464,20 @@ const productIndex = cart.products.findIndex(
 router.post(
   "/add-to-cart/:custumerId",
 
-
   async (req, res) => {
     try {
-
       const custumerId = req.params.custumerId;
-    
 
-   
-
-      const { productId, variationId,sizeId, quantity, size, image, price } = req.body;
-
+      const {   productId,
+        size,
+        color,
+        quantity,
+        image,
+        price } =
+        req.body;
 
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ custumerId: custumerId });
-
 
       if (!customer) {
         return res.status(404).json({ message: "Cliente não encontrado." });
@@ -496,60 +486,68 @@ router.post(
       // Encontra o carrinho do cliente
       let cart = await Cart.findOne({ customer: customer._id });
 
-
       // Se o carrinho não existir, cria um novo
       if (!cart) {
         cart = new Cart({ customer: customer._id, products: [] });
       }
-      
-
-
-      
-const product = await Product.findById(productId);
-if (!product) {
-  return res.status(404).json({ message: "Produto não encontrado." });
-}
-
-const variation = product.variations.find(v => v._id.toString() === variationId);
-if (!variation) {
-  return res.status(404).json({ message: "Variação do produto não encontrada." });
-}
-const selectedSize = variation.sizes.find(s => String(s._id) === sizeId);
-
-if (!selectedSize) {
-    return res.status(400).json({ message: "Tamanho do produto não encontrado." });
-}
-
-if (quantity > selectedSize.quantityAvailable) {
-    return res.status(400).json({ message: "A quantidade solicitada excede a disponibilidade do produto." });
-}
-
-
-cart.products.push({
-    productId,
-    variationId,
-    sizeId: selectedSize._id,
-    quantity,
-    size: selectedSize.size,
-    color: variation.color,
-    image: variation.urls[0],
-
-    availableQuantity: selectedSize.quantityAvailable
-});
-
-await cart.save();
-
-res.status(200).json({
-    cart,
-    message: "Produto adicionado ao carrinho com sucesso.",
-});
-      } catch (error) {
-        console.error("Erro ao adicionar produto ao carrinho:", error);
-        res.status(500).json({ message: "Erro ao adicionar produto ao carrinho." });
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Produto não encontrado." });
       }
-    }
-);
 
+      const variation = product.variations.find(
+        v => v.color === color && v.sizes.some(s => s.size === size)
+      );
+
+      if (!variation) {
+        return res
+          .status(404)
+          .json({ message: "Combinação de cor e tamanho do produto não encontrada." });
+      }
+
+      const selectedSize = variation.sizes.find(s => s.size === size);
+
+      if (!selectedSize) {
+        return res
+          .status(400)
+          .json({ message: "Tamanho do produto não encontrado." });
+      }
+
+      if (quantity > selectedSize.quantityAvailable) {
+        return res
+          .status(400)
+          .json({
+            message:
+              "A quantidade solicitada excede a disponibilidade do produto.",
+          });
+      }
+
+      cart.products.push({
+        productId,
+        variationId: variation._id,
+        sizeId: selectedSize._id,
+        quantity,
+        size: selectedSize.size,
+        color: variation.color,
+        image: image || variation.urls[0],
+        price: price || selectedSize.price,
+        availableQuantity: selectedSize.quantityAvailable,
+      });
+
+      await cart.save();
+
+      res.status(200).json({
+        cart,
+        message: "Produto adicionado ao carrinho com sucesso.",
+      });
+    } catch (error) {
+      console.error("Erro ao adicionar produto ao carrinho:", error);
+      res
+        .status(500)
+        .json({ message: "Erro ao adicionar produto ao carrinho." });
+    }
+  }
+);
 
 router.get(
   "/cart/:custumerId",
@@ -590,7 +588,6 @@ router.get(
 router.put(
   "/update-quantity/:custumerId/:productId/:variationId",
 
-
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
@@ -620,40 +617,41 @@ router.put(
       }
 
       // Encontra o produto no carrinho
-    // Encontra o produto no carrinho
-// Encontra o produto no carrinho
-const productIndex = cart.products.findIndex(
-  (product) => product.productId.toString() === productId && product.variationId.toString() === variationId
-);
+      // Encontra o produto no carrinho
+      // Encontra o produto no carrinho
+      const productIndex = cart.products.findIndex(
+        (product) =>
+          product.productId.toString() === productId &&
+          product.variationId.toString() === variationId
+      );
 
+      if (productIndex === -1) {
+        return res
+          .status(404)
+          .json({ message: "Produto não encontrado no carrinho." });
+      }
 
-    if (productIndex === -1) {
-      return res
-        .status(404)
-        .json({ message: "Produto não encontrado no carrinho." });
-    }
+      // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
+      if (quantity > cart.products[productIndex].availableQuantity) {
+        return res.status(400).json({
+          message:
+            "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+        });
+      }
 
-    // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
-    if (quantity > cart.products[productIndex].availableQuantity) {
-      return res.status(400).json({
-        message:
-          "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+      // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
+      cart.products[productIndex].quantity = quantity;
+      // Zera o shippingFee do carrinho
+      cart.shippingFee = 0;
+      await cart.save();
+
+      // Retorna informações sobre o produto atualizado
+      const updatedProduct = await Product.findById(productId);
+      res.status(200).json({
+        cart: cart,
+        updatedProductId: updatedProduct._id,
+        message: "Quantidade do produto atualizada no carrinho com sucesso.",
       });
-    }
-
-    // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-    cart.products[productIndex].quantity = quantity;
-    // Zera o shippingFee do carrinho
-    cart.shippingFee = 0;
-    await cart.save();
-
-    // Retorna informações sobre o produto atualizado
-    const updatedProduct = await Product.findById(productId);
-    res.status(200).json({
-      cart: cart,
-      updatedProductId: updatedProduct._id,
-      message: "Quantidade do produto atualizada no carrinho com sucesso.",
-    });
     } catch (error) {
       console.error(error);
       res.status(500).json({
@@ -1102,7 +1100,6 @@ router.post(
 // pagar boleto com checkout transparente
 router.post(
   "/boleto/:custumerId",
- 
 
   async (req, res) => {
     try {
