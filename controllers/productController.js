@@ -1,10 +1,10 @@
 const Product = require("../models/product");
 const axios = require("axios"); // Certifique-se de que o caminho do modelo está correto
-const cron = require('node-cron');
+const cron = require("node-cron");
 const APIFeatures = require("../utils/APIFeatures");
 
 // Controlador para criar um novo produto
-exports.newProduct = async (req, res, next,) => {
+exports.newProduct = async (req, res, next) => {
   try {
     // Cria uma instância do modelo com os dados recebidos
     const product = new Product(req.body);
@@ -26,10 +26,6 @@ exports.newProduct = async (req, res, next,) => {
   }
 };
 
-
-
-
-
 // mostrar produtos => /api/products
 
 exports.getProducts = async (req, res, next) => {
@@ -43,7 +39,7 @@ exports.getProducts = async (req, res, next) => {
     if (keyword) {
       // Count all products matching the search term
       totalItems = await Product.countDocuments({
-        name: { $regex: new RegExp(keyword, 'i') },
+        name: { $regex: new RegExp(keyword, "i") },
       });
       totalPages = Math.ceil(totalItems / resPerPage);
     } else {
@@ -77,8 +73,6 @@ exports.getProducts = async (req, res, next) => {
     });
   }
 };
-
-
 
 // mostrar produto especifico por id => /api/v1/product/:id
 
@@ -123,7 +117,6 @@ exports.updateProduct = async (req, res) => {
     });
 
     res.json(result);
-    
   } catch (error) {
     console.error("Error updating product:", error);
     res.status(500).json({ error: "Internal Server Error" });
@@ -259,14 +252,6 @@ exports.deleteReview = async (req, res, next) => {
   }
 };
 
-
-
-
-
-
-
-
-
 // Função para obter todos os produtos de uma categoria com subcategorias
 exports.getProductsByCategory = async (req, res) => {
   try {
@@ -275,10 +260,10 @@ exports.getProductsByCategory = async (req, res) => {
     // Encontrar produtos da categoria principal e suas subcategorias
     const produtos = await Product.find({
       $or: [
-        { category: { $regex: new RegExp(categoria, 'i') } }, // Case-insensitive match
-        { subcategory: { $regex: new RegExp(categoria, 'i') } }, // Case-insensitive match
+        { category: { $regex: new RegExp(categoria, "i") } }, // Case-insensitive match
+        { subcategory: { $regex: new RegExp(categoria, "i") } }, // Case-insensitive match
       ],
-    }).select('-variations'); // Removendo 'variations' por simplicidade
+    }).select("-variations"); // Removendo 'variations' por simplicidade
 
     res.json(produtos);
   } catch (error) {
@@ -286,28 +271,16 @@ exports.getProductsByCategory = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
 // Função para obter produtos por palavra-chave
 exports.getProductsByKeyword = async (req, res) => {
   try {
     const { keyword } = req.query;
 
     if (!keyword) {
-      return res.status(400).json({ message: 'Palavra-chave não fornecida' });
+      return res.status(400).json({ message: "Palavra-chave não fornecida" });
     }
 
-    const regex = new RegExp(keyword, 'i');
+    const regex = new RegExp(keyword, "i");
 
     const products = await Product.find({ name: regex });
 
@@ -316,8 +289,6 @@ exports.getProductsByKeyword = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
 
 // Controlador para adicionar uma nova cor a um produto existente
 exports.addColorToProduct = async (req, res, next) => {
@@ -330,7 +301,7 @@ exports.addColorToProduct = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Produto não encontrado',
+        message: "Produto não encontrado",
       });
     }
 
@@ -346,26 +317,20 @@ exports.addColorToProduct = async (req, res, next) => {
     // Salva as alterações no banco de dados
     await product.save();
 
-    console.log('Nova cor adicionada ao produto.');
+    console.log("Nova cor adicionada ao produto.");
 
     res.status(200).json({
       success: true,
       product,
     });
   } catch (error) {
-    console.error('Erro ao adicionar cor ao produto:', error);
+    console.error("Erro ao adicionar cor ao produto:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor',
+      message: "Erro interno do servidor",
     });
   }
 };
-
-
-
-
-
-
 
 // Controlador para excluir uma cor específica de um produto
 exports.deleteColorFromProduct = async (req, res, next) => {
@@ -378,12 +343,14 @@ exports.deleteColorFromProduct = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Produto não encontrado.',
+        message: "Produto não encontrado.",
       });
     }
 
     // Remova a cor do array de variações do produto
-    product.variations = product.variations.filter((variation) => variation.color !== color);
+    product.variations = product.variations.filter(
+      (variation) => variation.color !== color
+    );
 
     // Salve as alterações no banco de dados
     await product.save();
@@ -393,33 +360,35 @@ exports.deleteColorFromProduct = async (req, res, next) => {
       message: `Cor ${color} excluída com sucesso do produto ${productId}.`,
     });
   } catch (error) {
-    console.error('Erro ao excluir cor:', error);
+    console.error("Erro ao excluir cor:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor.',
+      message: "Erro interno do servidor.",
     });
   }
 };
-
-
-
 
 exports.addUrlToColor = async (req, res, next) => {
   try {
     const productId = req.params.productId;
     const colorName = req.params.colorName;
     const { url } = req.body;
-    console.log('Recebendo requisição para adicionar URL:', productId, colorName, url);
+    console.log(
+      "Recebendo requisição para adicionar URL:",
+      productId,
+      colorName,
+      url
+    );
 
     // Restante do código...
-    
-    console.log('Nova URL adicionada à cor do produto.');
-    
+
+    console.log("Nova URL adicionada à cor do produto.");
+
     // Validar se a URL está presente na solicitação
     if (!url) {
       return res.status(400).json({
         success: false,
-        message: 'A URL é obrigatória',
+        message: "A URL é obrigatória",
       });
     }
 
@@ -429,7 +398,7 @@ exports.addUrlToColor = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Produto não encontrado',
+        message: "Produto não encontrado",
       });
     }
 
@@ -439,7 +408,7 @@ exports.addUrlToColor = async (req, res, next) => {
     if (!variation) {
       return res.status(404).json({
         success: false,
-        message: 'Cor não encontrada no produto',
+        message: "Cor não encontrada no produto",
       });
     }
 
@@ -452,33 +421,20 @@ exports.addUrlToColor = async (req, res, next) => {
     // Salvar as alterações no banco de dados
     await product.save();
 
-    console.log('Nova URL adicionada à cor do produto.');
+    console.log("Nova URL adicionada à cor do produto.");
 
     res.status(200).json({
       success: true,
       product,
     });
   } catch (error) {
-    console.error('Erro ao adicionar nova URL à cor do produto:', error);
+    console.error("Erro ao adicionar nova URL à cor do produto:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor',
+      message: "Erro interno do servidor",
     });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 exports.deleteUrlFromColor = async (req, res, next) => {
   try {
@@ -492,7 +448,7 @@ exports.deleteUrlFromColor = async (req, res, next) => {
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: 'Produto não encontrado',
+        message: "Produto não encontrado",
       });
     }
 
@@ -502,7 +458,7 @@ exports.deleteUrlFromColor = async (req, res, next) => {
     if (!variation) {
       return res.status(404).json({
         success: false,
-        message: 'Cor não encontrada no produto',
+        message: "Cor não encontrada no produto",
       });
     }
 
@@ -510,7 +466,7 @@ exports.deleteUrlFromColor = async (req, res, next) => {
     if (urlId < 0 || urlId >= variation.urls.length) {
       return res.status(400).json({
         success: false,
-        message: 'Índice de URL inválido',
+        message: "Índice de URL inválido",
       });
     }
 
@@ -523,21 +479,20 @@ exports.deleteUrlFromColor = async (req, res, next) => {
     // Salvar as alterações no banco de dados
     await product.save();
 
-    console.log('URL removida da cor do produto.');
+    console.log("URL removida da cor do produto.");
 
     res.status(200).json({
       success: true,
       product,
     });
   } catch (error) {
-    console.error('Erro ao remover URL da cor do produto:', error);
+    console.error("Erro ao remover URL da cor do produto:", error);
     res.status(500).json({
       success: false,
-      message: 'Erro interno do servidor',
+      message: "Erro interno do servidor",
     });
   }
 };
-
 
 exports.listNewArrivals = async (req, res) => {
   const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
@@ -545,11 +500,11 @@ exports.listNewArrivals = async (req, res) => {
   const startIndex = (page - 1) * perPage; // Índice inicial do produto
   try {
     // Contar o total de produtos com quantidade maior que zero
-    const totalProducts = await Product.countDocuments({ });
+    const totalProducts = await Product.countDocuments({});
 
     // Encontrar os produtos da página atual com quantidade maior que zero
     const newArrivals = await Product.find({ inStock: true })
-      .sort('-createdAt')
+      .sort("-createdAt")
       .skip(startIndex)
       .limit(perPage);
 
@@ -557,22 +512,13 @@ exports.listNewArrivals = async (req, res) => {
       totalProducts,
       currentPage: page,
       totalPages: Math.ceil(totalProducts / perPage),
-      newArrivals
+      newArrivals,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error fetching new arrivals' });
+    res.status(500).json({ message: "Error fetching new arrivals" });
   }
 };
-
-
-
-
-
-
-
-
-
 
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
 // Controller para obter produtos com base no tamanho, categoria, subcategoria, cor e faixa de preço
@@ -586,7 +532,7 @@ exports.getProductsByFilter = async (req, res) => {
     console.log("Cor:", color);
     console.log("Faixa de Preço:", priceRange);
 
-    const filter = {  }; // Adiciona a condição para filtrar produtos com quantidade maior que zero
+    const filter = {}; // Adiciona a condição para filtrar produtos com quantidade maior que zero
 
     if (size) {
       filter.size = new RegExp(`\\b${size}\\b`);
@@ -598,13 +544,13 @@ exports.getProductsByFilter = async (req, res) => {
     }
 
     if (color) {
-      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+      filter["variations.color"] = new RegExp(`\\b${color}\\b`, "i");
     }
 
     if (subcategory) {
       // Remova espaços em branco extras ao redor da subcategoria
       const cleanedSubcategory = subcategory.trim();
-      filter.subcategory = new RegExp(`\\b${cleanedSubcategory}\\b`, 'i'); // 'i' torna a busca case-insensitive
+      filter.subcategory = new RegExp(`\\b${cleanedSubcategory}\\b`, "i"); // 'i' torna a busca case-insensitive
     } else if (category) {
       filter.category = new RegExp(`\\b${category}\\b`);
     }
@@ -622,19 +568,6 @@ exports.getProductsByFilter = async (req, res) => {
   }
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 // Controller para obter subcategorias com base na categoria
 exports.getSubcategoriesByCategory = async (req, res) => {
   try {
@@ -642,34 +575,20 @@ exports.getSubcategoriesByCategory = async (req, res) => {
 
     // Certifique-se de que a categoria seja fornecida
     if (!category) {
-      return res.status(400).json({ error: 'Parâmetro de categoria ausente' });
+      return res.status(400).json({ error: "Parâmetro de categoria ausente" });
     }
 
     // Filtrar subcategorias com base na categoria
-    const subcategories = await Product.distinct('subcategory', {
-      category: new RegExp(`\\b${category}\\b`, 'i'), // 'i' torna a busca case-insensitive
+    const subcategories = await Product.distinct("subcategory", {
+      category: new RegExp(`\\b${category}\\b`, "i"), // 'i' torna a busca case-insensitive
     });
 
     res.json(subcategories);
   } catch (error) {
-    console.error('Erro ao obter subcategorias:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao obter subcategorias:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // No controlador (controller)
 exports.getProductsByCategory = async (req, res) => {
@@ -683,10 +602,10 @@ exports.getProductsByCategory = async (req, res) => {
     console.log("Cor:", color);
     console.log("Faixa de Preço:", priceRange);
 
-    const filter = { };
+    const filter = {};
 
     if (size) {
-      filter.size = new RegExp(`\\b${size}\\b`, 'i');
+      filter.size = new RegExp(`\\b${size}\\b`, "i");
     }
 
     if (priceRange) {
@@ -695,13 +614,13 @@ exports.getProductsByCategory = async (req, res) => {
     }
 
     if (color) {
-      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+      filter["variations.color"] = new RegExp(`\\b${color}\\b`, "i");
     }
 
     if (subcategory) {
       const cleanedSubcategory = subcategory.trim();
       filter.category = categoryName;
-      filter.subcategory = new RegExp(`\\b${cleanedSubcategory}\\b`, 'i');
+      filter.subcategory = new RegExp(`\\b${cleanedSubcategory}\\b`, "i");
     } else {
       filter.category = categoryName;
     }
@@ -717,43 +636,54 @@ exports.getProductsByCategory = async (req, res) => {
     console.error("Erro ao obter produtos:", error);
     res.status(500).json({ error: "Erro interno do servidor" });
   }
-};exports.getColorsByCategory = async (req, res) => {
+};
+exports.getColorsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    
-    console.log('Categoria recebida:', category);
 
-    const colors = await Product.distinct('variations.color', { category: category });
+    console.log("Categoria recebida:", category);
 
-    console.log('Cores encontradas:', colors);
+    const colors = await Product.distinct("variations.color", {
+      category: category,
+    });
+
+    console.log("Cores encontradas:", colors);
 
     res.json(colors);
   } catch (error) {
-    console.error('Erro ao obter cores por categoria:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao obter cores por categoria:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
-
 
 exports.getSizesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
-    const sizes = await Product.distinct('size', { category });
-    res.json(sizes);
+    const products = await Product.find({ category });
+
+    // Verificar se há produtos
+    if (products.length === 0) {
+      console.log('Não há produtos para a categoria específica.');
+      res.json([]); // Retorna uma lista vazia se não houver produtos
+      return;
+    }
+
+    // Obter tamanhos únicos de todas as variações de todos os produtos
+    const sizes = products.flatMap(product =>
+      product.variations.flatMap(variation =>
+        variation.sizes.map(size => size.size)
+      )
+    );
+
+    // Filtrar tamanhos únicos
+    const uniqueSizes = [...new Set(sizes)];
+
+    res.json(uniqueSizes);
   } catch (error) {
-    console.error('Erro ao obter tamanhos por categoria:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao obter tamanhos por categoria:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
-
-
-
-
-
-
-
-
-
 
 // Função para obter faixas de preço com base no mínimo e máximo
 function generatePriceRanges(min, max, step) {
@@ -775,56 +705,66 @@ exports.getPriceRangesByCategory = async (req, res) => {
     // Modificamos a consulta para incluir apenas produtos da categoria específica
     const products = await Product.find({ category });
 
-    console.log('Products for category:', products);
+    console.log("Products for category:", products);
 
     // Verificar se há produtos
     if (products.length === 0) {
-      console.log('Não há produtos para a categoria específica.');
+      console.log("Não há produtos para a categoria específica.");
       // Lide com o caso em que não há produtos para a categoria específica.
       // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas.
       const defaultMinPrice = 0;
       const defaultMaxPrice = 100;
       const step = 50;
-      const priceRanges = generatePriceRanges(defaultMinPrice, defaultMaxPrice, step);
-      console.log('Price Ranges:', priceRanges);
+      const priceRanges = generatePriceRanges(
+        defaultMinPrice,
+        defaultMaxPrice,
+        step
+      );
+      console.log("Price Ranges:", priceRanges);
       res.json(priceRanges);
       return;
     }
 
     // Encontrar valores mínimo e máximo dos preços dos produtos
-   // Encontrar valores mínimo e máximo dos preços dos produtos
-const allPrices = products.flatMap(product =>
-  product.variations.flatMap(variation => variation.sizes.map(size => size.price))
-);
+    // Encontrar valores mínimo e máximo dos preços dos produtos
+    const allPrices = products.flatMap((product) =>
+      product.variations.flatMap((variation) =>
+        variation.sizes.map((size) => size.price)
+      )
+    );
 
-// Verificar se a lista allPrices está vazia
-if (allPrices.length === 0) {
-  console.log('Não há preços para os produtos nesta categoria.');
-  // Lide com o caso em que não há preços para os produtos.
-  // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas de preço.
-  const defaultMinPrice = 0;
-  const defaultMaxPrice = 100;
-  const step = 50;
-  const priceRanges = generatePriceRanges(defaultMinPrice, defaultMaxPrice, step);
-  console.log('Price Ranges:', priceRanges);
-  res.json(priceRanges);
-  return;
-}
+    // Verificar se a lista allPrices está vazia
+    if (allPrices.length === 0) {
+      console.log("Não há preços para os produtos nesta categoria.");
+      // Lide com o caso em que não há preços para os produtos.
+      // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas de preço.
+      const defaultMinPrice = 0;
+      const defaultMaxPrice = 100;
+      const step = 50;
+      const priceRanges = generatePriceRanges(
+        defaultMinPrice,
+        defaultMaxPrice,
+        step
+      );
+      console.log("Price Ranges:", priceRanges);
+      res.json(priceRanges);
+      return;
+    }
 
-// Encontrar valores mínimo e máximo dos preços dos produtos
-const minPrice = Math.floor(Math.min(...allPrices));
-const maxPrice = Math.ceil(Math.max(...allPrices));
-console.log('Min Price:', minPrice);
-console.log('Max Price:', maxPrice);
+    // Encontrar valores mínimo e máximo dos preços dos produtos
+    const minPrice = Math.floor(Math.min(...allPrices));
+    const maxPrice = Math.ceil(Math.max(...allPrices));
+    console.log("Min Price:", minPrice);
+    console.log("Max Price:", maxPrice);
 
-// Verificar se há produtos em cada faixa de preço
-const step = 50; // Ajuste conforme necessário
-const priceRanges = generatePriceRanges(minPrice, maxPrice, step);
-console.log('Generated Price Ranges:', priceRanges);
+    // Verificar se há produtos em cada faixa de preço
+    const step = 50; // Ajuste conforme necessário
+    const priceRanges = generatePriceRanges(minPrice, maxPrice, step);
+    console.log("Generated Price Ranges:", priceRanges);
 
     res.json(priceRanges);
   } catch (error) {
-    console.error('Erro ao obter faixas de preço por categoria:', error);
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error("Erro ao obter faixas de preço por categoria:", error);
+    res.status(500).json({ error: "Erro interno do servidor" });
   }
 };
