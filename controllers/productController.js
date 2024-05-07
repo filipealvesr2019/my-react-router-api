@@ -792,16 +792,35 @@ exports.getPriceRangesByCategory = async (req, res) => {
     }
 
     // Encontrar valores mínimo e máximo dos preços dos produtos
-    const allPrices = products.flatMap(product => product.variations.map(variation => variation.price));
-    const minPrice = Math.floor(Math.min(...allPrices));
-    const maxPrice = Math.ceil(Math.max(...allPrices));
-    console.log('Min Price:', minPrice);
-    console.log('Max Price:', maxPrice);
+   // Encontrar valores mínimo e máximo dos preços dos produtos
+const allPrices = products.flatMap(product =>
+  product.variations.flatMap(variation => variation.sizes.map(size => size.price))
+);
 
-    // Verificar se há produtos em cada faixa de preço
-    const step = 50; // Ajuste conforme necessário
-    const priceRanges = generatePriceRanges(minPrice, maxPrice, step);
-    console.log('Generated Price Ranges:', priceRanges);
+// Verificar se a lista allPrices está vazia
+if (allPrices.length === 0) {
+  console.log('Não há preços para os produtos nesta categoria.');
+  // Lide com o caso em que não há preços para os produtos.
+  // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas de preço.
+  const defaultMinPrice = 0;
+  const defaultMaxPrice = 100;
+  const step = 50;
+  const priceRanges = generatePriceRanges(defaultMinPrice, defaultMaxPrice, step);
+  console.log('Price Ranges:', priceRanges);
+  res.json(priceRanges);
+  return;
+}
+
+// Encontrar valores mínimo e máximo dos preços dos produtos
+const minPrice = Math.floor(Math.min(...allPrices));
+const maxPrice = Math.ceil(Math.max(...allPrices));
+console.log('Min Price:', minPrice);
+console.log('Max Price:', maxPrice);
+
+// Verificar se há produtos em cada faixa de preço
+const step = 50; // Ajuste conforme necessário
+const priceRanges = generatePriceRanges(minPrice, maxPrice, step);
+console.log('Generated Price Ranges:', priceRanges);
 
     res.json(priceRanges);
   } catch (error) {
