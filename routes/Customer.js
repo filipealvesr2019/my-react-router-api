@@ -711,7 +711,7 @@ router.put(
     }
 
     // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-    cart.products[productIndex].quantity += parseInt(quantity);
+    cart.products[productIndex].quantity = req.body.quantity;
     // Zera o shippingFee do carrinho
     cart.shippingFee = 0;
     await cart.save();
