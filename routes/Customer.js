@@ -731,15 +731,28 @@ router.put(
 );
 
 // Rota para excluir um produto do carrinho de um cliente
+
+// Rota para atualizar a quantidade de um produto no carrinho de um cliente
+// router.put(
+//   "/update-quantity/:custumerId/:productId/:color/:size",
+
+//   async (req, res) => {
+//     try {
+//       const custumerId = req.params.custumerId;
+//       const productId = req.params.productId;
+
+//       const color = req.params.color;
+//       const size = req.params.size;
 router.delete(
-  "/remove-from-cart/:custumerId/:productId",
+  "/remove-from-cart/:custumerId/:productId/:color/:size",
   isAuthenticated,
 
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
       const productId = req.params.productId;
-
+      const color = req.params.color;
+      const size = req.params.size;
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ custumerId: custumerId });
 
@@ -756,7 +769,9 @@ router.delete(
 
       // Encontra o produto no carrinho
       const productIndex = cart.products.findIndex(
-        (product) => product.productId.toString() === productId
+        (product) => product.productId.toString() === productId &&
+        product.color === color && 
+        product.size ===  size
       );
 
       if (productIndex === -1) {
