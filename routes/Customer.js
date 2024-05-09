@@ -553,14 +553,7 @@ router.post(
         .json({ message: "Tamanho do produto não encontrado." });
     }
 
-    if (quantity > selectedSize.quantityAvailable) {
-      return res
-        .status(400)
-        .json({
-          message:
-            "A quantidade solicitada excede a disponibilidade do produto.",
-        });
-    }
+    
 
     // Verifica se o produto com a mesma cor e tamanho já está no carrinho
     const existingProductIndex = cart.products.findIndex(product => {
@@ -573,7 +566,17 @@ router.post(
 
     if (existingProductIndex !== -1) {
       // Se o produto já estiver no carrinho, apenas atualize a quantidade
-      cart.products[existingProductIndex].quantity += quantity;
+     let cartQuantity = cart.products[existingProductIndex].quantity += quantity;
+      console.log("quanridade", cartQuantity)
+console.log("quanridade disponivel", selectedSize.quantityAvailable)
+if (cartQuantity > selectedSize.quantityAvailable) {
+  return res
+    .status(400)
+    .json({
+      message:
+        "A quantidade solicitada excede a disponibilidade do produto.",
+    });
+}
     } else {
       // Se o produto não estiver no carrinho, adicione-o
       cart.products.push({
@@ -704,7 +707,7 @@ router.put(
       }
 
       // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-      cart.products[productIndex].quantity = quantity;
+      cart.products[productIndex].quantity =  parseInt(quantity);
       // Zera o shippingFee do carrinho
       cart.shippingFee = 0;
       await cart.save();
