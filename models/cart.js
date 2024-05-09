@@ -41,6 +41,11 @@ const cartSchema = new Schema({
         default: 0,
         unique: true
       },
+      cartProductExist:{
+        type: Boolean,
+        default: false
+      }
+
     
     },
   ],

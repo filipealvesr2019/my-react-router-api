@@ -486,9 +486,7 @@ router.get(
         match: { productId: productId, color: color, size: size }
       });
 
-      if (!cart) {
-        return res.status(404).json({ message: "Carrinho não encontrado." });
-      }
+     
 
       // Retorna os produtos no carrinho
       res.status(200).json({ cart, message: "Produtos no carrinho." });
@@ -503,6 +501,7 @@ router.get(
 
 
 // Rota para adicionar um produto ao carrinho de um cliente
+// Rota para adicionar um produto ao carrinho de um cliente
 router.post(
   "/add-to-cart/:custumerId",
 
@@ -510,60 +509,73 @@ router.post(
     try {
       const custumerId = req.params.custumerId;
 
-      const {   productId,
-        size,
-        color,
-        quantity,
-        image,
-        price } =
-        req.body;
+      const { productId, size, color, quantity, image, price } = req.body;
 
       // Encontra o cliente associado ao atendente
-      const customer = await Customer.findOne({ custumerId: custumerId });
+      const customer = await Customer.findOne({ custumerId });
 
       if (!customer) {
         return res.status(404).json({ message: "Cliente não encontrado." });
       }
 
-      // Encontra o carrinho do cliente
-      let cart = await Cart.findOne({ customer: customer._id });
+      // Encontra o carrinho do cliente ou cria um novo se não existir
+     // Encontra o carrinho do cliente ou cria um novo se não existir
+     let cart = await Cart.findOne({ customer: customer._id }).populate({
+      path: "products",
+      match: { productId, color } // Não precisa verificar o tamanho neste momento
+    });
 
-      // Se o carrinho não existir, cria um novo
-      if (!cart) {
-        cart = new Cart({ customer: customer._id, products: [] });
-      }
-      const product = await Product.findById(productId);
-      if (!product) {
-        return res.status(404).json({ message: "Produto não encontrado." });
-      }
+    // Se o carrinho não existir, cria um novo
+    if (!cart) {
+      cart = new Cart({ customer: customer._id, products: [] });
+    }
 
-      const variation = product.variations.find(
-        v => v.color === color && v.sizes.some(s => s.size === size)
+    const product = await Product.findById(productId);
+    if (!product) {
+      return res.status(404).json({ message: "Produto não encontrado." });
+    }
+
+    const variation = product.variations.find(
+      v => v.color === color && v.sizes.some(s => s.size === size)
+    );
+
+    if (!variation) {
+      return res
+        .status(404)
+        .json({ message: "Combinação de cor e tamanho do produto não encontrada." });
+    }
+
+    const selectedSize = variation.sizes.find(s => s.size === size);
+
+    if (!selectedSize) {
+      return res
+        .status(400)
+        .json({ message: "Tamanho do produto não encontrado." });
+    }
+
+    if (quantity > selectedSize.quantityAvailable) {
+      return res
+        .status(400)
+        .json({
+          message:
+            "A quantidade solicitada excede a disponibilidade do produto.",
+        });
+    }
+
+    // Verifica se o produto com a mesma cor e tamanho já está no carrinho
+    const existingProductIndex = cart.products.findIndex(product => {
+      return (
+        product.productId.toString() === productId &&
+        product.color === color &&
+        product.size === size
       );
+    });
 
-      if (!variation) {
-        return res
-          .status(404)
-          .json({ message: "Combinação de cor e tamanho do produto não encontrada." });
-      }
-
-      const selectedSize = variation.sizes.find(s => s.size === size);
-
-      if (!selectedSize) {
-        return res
-          .status(400)
-          .json({ message: "Tamanho do produto não encontrado." });
-      }
-
-      if (quantity > selectedSize.quantityAvailable) {
-        return res
-          .status(400)
-          .json({
-            message:
-              "A quantidade solicitada excede a disponibilidade do produto.",
-          });
-      }
-
+    if (existingProductIndex !== -1) {
+      // Se o produto já estiver no carrinho, apenas atualize a quantidade
+      cart.products[existingProductIndex].quantity += quantity;
+    } else {
+      // Se o produto não estiver no carrinho, adicione-o
       cart.products.push({
         productId,
         variationId: variation._id,
@@ -574,14 +586,16 @@ router.post(
         image: image || variation.urls[0],
         price: price || selectedSize.price,
         availableQuantity: selectedSize.quantityAvailable,
+        cartProductExist: false
       });
+    }
 
-      await cart.save();
+    await cart.save();
 
-      res.status(200).json({
-        cart,
-        message: "Produto adicionado ao carrinho com sucesso.",
-      });
+    res.status(200).json({
+      cart,
+      message: "Produto adicionado ao carrinho com sucesso.",
+    });
     } catch (error) {
       console.error("Erro ao adicionar produto ao carrinho:", error);
       res
