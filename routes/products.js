@@ -39,7 +39,7 @@ router.route("/review").put( createProductReview);
 router.get("/reviews", getProductReviews);
 router.route("/review").delete(deleteReview);
 router.get('/products/search', productController.getProductsByKeyword);
-router.post('/product/:productId/add-color', productController.addColorToProduct);
+router.post('/product/:productId/add-variation', productController.addVariation);
 
 
 router.post('/product/:productId/color/:colorName/add-url', productController.addUrlToColor);

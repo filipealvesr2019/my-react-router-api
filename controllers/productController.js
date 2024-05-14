@@ -291,7 +291,7 @@ exports.getProductsByKeyword = async (req, res) => {
 };
 
 // Controlador para adicionar uma nova cor a um produto existente
-exports.addColorToProduct = async (req, res, next) => {
+exports.addVariation = async (req, res, next) => {
   try {
     const productId = req.params.productId;
 
@@ -306,10 +306,10 @@ exports.addColorToProduct = async (req, res, next) => {
     }
 
     // Extrai os dados da nova cor do corpo da requisição
-    const { color, urls } = req.body;
+    const { color, urls, sizes } = req.body;
 
     // Adiciona a nova cor às variações do produto
-    product.variations.push({ color, urls });
+    product.variations.push({ color, urls, sizes });
 
     // Atualiza a data de modificação do produto
     product.lastModifiedAt = new Date();
