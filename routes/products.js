@@ -48,7 +48,7 @@ router.post('/product/:productId/color/:colorName/add-url', productController.ad
 router.delete('/product/:productId/color/:colorName/url/:urlId', productController.deleteUrlFromColor);
 
 // Rota para excluir uma cor completa de um produto
-router.delete('/product/:productId/color/:color', productController.deleteColorFromProduct);
+router.delete('/product/:productId/color/:color',isAuthenticated, isAdmin, productController.deleteVariation);
 
 
 router.get('/products/new-arrivals', productController.listNewArrivals);

@@ -333,7 +333,7 @@ exports.addVariation = async (req, res, next) => {
 };
 
 // Controlador para excluir uma cor específica de um produto
-exports.deleteColorFromProduct = async (req, res, next) => {
+exports.deleteVariation = async (req, res, next) => {
   try {
     const { productId, color } = req.params;
 
