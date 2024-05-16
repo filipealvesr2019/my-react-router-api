@@ -730,22 +730,10 @@ router.put(
   }
 );
 
-// Rota para excluir um produto do carrinho de um cliente
-
-// Rota para atualizar a quantidade de um produto no carrinho de um cliente
-// router.put(
-//   "/update-quantity/:custumerId/:productId/:color/:size",
-
-//   async (req, res) => {
-//     try {
-//       const custumerId = req.params.custumerId;
-//       const productId = req.params.productId;
-
-//       const color = req.params.color;
-//       const size = req.params.size;
+// remove um produto com uma variação de tamanho e cor especifica
 router.delete(
   "/remove-from-cart/:custumerId/:productId/:color/:size",
-  isAuthenticated,
+ isAuthenticated,
 
   async (req, res) => {
     try {
