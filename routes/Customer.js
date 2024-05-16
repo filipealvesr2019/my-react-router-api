@@ -730,17 +730,75 @@ router.put(
   }
 );
 
+// // remove um produto com uma variação de tamanho e cor especifica
+// router.delete(
+//   "/remove-from-cart/:custumerId/:productId/:color/:size",
+//  isAuthenticated,
+
+//   async (req, res) => {
+//     try {
+//       const custumerId = req.params.custumerId;
+//       const productId = req.params.productId;
+//       const color = req.params.color;
+//       const size = req.params.size;
+//       // Encontra o cliente associado ao atendente
+//       const customer = await Customer.findOne({ custumerId: custumerId });
+
+//       if (!customer) {
+//         return res.status(404).json({ message: "Cliente não encontrado." });
+//       }
+
+//       // Encontra o carrinho do cliente
+//       let cart = await Cart.findOne({ customer: customer._id });
+
+//       if (!cart) {
+//         return res.status(404).json({ message: "Carrinho não encontrado." });
+//       }
+
+//       // Encontra o produto no carrinho
+//       const productIndex = cart.products.findIndex(
+//         (product) => product.productId.toString() === productId &&
+//         product.color === color && 
+//         product.size ===  size
+//       );
+
+//       if (productIndex === -1) {
+//         return res
+//           .status(404)
+//           .json({ message: "Produto não encontrado no carrinho." });
+//       }
+
+//       // Remove o produto do carrinho
+//       cart.products.splice(productIndex, 1);
+//       await cart.save();
+
+//       // Retorna informações sobre o produto removido
+//       const removedProduct = await Product.findById(productId);
+//       res.status(200).json({
+//         removedProductId: removedProduct._id,
+//         message: "Produto removido do carrinho com sucesso.",
+//       });
+//     } catch (error) {
+//       console.error(error);
+//       res.status(500).json({ message: "Erro ao remover produto do carrinho." });
+//     }
+//   }
+// );
+
+
+
+
+
 // remove um produto com uma variação de tamanho e cor especifica
 router.delete(
-  "/remove-from-cart/:custumerId/:productId/:color/:size",
- isAuthenticated,
+  "/remove-from-cart/:custumerId/:uniqueId",
+
 
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
-      const productId = req.params.productId;
-      const color = req.params.color;
-      const size = req.params.size;
+      const uniqueId = req.params.uniqueId;
+
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ custumerId: custumerId });
 
@@ -755,29 +813,16 @@ router.delete(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
-      // Encontra o produto no carrinho
-      const productIndex = cart.products.findIndex(
-        (product) => product.productId.toString() === productId &&
-        product.color === color && 
-        product.size ===  size
-      );
+    // Remove o produto do carrinho pelo uniqueId
+    const indexToRemove = cart.products.findIndex(
+      (product) => product._id.toString() === uniqueId
+    );
 
-      if (productIndex === -1) {
-        return res
-          .status(404)
-          .json({ message: "Produto não encontrado no carrinho." });
-      }
 
-      // Remove o produto do carrinho
-      cart.products.splice(productIndex, 1);
-      await cart.save();
+    cart.products.splice(indexToRemove, 1);
+    await cart.save();
 
-      // Retorna informações sobre o produto removido
-      const removedProduct = await Product.findById(productId);
-      res.status(200).json({
-        removedProductId: removedProduct._id,
-        message: "Produto removido do carrinho com sucesso.",
-      });
+    res.status(200).json({ message: "Produto removido do carrinho com sucesso." });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Erro ao remover produto do carrinho." });
