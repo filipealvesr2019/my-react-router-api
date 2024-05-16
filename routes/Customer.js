@@ -813,6 +813,8 @@ router.delete(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
+  
+
     // Remove o produto do carrinho pelo uniqueId
     const indexToRemove = cart.products.findIndex(
       (product) => product._id.toString() === uniqueId
