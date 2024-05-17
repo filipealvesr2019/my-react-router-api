@@ -686,80 +686,76 @@ exports.getSizesByCategory = async (req, res) => {
 };
 
 // Função para obter faixas de preço com base no mínimo e máximo
-function generatePriceRanges(min, max, step) {
+
+// Função para obter faixas de preço com base no mínimo e máximo
+function generatePriceRangesWithProducts(min, max, step, prices) {
   const ranges = [];
 
-  for (let i = min; i <= max; i += step) {
-    const nextStep = i + step - 0.01; // Ajuste para evitar problemas com ponto flutuante
-    const range = `R$ ${i.toFixed(2)} - R$ ${nextStep.toFixed(2)}`;
-    ranges.push(range);
+  for (let i = min; i < max; i += step) {
+    const nextStep = Math.min(i + step - 0.01, max);
+    const rangeLabel = `R$ ${i.toFixed(2)} - R$ ${nextStep.toFixed(2)}`;
+
+    // Verificar se existe algum preço dentro do intervalo atual
+    const hasProductsInRange = prices.some(price => price >= i && price <= nextStep);
+
+    if (hasProductsInRange) {
+      ranges.push(rangeLabel);
+    }
   }
 
   return ranges;
 }
+
 // Função para obter faixas de preço com base na categoria
 exports.getPriceRangesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
 
-    // Modificamos a consulta para incluir apenas produtos da categoria específica
-    const products = await Product.find({ category });
+    // Consulta para incluir apenas produtos da categoria específica e em estoque
+    const products = await Product.find({ category, inStock: true });
 
     console.log("Products for category:", products);
 
     // Verificar se há produtos
-    if (products.length === 0) {
+    if (!products || products.length === 0) {
       console.log("Não há produtos para a categoria específica.");
-      // Lide com o caso em que não há produtos para a categoria específica.
-      // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas.
       const defaultMinPrice = 0;
       const defaultMaxPrice = 100;
       const step = 50;
-      const priceRanges = generatePriceRanges(
-        defaultMinPrice,
-        defaultMaxPrice,
-        step
-      );
+      const priceRanges = generatePriceRangesWithProducts(defaultMinPrice, defaultMaxPrice, step, []);
       console.log("Price Ranges:", priceRanges);
       res.json(priceRanges);
       return;
     }
 
     // Encontrar valores mínimo e máximo dos preços dos produtos
-    // Encontrar valores mínimo e máximo dos preços dos produtos
-    const allPrices = products.flatMap((product) =>
-      product.variations.flatMap((variation) =>
-        variation.sizes.map((size) => size.price)
+    const allPrices = products.flatMap(product =>
+      product.variations.flatMap(variation =>
+        variation.sizes
+          .filter(size => size.quantityAvailable > 0)
+          .map(size => size.price)
       )
     );
 
-    // Verificar se a lista allPrices está vazia
+    // Verificar se há preços
     if (allPrices.length === 0) {
       console.log("Não há preços para os produtos nesta categoria.");
-      // Lide com o caso em que não há preços para os produtos.
-      // Por exemplo, você pode definir valores padrão ou retornar um conjunto fixo de faixas de preço.
       const defaultMinPrice = 0;
       const defaultMaxPrice = 100;
       const step = 50;
-      const priceRanges = generatePriceRanges(
-        defaultMinPrice,
-        defaultMaxPrice,
-        step
-      );
+      const priceRanges = generatePriceRangesWithProducts(defaultMinPrice, defaultMaxPrice, step, []);
       console.log("Price Ranges:", priceRanges);
       res.json(priceRanges);
       return;
     }
 
-    // Encontrar valores mínimo e máximo dos preços dos produtos
     const minPrice = Math.floor(Math.min(...allPrices));
     const maxPrice = Math.ceil(Math.max(...allPrices));
     console.log("Min Price:", minPrice);
     console.log("Max Price:", maxPrice);
 
-    // Verificar se há produtos em cada faixa de preço
     const step = 50; // Ajuste conforme necessário
-    const priceRanges = generatePriceRanges(minPrice, maxPrice, step);
+    const priceRanges = generatePriceRangesWithProducts(minPrice, maxPrice, step, allPrices);
     console.log("Generated Price Ranges:", priceRanges);
 
     res.json(priceRanges);
