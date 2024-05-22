@@ -363,7 +363,7 @@ const getMixedProductsByCategory = async (req, res) => {
     // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
     const products = await Product.find(filter)
       .skip(startIndex)
-      .limit(pageSize);
+      // .limit(pageSize);
 
     res.json({ success: true, mixedProducts: products, totalPages });
   } catch (error) {
