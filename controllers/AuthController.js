@@ -46,7 +46,7 @@ let loginAttempts = {}; // Objeto para armazenar o número de tentativas de logi
 let blockedUsers = {}; // Objeto para armazenar os usuários bloqueados
 
 const MAX_LOGIN_ATTEMPTS = 7; // Número máximo de tentativas de login permitidas
-const BLOCK_DURATION = 20000; // Duração do bloqueio em milissegundos (3 segundos)
+const BLOCK_DURATION = 30000; // Duração do bloqueio em milissegundos (3 segundos)
 
 // Função para retornar o número de tentativas restantes para o login
 const remainingLoginAttempts = (email) => {
@@ -107,20 +107,26 @@ const loginCustomer = async (req, res, next) => {
 
   // Verifica se a senha está correta
   const isPasswordMatch = await user.comparePassword(password);
-
   if (!isPasswordMatch) {
     console.log("Senha incorreta");
+    const remainingAttempts = MAX_LOGIN_ATTEMPTS - (loginAttempts[email] || 0);
+    console.log(`Tentativas restantes: ${remainingAttempts}`);
+  
     // Incrementa o contador de tentativas de login
     loginAttempts[email] = (loginAttempts[email] || 0) + 1;
+    
     if (loginAttempts[email] >= MAX_LOGIN_ATTEMPTS) {
       blockUser(email); // Bloqueia o usuário se exceder o número máximo de tentativas
     }
+    
     return res.status(401).json({
       success: false,
       error: "Email ou senha inválidos.",
-      remainingAttempts: remainingLoginAttempts(email), // Retorna o número de tentativas restantes
+      remainingAttempts: remainingAttempts, // Retorna o número de tentativas restantes
     });
   }
+  
+  
 
   // Limpa o contador de tentativas de login se o login for bem-sucedido
   delete loginAttempts[email];
