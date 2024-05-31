@@ -317,7 +317,7 @@ const getMixedProductsByCategory = async (req, res) => {
   try {
     const { category } = req.params;
     const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
-    const pageSize = 10; // Número de produtos por página
+    const pageSize = 5; // Número de produtos por página
 
     // Opções de filtro
     const { color, size, priceRange } = req.query;
@@ -363,7 +363,7 @@ const getMixedProductsByCategory = async (req, res) => {
     // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
     const products = await Product.find(filter)
       .skip(startIndex)
-      // .limit(pageSize);
+      .limit(pageSize);
 
     res.json({ success: true, mixedProducts: products, totalPages });
   } catch (error) {
