@@ -707,9 +707,13 @@ function generatePriceRangesWithProducts(min, max, step, prices) {
 }
 
 // Função para obter faixas de preço com base na categoria
+// Função para obter faixas de preço com base na categoria
+// Função para obter faixas de preço com base na categoria
+// Função para obter faixas de preço com base na categoria
 exports.getPriceRangesByCategory = async (req, res) => {
   try {
     const { category } = req.params;
+    const { minPrice: minRange, maxPrice: maxRange } = req.query;
 
     // Consulta para incluir apenas produtos da categoria específica e em estoque
     const products = await Product.find({ category, inStock: true });
@@ -728,8 +732,21 @@ exports.getPriceRangesByCategory = async (req, res) => {
       return;
     }
 
-    // Encontrar valores mínimo e máximo dos preços dos produtos
-    const allPrices = products.flatMap(product =>
+    // Filtrar os produtos dentro do intervalo de preço especificado
+    const filteredProducts = products.filter(product => {
+      const price = product.variations[0].sizes[0].price; // Considerando que o preço está no primeiro tamanho da primeira variação
+      return price >= minRange && price <= maxRange;
+    });
+
+    // Verificar se há produtos dentro do intervalo de preço
+    if (filteredProducts.length === 0) {
+      console.log("Não há produtos dentro do intervalo de preço especificado.");
+      res.json({ success: false, message: "Não há produtos dentro do intervalo de preço especificado" });
+      return;
+    }
+
+    // Encontrar valores mínimo e máximo dos preços dos produtos filtrados
+    const allPrices = filteredProducts.flatMap(product =>
       product.variations.flatMap(variation =>
         variation.sizes
           .filter(size => size.quantityAvailable > 0)
@@ -737,28 +754,16 @@ exports.getPriceRangesByCategory = async (req, res) => {
       )
     );
 
-    // Verificar se há preços
-    if (allPrices.length === 0) {
-      console.log("Não há preços para os produtos nesta categoria.");
-      const defaultMinPrice = 0;
-      const defaultMaxPrice = 100;
-      const step = 50;
-      const priceRanges = generatePriceRangesWithProducts(defaultMinPrice, defaultMaxPrice, step, []);
-      console.log("Price Ranges:", priceRanges);
-      res.json(priceRanges);
-      return;
-    }
-
-    const minPrice = Math.floor(Math.min(...allPrices));
-    const maxPrice = Math.ceil(Math.max(...allPrices));
-    console.log("Min Price:", minPrice);
-    console.log("Max Price:", maxPrice);
+    const minPriceValue = parseFloat(minRange);
+    const maxPriceValue = parseFloat(maxRange);
+    console.log("Min Price:", minPriceValue);
+    console.log("Max Price:", maxPriceValue);
 
     const step = 50; // Ajuste conforme necessário
-    const priceRanges = generatePriceRangesWithProducts(minPrice, maxPrice, step, allPrices);
+    const priceRanges = generatePriceRangesWithProducts(minPriceValue, maxPriceValue, step, allPrices);
     console.log("Generated Price Ranges:", priceRanges);
 
-    res.json(priceRanges);
+    res.json({ success: true, priceRanges, products: filteredProducts });
   } catch (error) {
     console.error("Erro ao obter faixas de preço por categoria:", error);
     res.status(500).json({ error: "Erro interno do servidor" });

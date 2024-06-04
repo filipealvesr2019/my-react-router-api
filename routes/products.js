@@ -258,7 +258,7 @@ router.get('/products/category/:categoryName', productController.getProductsByCa
 
 router.get('/categories/:category/colors', productController.getColorsByCategory);
 router.get('/categories/:category/sizes', productController.getSizesByCategory);
-router.get('/categories/:category/priceRanges', productController.getPriceRangesByCategory);
+router.get('/category/:category/priceRange', productController.getPriceRangesByCategory);
 
 
 
