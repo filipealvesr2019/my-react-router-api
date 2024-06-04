@@ -35,8 +35,12 @@ router.get('/allCategories',   categoriesController.getAllCategoriesWithProducts
 
 
 router.get('/categories/:category/mixedProducts', categoriesController.getMixedProductsByCategory);
+router.get('/categories/:category/:subcategory', categoriesController.getMixedProductsBySubCategory);
+router.get('/category/:category/priceRange/:range', categoriesController.getMixedProductsByPriceRange);
 
-  
+
+router.get('/categories/:category/filterSizeProducts', categoriesController.getProductsBySizeAndCategory);
+
 
 
 

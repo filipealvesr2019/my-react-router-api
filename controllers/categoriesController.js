@@ -372,6 +372,185 @@ const getMixedProductsByCategory = async (req, res) => {
   }
 };
 
+const getMixedProductsBySubCategory = async (req, res) => {
+  try {
+    const { category, subcategory } = req.params;
+    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
+    const pageSize = 5; // Número de produtos por página
+
+    // Opções de filtro
+    const { color, size, priceRange } = req.query;
+    const filter = { category, subcategory, inStock: true }; // Adicione a condição para quantidade maior que zero
+
+    // Adicionar opções de filtro se fornecidas
+    if (color) {
+      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+    }
+
+    if (size) {
+      filter.size = new RegExp(`\\b${size}\\b`);
+    }
+
+  
+    if (priceRange) {
+      const [minPriceStr, maxPriceStr] = priceRange.split(" - ");
+      
+      // Remover o "R$" e converter para números
+      const minPrice = parseFloat(minPriceStr.replace('R$', '').replace(',', '.'));
+      const maxPrice = parseFloat(maxPriceStr.replace('R$', '').replace(',', '.'));
+    
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        filter.price = { $gte: minPrice, $lte: maxPrice };
+      } else {
+        // Lógica para lidar com valores inválidos
+        console.error('Invalid priceRange values:', minPrice, maxPrice, 'Original:', priceRange);
+        res.status(400).json({ success: false, message: 'Invalid priceRange values' });
+        return; // Encerrar a execução da função
+      }
+    }
+    
+    
+    // Calcular o número total de produtos com base nas opções de filtro
+    const totalProducts = await Product.countDocuments(filter);
+
+    // Calcular o número total de páginas
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    // Calcular o índice de início dos documentos (página atual - 1 * produtos por página)
+    const startIndex = (page - 1) * pageSize;
+
+    // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
+    const products = await Product.find(filter)
+      .skip(startIndex)
+      .limit(pageSize);
+
+    res.json({ success: true, subcategoryProducts: products, totalPages });
+  } catch (error) {
+    console.error('Error in getSubcategoryProducts:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
+const getMixedProductsByPriceRange = async (req, res) => {
+  try {
+    const {category, priceRange } = req.params; // Extrai o intervalo de preço da URL
+    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
+    const pageSize = 5; // Número de produtos por página
+
+    // Opções de filtro
+    const { color, size } = req.query;
+    const filter = {category, inStock: true }; // Remova "range" desta linha
+
+    // Adicionar opções de filtro se fornecidas
+    if (color) {
+      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+    }
+
+    if (size) {
+      filter.size = new RegExp(`\\b${size}\\b`);
+    }
+
+  
+    if (priceRange) {
+      const [minPriceStr, maxPriceStr] = priceRange.split(" - ");
+      
+      // Remover o "R$" e converter para números
+      const minPrice = parseFloat(minPriceStr.replace('R$', '').replace(',', '.'));
+      const maxPrice = parseFloat(maxPriceStr.replace('R$', '').replace(',', '.'));
+    
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        filter.price = { $gte: minPrice, $lte: maxPrice };
+      } else {
+        // Lógica para lidar com valores inválidos
+        console.error('Invalid priceRange values:', minPrice, maxPrice, 'Original:', priceRange);
+        res.status(400).json({ success: false, message: 'Invalid priceRange values' });
+        return; // Encerrar a execução da função
+      }
+    }
+    
+    
+    // Calcular o número total de produtos com base nas opções de filtro
+    const totalProducts = await Product.countDocuments(filter);
+
+    // Calcular o número total de páginas
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    // Calcular o índice de início dos documentos (página atual - 1 * produtos por página)
+    const startIndex = (page - 1) * pageSize;
+
+    // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
+    const products = await Product.find(filter)
+      .skip(startIndex)
+      .limit(pageSize);
+
+    res.json({ success: true, priceRange: products, totalPages });
+  } catch (error) {
+    console.error('Error in priceRange:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
+
+const getProductsBySizeAndCategory = async (req, res) => {
+  try {
+    const { category } = req.params;
+    const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
+    const pageSize = 5; // Número de produtos por página
+
+    // Opções de filtro
+    const { color, size, priceRange } = req.query;
+    const filter = { category, inStock: true }; // Adicione a condição para quantidade maior que zero
+
+    // Adicionar opções de filtro se fornecidas
+    if (color) {
+      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
+    }
+
+    if (size) {
+      filter['variations.sizes.size'] = new RegExp(`\\b${size}\\b`, 'i');
+    }
+  
+    if (priceRange) {
+      const [minPriceStr, maxPriceStr] = priceRange.split(" - ");
+      
+      // Remover o "R$" e converter para números
+      const minPrice = parseFloat(minPriceStr.replace('R$', '').replace(',', '.'));
+      const maxPrice = parseFloat(maxPriceStr.replace('R$', '').replace(',', '.'));
+    
+      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
+        filter.price = { $gte: minPrice, $lte: maxPrice };
+      } else {
+        // Lógica para lidar com valores inválidos
+        console.error('Invalid priceRange values:', minPrice, maxPrice, 'Original:', priceRange);
+        res.status(400).json({ success: false, message: 'Invalid priceRange values' });
+        return; // Encerrar a execução da função
+      }
+    }
+    
+    // Calcular o número total de produtos com base nas opções de filtro
+    const totalProducts = await Product.countDocuments(filter);
+
+    // Calcular o número total de páginas
+    const totalPages = Math.ceil(totalProducts / pageSize);
+
+    // Calcular o índice de início dos documentos (página atual - 1 * produtos por página)
+    const startIndex = (page - 1) * pageSize;
+
+    // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
+    const products = await Product.find(filter)
+      .skip(startIndex)
+      .limit(pageSize);
+
+    res.json({ success: true, mixedProducts: products, totalPages });
+  } catch (error) {
+    console.error('Error in getProductsBySizeAndCategory:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};  
+
+
 
 // Rota no arquivo de roteamento
 
@@ -388,7 +567,10 @@ const getMixedProductsByCategory = async (req, res) => {
     getImagesByCategory,
     updateImageURL,
     getAllCategoriesWithProducts,
-    getMixedProductsByCategory
+    getMixedProductsByCategory,
+    getProductsBySizeAndCategory,
+    getMixedProductsBySubCategory,
+    getMixedProductsByPriceRange
 
 
   };
