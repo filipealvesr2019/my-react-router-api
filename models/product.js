@@ -38,6 +38,10 @@ const productSchema = new mongoose.Schema({
             type: Number,
             default: 0, // Quantidade inicialmente disponível para este tamanho
           },
+          inStockSize: {
+            type: Boolean,
+            default: false,
+          },
         },
       ],
 
