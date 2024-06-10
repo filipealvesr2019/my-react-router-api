@@ -176,15 +176,8 @@ const loginUser = async (req, res, next) => {
   }
 
 
-   // Verificação da composição da senha
-   const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
-   if (!passwordRegex.test(password)) {
-     return res.status(400).json({
-       success: false,
-       error: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
-     });
-   }
  
+
   // procurando usuario no banco de dados
   const user = await User.findOne({ email }).select("+password +role");
 
@@ -217,11 +210,7 @@ const loginUser = async (req, res, next) => {
   } else if (user.role === "funcionario") {
     // Lógica para funcionário
     // Adicione aqui as ações específicas para o funcionário
-  } else if (user.role === "customer") {
-    // Lógica para funcionário
-    // Adicione aqui as ações específicas para o funcionário
-  }
-
+  } 
   // Envie o token para o usuário
   console.log("Enviando token para o usuário");
   sendToken(user, 200, res);
