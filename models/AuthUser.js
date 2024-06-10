@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
-
 const { isEmail } = require("validator");
 
 const userSchema = new mongoose.Schema({
@@ -17,7 +16,15 @@ const userSchema = new mongoose.Schema({
     required: [true, "Digite uma senha"],
     minLength: [10, "Digite uma senha de no mínimo 10 caracteres"],
     select: false,
-},
+    validate: {
+      validator: function(value) {
+        // Verifica se a senha contém pelo menos uma letra maiúscula, uma letra minúscula e um número
+        return /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/.test(value);
+      },
+      message: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número",
+    },
+  },
+
   role: {
     type: String,
     required: [true, "Digite uma credencial válida!"],

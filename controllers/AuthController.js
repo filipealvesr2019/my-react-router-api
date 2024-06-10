@@ -17,6 +17,15 @@ const registerUser = async (req, res, next) => {
     });
   }
 
+    // Verificação da composição da senha
+    const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])/;
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        success: false,
+        error: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula e um número.",
+      });
+    }
+
   if (!email || !validator.isEmail(email)) {
     return res.status(400).json({
       success: false,
