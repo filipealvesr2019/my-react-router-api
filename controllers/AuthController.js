@@ -54,7 +54,7 @@ let loginAttempts = {}; // Objeto para armazenar o número de tentativas de logi
 let blockedUsers = {}; // Objeto para armazenar os usuários bloqueados
 
 const MAX_LOGIN_ATTEMPTS = 7; // Número máximo de tentativas de login permitidas
-const BLOCK_DURATION = 30000; // Duração do bloqueio em milissegundos (3 segundos)
+const BLOCK_DURATION = 1800000; // Duração do bloqueio em milissegundos (30 minutos)
 
 // Função para retornar o número de tentativas restantes para o login
 const remainingLoginAttempts = (email) => {
