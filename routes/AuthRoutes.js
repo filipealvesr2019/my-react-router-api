@@ -154,7 +154,14 @@ router.post("/register/:token", async (req, res) => {
     }
 
     // Aqui você pode adicionar mais validações, se necessário
-
+// Verificação da composição da senha
+const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
+if (!passwordRegex.test(password)) {
+  return res.status(400).json({
+    success: false,
+    error: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
+  });
+}
     // Criar usuário com e-mail e senha fornecidos
     const user = await User.create({
       email,
