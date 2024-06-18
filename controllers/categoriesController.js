@@ -226,38 +226,52 @@ const getImagesByCategory = async (req, res) => {
   }
 };
 
-// controllers/categoriesController.js
 
 
 const updateImageURL = async (req, res) => {
-  const { categoryId, imageIndex, newImageUrl } = req.body;
+  const { category, imageId } = req.params;
+  const { newImageUrl } = req.body;
 
   try {
-    const category = await Category.findById(categoryId);
+    // Verificar se category e imageId são ObjectId válidos
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).json({ message: 'Categoria inválida' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(imageId)) {
+      return res.status(400).json({ message: 'ID da imagem inválido' });
+    }
 
-    if (!category) {
+    const categoryObj = await Category.findById(category);
+
+    if (!categoryObj) {
       return res.status(404).json({ message: 'Categoria não encontrada' });
     }
 
-    if (
-      imageIndex < 0 ||
-      imageIndex >= category.images.length ||
-      category.images[imageIndex].length === 0
-    ) {
-      return res.status(400).json({ message: 'Índice de imagem inválido' });
+    // Encontrar o índice do objeto de imagem pelo _id
+    let imageFound = false;
+    categoryObj.images.forEach(imageArray => {
+      imageArray.forEach(imageObj => {
+        if (imageObj._id.toString() === imageId) {
+          imageObj.imageUrl = newImageUrl;
+          imageFound = true;
+        }
+      });
+    });
+
+    // Verificar se a imagem foi encontrada e atualizada
+    if (!imageFound) {
+      return res.status(400).json({ message: 'ID da imagem não encontrado na categoria' });
     }
 
-    category.images[imageIndex][0].imageUrl = newImageUrl;
-    await category.save();
+    // Salvar as mudanças na categoria
+    await categoryObj.save();
 
-    res.status(200).json({ message: 'URL da imagem atualizada com sucesso', category });
+    res.status(200).json({ message: 'URL da imagem atualizada com sucesso', category: categoryObj });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
-
-
 
 
 

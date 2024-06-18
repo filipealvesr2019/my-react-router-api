@@ -18,7 +18,8 @@ router.put('/admin/categories/:categoryId',isAuthenticated, isAdmin,  categories
 router.get('/category/:categoryId/images', categoriesController.getImagesByCategory);
 
 // Rota para atualizar uma imagem em uma categoria
-router.put('/category/updateImageURL', isAuthenticated, isAdmin, categoriesController.updateImageURL);
+// isAuthenticated, isAdmin,
+router.put('/category/:category/imageId/:imageId',  categoriesController.updateImageURL);
 
 // Rota para excluir uma imagem de uma categoria
 router.delete('/categories/:categoryId/images/:imageIndex', isAuthenticated, isAdmin, categoriesController.deleteImage);
