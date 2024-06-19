@@ -43,8 +43,24 @@ router.get('/category/:category/priceRange/:range', categoriesController.getMixe
 
 router.get('/categories/:category/filterSizeProducts', categoriesController.getProductsBySizeAndCategory);
 
+
+
+
+router.get('/category/:categoryId/images', categoriesController.getImageSlider);
+
 // upload imagem from slider
 router.post('/slider/categories/:categoryId/images', categoriesController.addImageToSlider);
+
+
+router.put('/slider/category/:category/imageId/:imageId',  categoriesController.updateImageURLSlider);
+
+// Rota para excluir uma imagem de uma categoria
+router.delete('/slider/categories/:categoryId/images/:imageIndex', categoriesController.deleteImageSlider);
+ 
+// isAuthenticated, isAdmin,
+
+// Rota para excluir uma categoria
+router.delete('/slider/admin/categories/:categoryId',isAuthenticated, isAdmin, categoriesController.deleteCategory);
 
 
 
