@@ -1557,10 +1557,10 @@ router.post(
 
       // Itera sobre o número de parcelas e cria uma cobrança para cada uma
       const payments = [];
-      for (let i = 0; i < installmentCount; i++) {
+ 
         // Ajusta a data de vencimento para cada parcela, por exemplo, 30 dias após a data atual
         const newDueDate = new Date();
-        newDueDate.setDate(dueDate.getDate() + 30 * (i + 1));
+    
 
         const paymentData = {
           billingType: "CREDIT_CARD",
@@ -1568,9 +1568,9 @@ router.post(
           dueDate: newDueDate,
           value: installmentValue,
           postalService: false,
-
+          installmentCount: installmentCount,
           installmentValue: installmentValue,
-          installmentNumber: i + 1, // Adiciona o número da parcela
+          installmentNumber: installmentCount, // Adiciona o número da parcela
           creditCard: {
             holderName: customer.name,
             number: req.body.number,
@@ -1602,13 +1602,12 @@ router.post(
         );
 
         payments.push(response.data);
-      }
+  
 
-      // Salva as informações de cobrança no banco de dados
-      for (let i = 0; i < payments.length; i++) {
+   
         const payment = payments[i];
-        const installmentNumber = i + 1; // Número da parcela começa em 1
-
+        const installmentNumber =  payment.installmentCount; // Número da parcela começa em 1
+        const installment =     payment.installmentCount / payment.installmentValue 
         const creditCard = new CreditCard({
           orderId: payment.id,
           custumerId: custumerId,
@@ -1620,7 +1619,7 @@ router.post(
           bankSlipUrl: payment.bankSlipUrl,
           dueDate: payment.dueDate,
           installmentNumber: installmentNumber, // Usando o número de parcela correto
-          installmentValue: payment.installmentValue,
+          installmentValue: installment,
           installmentCount: payment.installmentCount,
           shippingFeeData: {
             transportadora: cart.transportadora.nome || "",
@@ -1638,7 +1637,7 @@ router.post(
           name: customer.name,
         });
         await creditCard.save();
-      }
+
 
       res.json(payments);
     } catch (error) {
