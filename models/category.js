@@ -1,6 +1,11 @@
 // models/Category.js
 const mongoose = require('mongoose');
+
 const imageSchema = new mongoose.Schema({
+  imageUrl: String,
+});
+
+const sliderSchema = new mongoose.Schema({
   imageUrl: String,
 });
 const categorySchema = new mongoose.Schema({
@@ -16,6 +21,9 @@ const categorySchema = new mongoose.Schema({
   }],
   images: [{
     type:  [imageSchema], // Assuming you store photo URLs
+  }],
+  slider:[{
+    type:  [sliderSchema], // Assuming you store photo URLs
   }],
 });
 

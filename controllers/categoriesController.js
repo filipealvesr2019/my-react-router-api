@@ -186,6 +186,8 @@ const addImageToCategory = async (req, res) => {
 
 
 
+
+
 const deleteImage = async (req, res) => {
   try {
     const { categoryId, imageIndex } = req.params;
@@ -272,6 +274,141 @@ const updateImageURL = async (req, res) => {
     res.status(500).json({ message: 'Erro interno do servidor' });
   }
 };
+
+
+
+
+
+// slider controllers
+
+const addImageToSlider = async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+    const { categoryId } = req.params;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Categoria não encontrada.' });
+    }
+
+    // Criar um novo objeto image com _id exclusivo
+    const newImage = {
+      _id: new mongoose.Types.ObjectId(),
+      imageUrl,
+    };
+
+    category.slider.push(newImage);
+    await category.save();
+
+    res.status(200).json({ message: 'Imagem adicionada com sucesso à categoria.', category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro ao adicionar a imagem à categoria.' });
+  }
+};
+
+
+
+
+
+const deleteImageSlider = async (req, res) => {
+  try {
+    const { categoryId, imageIndex } = req.params;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found.' });
+    }
+
+    if (imageIndex < 0 || imageIndex >= category.slider.length) {
+      return res.status(400).json({ message: 'Invalid image index.' });
+    }
+
+    category.slider.splice(imageIndex, 1);
+    await category.save();
+
+    res.status(200).json({ message: 'Image deleted successfully from the category.', category });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error deleting the image from the category.' });
+  }
+};
+
+const getImageSlider = async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const category = await Category.findById(categoryId);
+    if (!category) {
+      return res.status(404).json({ message: 'Category not found.' });
+    }
+    
+    const slider = category.slider;
+    res.status(200).json({ category, slider });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error getting images by category.' });
+  }
+};
+
+
+
+const updateImageURLSlider = async (req, res) => {
+  const { category, imageId } = req.params;
+  const { newImageUrl } = req.body;
+
+  try {
+    // Verificar se category e imageId são ObjectId válidos
+    if (!mongoose.Types.ObjectId.isValid(category)) {
+      return res.status(400).json({ message: 'Categoria inválida' });
+    }
+    if (!mongoose.Types.ObjectId.isValid(imageId)) {
+      return res.status(400).json({ message: 'ID da imagem inválido' });
+    }
+
+    const categoryObj = await Category.findById(category);
+
+    if (!categoryObj) {
+      return res.status(404).json({ message: 'Categoria não encontrada' });
+    }
+
+    // Encontrar o índice do objeto de imagem pelo _id
+    let imageFound = false;
+    categoryObj.slider.forEach(imageArray => {
+      imageArray.forEach(imageObj => {
+        if (imageObj._id.toString() === imageId) {
+          imageObj.imageUrl = newImageUrl;
+          imageFound = true;
+        }
+      });
+    });
+
+    // Verificar se a imagem foi encontrada e atualizada
+    if (!imageFound) {
+      return res.status(400).json({ message: 'ID da imagem não encontrado na categoria' });
+    }
+
+    // Salvar as mudanças na categoria
+    await categoryObj.save();
+
+    res.status(200).json({ message: 'URL da imagem atualizada com sucesso', category: categoryObj });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Erro interno do servidor' });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -584,7 +721,14 @@ const getProductsBySizeAndCategory = async (req, res) => {
     getMixedProductsByCategory,
     getProductsBySizeAndCategory,
     getMixedProductsBySubCategory,
-    getMixedProductsByPriceRange
+    getMixedProductsByPriceRange,
+    addImageToSlider,
+    
+
+deleteImageSlider,
+
+getImageSlider,
+updateImageURLSlider,
 
 
   };

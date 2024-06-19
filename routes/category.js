@@ -18,7 +18,8 @@ router.put('/admin/categories/:categoryId',isAuthenticated, isAdmin,  categories
 router.get('/category/:categoryId/images', categoriesController.getImagesByCategory);
 
 // Rota para atualizar uma imagem em uma categoria
-// isAuthenticated, isAdmin,
+// isAuthenticated, isAdmin,slider
+
 router.put('/category/:category/imageId/:imageId',  categoriesController.updateImageURL);
 
 // Rota para excluir uma imagem de uma categoria
@@ -42,8 +43,8 @@ router.get('/category/:category/priceRange/:range', categoriesController.getMixe
 
 router.get('/categories/:category/filterSizeProducts', categoriesController.getProductsBySizeAndCategory);
 
-
-
+// upload imagem from slider
+router.post('/slider/categories/:categoryId/images', categoriesController.addImageToSlider);
 
 
 
