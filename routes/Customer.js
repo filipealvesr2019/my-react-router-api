@@ -1541,12 +1541,11 @@ router.post(
 
       // Remove a vírgula extra no final da string externalReferences
       externalReferences = externalReferences.slice(0, -1);
-
-      // Pegue o valor do corpo da requisição
       const requestBody = req.body;
 
-      // Extraia o número de parcelas do corpo da requisição
-      const installmentCount = parseInt(requestBody.installmentCount);
+      
+      // Pegue o valor do corpo da requisição
+      const installmentCount = requestBody.installmentCount ? parseInt(requestBody.installmentCount) : 1;
       const totalAmount = cart.totalAmount;
 
       // Calcule o valor de cada parcela
@@ -1605,7 +1604,7 @@ router.post(
   
 
    
-        const payment = payments[i];
+        const payment = payments;
         const installmentNumber =  payment.installmentCount; // Número da parcela começa em 1
         const installment =     payment.installmentCount / payment.installmentValue 
         const creditCard = new CreditCard({
