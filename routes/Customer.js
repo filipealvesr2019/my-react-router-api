@@ -1482,12 +1482,9 @@ router.post(
 );
 
 // pagar creditCard com checkout transparente
-router.post(
-  "/creditCardWithoutTokenization/:custumerId",
-  isAuthenticated,
 
-  async (req, res) => {
-    try {
+router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async (req, res) => {
+  try {
       const token = process.env.ACCESS_TOKEN;
       const custumerId = req.params.custumerId; // Agora é uma string
 
@@ -1495,157 +1492,154 @@ router.post(
       const customer = await Customer.findOne({ custumerId: custumerId });
 
       if (!customer) {
-        return res.status(404).json({ message: "Cliente não encontrado." });
+          return res.status(404).json({ message: 'Cliente não encontrado.' });
       }
 
       // Encontra o carrinho do cliente
-      const cart = await Cart.findOne({ customer: customer._id }).populate(
-        "products.productId"
-      );
+      const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
 
       if (!cart) {
-        return res.status(404).json({ message: "Carrinho não encontrado." });
+          return res.status(404).json({ message: 'Carrinho não encontrado.' });
       }
+
       // Valida se todos os campos necessários estão presentes no corpo da requisição
-      if (
-        !req.body.number ||
-        !req.body.expiryMonth ||
-        !req.body.expiryYear ||
-        !req.body.ccv
-      ) {
-        return res.status(400).json({
-          message:
-            "Campos de cartão de crédito incompletos. Todos os campos são necessários.",
-        });
+      if (!req.body.number || !req.body.expiryMonth || !req.body.expiryYear || !req.body.ccv) {
+          return res.status(400).json({
+              message: 'Campos de cartão de crédito incompletos. Todos os campos são necessários.',
+          });
       }
+
       // Remove todos os produtos do carrinho
       const result = await Cart.deleteMany({ customer: customer._id });
 
       if (result.deletedCount === 0) {
-        return res
-          .status(404)
-          .json({ message: "Nenhum produto encontrado no carrinho." });
+          return res.status(404).json({ message: 'Nenhum produto encontrado no carrinho.' });
       }
 
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
 
       // Cria uma string vazia para armazenar os IDs dos produtos
-      let externalReferences = "";
+      let externalReferences = '';
 
       // Itera sobre os produtos no carrinho
       for (const product of cart.products) {
-        // Adiciona o ID do produto à string externalReferences
-        externalReferences += product.productId._id + ",";
+          // Adiciona o ID do produto à string externalReferences
+          externalReferences += product.productId._id + ',';
       }
 
       // Remove a vírgula extra no final da string externalReferences
       externalReferences = externalReferences.slice(0, -1);
       const requestBody = req.body;
 
-      
       // Pegue o valor do corpo da requisição
       const installmentCount = requestBody.installmentCount ? parseInt(requestBody.installmentCount) : 1;
       const totalAmount = cart.totalAmount;
 
+      // Verifique se installmentCount e totalAmount são válidos
+      if (isNaN(installmentCount) || installmentCount <= 0) {
+          return res.status(400).json({ message: 'Número de parcelas inválido.' });
+      }
+
+      if (isNaN(totalAmount) || totalAmount <= 0) {
+          return res.status(400).json({ message: 'Valor total do carrinho inválido.' });
+      }
+
       // Calcule o valor de cada parcela
-      const installmentValue = totalAmount / installmentCount;
+      const installmentValue = parseFloat((totalAmount / installmentCount).toFixed(2));
+
+      if (isNaN(installmentValue)) {
+          return res.status(400).json({ message: 'Erro no cálculo do valor da parcela.' });
+      }
 
       // Define a data de vencimento base
       const dueDate = new Date();
 
       // Itera sobre o número de parcelas e cria uma cobrança para cada uma
       const payments = [];
- 
-        // Ajusta a data de vencimento para cada parcela, por exemplo, 30 dias após a data atual
-        const newDueDate = new Date();
-    
 
-        const paymentData = {
-          billingType: "CREDIT_CARD",
+      const paymentData = {
+          billingType: 'CREDIT_CARD',
           customer: asaasCustomerId,
-          dueDate: newDueDate,
+          dueDate: dueDate,
           value: installmentValue,
           postalService: false,
           installmentCount: installmentCount,
           installmentValue: installmentValue,
-          installmentNumber: installmentCount, // Adiciona o número da parcela
           creditCard: {
-            holderName: customer.name,
-            number: req.body.number,
-            expiryMonth: req.body.expiryMonth,
-            expiryYear: req.body.expiryYear,
-            ccv: req.body.ccv,
+              holderName: customer.name,
+              number: req.body.number,
+              expiryMonth: req.body.expiryMonth,
+              expiryYear: req.body.expiryYear,
+              ccv: req.body.ccv,
           },
           creditCardHolderInfo: {
-            name: customer.name,
-            email: customer.email,
-            cpfCnpj: customer.cpfCnpj,
-            postalCode: customer.postalCode,
-            addressNumber: customer.addressNumber,
-            addressComplement: null,
-            phone: customer.mobilePhone,
+              name: customer.name,
+              email: customer.email,
+              cpfCnpj: customer.cpfCnpj,
+              postalCode: customer.postalCode,
+              addressNumber: customer.addressNumber,
+              addressComplement: null,
+              phone: customer.mobilePhone,
           },
-        };
+      };
 
-        const response = await axios.post(
-          "https://sandbox.asaas.com/api/v3/payments",
+      const response = await axios.post(
+          'https://sandbox.asaas.com/api/v3/payments',
           paymentData,
           {
-            headers: {
-              accept: "application/json",
-              "content-type": "application/json",
-              access_token: token,
-            },
+              headers: {
+                  accept: 'application/json',
+                  'content-type': 'application/json',
+                  access_token: token,
+              },
           }
-        );
+      );
 
-        payments.push(response.data);
-  
+      const paymentResponse = response.data;
+      payments.push(paymentResponse);
 
-   
-        const payment = payments;
-        const installmentNumber =  payment.installmentCount; // Número da parcela começa em 1
-        const installment =     payment.installmentCount / payment.installmentValue 
-        const creditCard = new CreditCard({
-          orderId: payment.id,
+      console.log('Payment Response:', paymentResponse);
+
+      const creditCard = new CreditCard({
+          orderId: paymentResponse.id,
           custumerId: custumerId,
-          customer: payment.customer,
-          billingType: payment.billingType,
-          value: payment.value,
-          externalReference: payment.externalReference,
-          invoiceUrl: payment.invoiceUrl,
-          bankSlipUrl: payment.bankSlipUrl,
-          dueDate: payment.dueDate,
-          installmentNumber: installmentNumber, // Usando o número de parcela correto
-          installmentValue: installment,
-          installmentCount: payment.installmentCount,
+          customer: paymentResponse.customer,
+          billingType: paymentResponse.billingType,
+          value: paymentResponse.value,
+          externalReference: paymentResponse.externalReference,
+          invoiceUrl: paymentResponse.invoiceUrl,
+          bankSlipUrl: paymentResponse.bankSlipUrl,
+          dueDate: paymentResponse.dueDate,
+          installmentNumber: installmentCount, // Número da parcela
+          installmentValue: installmentValue,
+          installmentCount: installmentCount,
           shippingFeeData: {
-            transportadora: cart.transportadora.nome || "",
-            logo: cart.logo.img || "",
-            shippingFeePrice: cart.shippingFee,
+              transportadora: cart.transportadora?.nome || '',
+              logo: cart.logo?.img || '',
+              shippingFeePrice: cart.shippingFee,
           },
           products: cart.products.map((product) => ({
-            productId: product.productId._id,
-            quantity: product.quantity,
-            size: product.size,
-            color: product.color,
-            image: product.image,
+              productId: product.productId._id,
+              quantity: product.quantity,
+              size: product.size,
+              color: product.color,
+              image: product.image,
+              name: product.name,
           })),
-
           name: customer.name,
-        });
-        await creditCard.save();
+      });
 
+      console.log('CreditCard Data to Save:', creditCard);
+
+      await creditCard.save();
 
       res.json(payments);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      res.status(500).json({ error: "Internal Server Error" });
-    }
+  } catch (error) {
+      console.error('Error fetching data:', error);
+      res.status(500).json({ error: 'Internal Server Error' });
   }
-);
-
+});
 // pagar boleto com checkout transparente
 router.post(
   "/tokenizeCreditCard",
@@ -1970,6 +1964,8 @@ router.post(
           await pix.save();
         }
       } else {
+
+        
         const pix = new PixQRcode({
           billingType: "PIX",
           custumerId: custumerId,
