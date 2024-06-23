@@ -98,14 +98,7 @@ const loginCustomer = async (req, res, next) => {
       error: "Email e senha são obrigatórios.",
     });
   }
-// Verificação da composição da senha
-const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
-if (!passwordRegex.test(password)) {
-  return res.status(400).json({
-    success: false,
-    error: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
-  });
-}
+
   // Procurando usuário no banco de dados
   const user = await User.findOne({ email }).select("+password +role");
 
