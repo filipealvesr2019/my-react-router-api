@@ -2410,7 +2410,8 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
     }
 
     // Encontre todos os boletos que correspondem à query, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
-    const allBoletos = await Boleto.find(query).skip(skip).limit(pageSize);
+    const allBoletos = await Boleto.find(query).skip(skip).limit(pageSize).sort({ createdAt: -1 }) // Ordenar pela data de criação em ordem decrescente
+    ;
 
     // Atualize os status para os pedidos de boleto
     for (const boleto of allBoletos) {
@@ -2524,7 +2525,9 @@ router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
     const allOrders = await CreditCard.find(query)
       .sort({ status: -1 })
       .skip(skip)
-      .limit(pageSize);
+      .limit(pageSize)
+      .sort({ createdAt: -1 }) // Ordenar pela data de criação em ordem decrescente
+      ;
 
     // Update statuses for Pix orders
     for (const pixOrder of allOrders) {

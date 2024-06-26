@@ -32,6 +32,8 @@ const boletoSchema = new mongoose.Schema({
     required: true,
     default: Date.now,
   },
+  createdAt: { type: Date, default: Date.now }, // Campo para armazenar a data de criação
+
   shippingFee: {
     type: Number,
     required: true,
