@@ -24,6 +24,8 @@ const PixQRcodeSchema = new mongoose.Schema({
     type: String,
     enum: ["ALL", "IMAGE", "PAYLOAD"],
   },
+  createdAt: { type: Date, default: Date.now }, // Campo para armazenar a data de criação
+
 
   expirationDate: {
     type: Date,

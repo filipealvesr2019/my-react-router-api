@@ -2448,6 +2448,7 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+
 router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
@@ -2461,17 +2462,22 @@ router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
       // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
       query = { name: { $regex: searchQuery, $options: "i" } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
     }
-    // Encontre todos os pedidos
-    const allOrders = await PixQRcode.find(query).skip(skip).limit(pageSize);
-    // Update statuses for Credit Card orders
-    for (const creditCardOrder of allOrders) {
-      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+
+    // Encontre todos os boletos que correspondem à query, ordene pela data de criação e aplique paginação
+    const allPixQRcode = await PixQRcode.find(query)
+      .sort({ createdAt: -1 }) // Ordenar pela data de criação em ordem decrescente
+      .skip(skip)
+      .limit(pageSize);
+
+    // Atualize os status para os pedidos de boleto
+    for (const pix of allPixQRcode) {
+      const orderId = pix.orderId;
       const paymentReport = await PaymentReports.findOne({
         "payment.id": orderId,
       });
       if (paymentReport) {
-        creditCardOrder.status = paymentReport.payment.status;
-        await creditCardOrder.save();
+        pix.status = paymentReport.payment.status;
+        await pix.save();
       }
     }
 
@@ -2484,19 +2490,21 @@ router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
     };
 
     // Ordenar os resultados com base no status
-    allOrders.sort((a, b) => {
+    allPixQRcode.sort((a, b) => {
       const statusA = a.status;
       const statusB = b.status;
 
       // Compare os status com base na ordem de prioridade
       return statusPriority[statusA] - statusPriority[statusB];
     });
-    res.json(allOrders);
+
+    res.json(allPixQRcode);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
 
 router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
   try {
