@@ -2231,7 +2231,7 @@ router.get("/order/:customerId/:orderId", async (req, res) => {
   }
 });
 
-router.get("/allOrders/:custumerId", isAuthenticated, async (req, res) => {
+router.get("/allOrders/:custumerId",  async (req, res) => {
   const custumerId = req.params.custumerId;
   const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
