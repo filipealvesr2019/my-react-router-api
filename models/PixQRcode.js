@@ -95,6 +95,7 @@ const PixQRcodeSchema = new mongoose.Schema({
       },
     },
   ],
+  createdAt: { type: Date, default: Date.now }, // Campo para armazenar a data de criação
 
   trackingCode: { type: String },
   totalQuantity: {
