@@ -2230,49 +2230,86 @@ router.get("/order/:customerId/:orderId", async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar a ordem" });
   }
 });
-router.get("/allOrders/:custumerId", async (req, res) => {
+
+router.get("/allOrders/:custumerId",  async (req, res) => {
   const custumerId = req.params.custumerId;
   const page = req.query.page ? parseInt(req.query.page) : 1;
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
-
   try {
     const skip = (page - 1) * pageSize;
+
 
     const [boletoData, pixData, creditCardData, totalBoletos, totalPix, totalCreditCards] = await Promise.all([
       Boleto.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
       PixQRcode.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
       CreditCard.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
-      Boleto.countDocuments({ custumerId }),
+       Boleto.countDocuments({ custumerId }),
       PixQRcode.countDocuments({ custumerId }),
       CreditCard.countDocuments({ custumerId })
     ]);
-
+    // Find the customer's data in other schemas
     const totalOrders = totalBoletos + totalPix + totalCreditCards;
 
+
+    // Check if any data is found for the customer
     if (!boletoData.length && !creditCardData.length && !pixData.length) {
-      return res.status(404).json({ error: "Dados do cliente não encontrados" });
+      return res
+        .status(404)
+        .json({ error: "Dados do cliente não encontrados" });
     }
 
+    // Update statuses for Boleto orders
+    for (const boletoOrder of boletoData) {
+      const orderId = boletoOrder.orderId;
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        boletoOrder.status = paymentReport.payment.status;
+        await boletoOrder.save();
+      }
+    }
 
+    // Update statuses for Credit Card orders
+    for (const creditCardOrder of creditCardData) {
+      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        creditCardOrder.status = paymentReport.payment.status;
+        await creditCardOrder.save();
+      }
+    }
 
-    //  // Defina a ordem de prioridade dos status
-    //  const statusPriority = {
-    //   RECEIVED: 1,
-    //   CONFIRMED: 2,
-    //   PENDING: 3,
-    //   OVERDUE: 4,
-    // };
+    // Update statuses for Pix orders
+    for (const pixOrder of pixData) {
+      const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
+      const paymentReport = await PaymentReports.findOne({
+        "payment.id": orderId,
+      });
+      if (paymentReport) {
+        pixOrder.status = paymentReport.payment.status;
+        await pixOrder.save();
+      }
+    }
 
-    // // Ordenar os resultados com base no status
-    // [boletoData, pixData, creditCardData].sort((a, b) => {
-    //   const statusA = a.status;
-    //   const statusB = b.status;
+     // Defina a ordem de prioridade dos status
+     const statusPriority = {
+      RECEIVED: 1,
+      CONFIRMED: 2,
+      PENDING: 3,
+      OVERDUE: 4,
+    };
 
-    //   // Compare os status com base na ordem de prioridade
-    //   return statusPriority[statusA] - statusPriority[statusB];
-    // });
+    // Ordenar os resultados com base no status
+    [boletoData, pixData, creditCardData].sort((a, b) => {
+      const statusA = a.status;
+      const statusB = b.status;
 
-
+      // Compare os status com base na ordem de prioridade
+      return statusPriority[statusA] - statusPriority[statusB];
+    });
     const responseData = {
       boleto: boletoData,
       creditCard: creditCardData,
@@ -2280,12 +2317,14 @@ router.get("/allOrders/:custumerId", async (req, res) => {
       totalOrders
     };
 
+    // Send the response after updating all orders
     res.json(responseData);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
 
 
 router.get("/allOrders/boleto/:custumerId", async (req, res) => {
