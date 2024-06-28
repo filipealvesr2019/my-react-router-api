@@ -93,6 +93,11 @@ const PixQRcodeSchema = new mongoose.Schema({
         type: String,
         default: " ",
       },
+      price: {
+        // Adicionando o campo de imagem
+        type: Number,
+        
+      },
     },
   ],
   createdAt: { type: Date, default: Date.now }, // Campo para armazenar a data de criação

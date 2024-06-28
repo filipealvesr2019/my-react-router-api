@@ -1312,6 +1312,7 @@ router.post(
               color: product.color,
               image: product.image,
               name: product.name,
+              price: product.price,
             })),
             name: customer.name,
           });
@@ -1342,10 +1343,13 @@ router.post(
             color: product.color,
             image: product.image,
             name: product.name,
+            price: product.price,
+
           })),
           name: customer.name,
           orderId: response.data.id,
           name: customer.name,
+          
         });
 
         await boleto.save();
@@ -1626,6 +1630,8 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
               color: product.color,
               image: product.image,
               name: product.name,
+              price: product.price,
+
           })),
           name: customer.name,
       });
@@ -1957,6 +1963,8 @@ router.post(
               size: product.size,
               color: product.color,
               image: product.image,
+              price: product.price,
+
             })),
             name: customer.name,
           });
@@ -1990,6 +1998,8 @@ router.post(
             size: product.size,
             color: product.color,
             image: product.image,
+            price: product.price,
+
           })),
           name: customer.name,
         });

@@ -81,6 +81,11 @@ const boletoSchema = new mongoose.Schema({
         type: String,
         default: " ",
       },
+      price: {
+        // Adicionando o campo de imagem
+        type: Number,
+        
+      },
     },
   ],
   totalQuantity: {

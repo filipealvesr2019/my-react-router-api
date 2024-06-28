@@ -115,6 +115,12 @@ const customerSchema = new mongoose.Schema({
         type: String,
         default: " ",
       },
+      
+      price: {
+        // Adicionando o campo de imagem
+        type: Number,
+        
+      },
     },
   ],
   typeOrder: {
