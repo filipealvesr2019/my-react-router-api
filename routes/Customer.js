@@ -2910,6 +2910,69 @@ router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
       return statusPriority[statusA] - statusPriority[statusB];
     });
 
+
+    if (allPixQRcode.status === "RECEIVED") {
+      // Encontra o cliente pelo ID
+    const customer = await Customer.findOne({ custumerId: allBoletos.custumerId });
+
+    // Verifica se o cliente existe
+    if (!customer) {
+      console.log("Cliente não encontrado.");
+      return res.status(404).json({ error: "Cliente não encontrado." });
+    }
+
+    // Verifica se o email do cliente está presente
+    if (!customer.email) {
+      console.log("Email do cliente não encontrado.");
+      return res.status(400).json({ error: "Email do cliente não encontrado." });
+    }
+      // Envia um email com o código de rastreamento
+      await client.sendEmail({
+        "From": process.env.EMAIL_FROM,
+        "To": customer.email,
+        "Subject": "Seu código de rastreamento",
+        "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
+        HtmlBody: `<p>
+  
+  
+  <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+  justify-content: center;
+  align-items: center;">
+        <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+ </div>
+  
+
+
+<div style="display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<p style=" font-weight: 400;
+font-size: 1.8rem;
+text-align: center;
+margin-top: 5rem;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">      
+<p style="display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<p style=" font-weight: 400;
+font-size: 1.6rem;
+text-align: center;
+margin-top: 1rem;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">     Olá ${customer.name},\n\nSua compra foi aprovada com sucesso!.\n\nObrigado por comprar conosco!
+<a ></a>.</p></p>
+
+
+</div>
+`,
+      });
+      console.log("Email enviado com sucesso.");
+    }
     res.json(allPixQRcode);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
