@@ -2091,7 +2091,7 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
       "From": process.env.EMAIL_FROM,
       "To": customer.email,
       "Subject": "Seu código de rastreamento",
-      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!`,
+      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: ${trackingCode}.\n\nObrigado por comprar conosco!`,
       HtmlBody: `<p>
       
       
@@ -2124,7 +2124,7 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
   margin-top: 1rem;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento:  <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio:  <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
 <a href="${orderLink}"></a>.</p></p>
     
   <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
@@ -2187,7 +2187,7 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
       "From": process.env.EMAIL_FROM,
       "To": customer.email,
       "Subject": "Seu código de rastreamento",
-      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!`,
+      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: ${trackingCode}.\n\nObrigado por comprar conosco!`,
       HtmlBody: `<p>
       
       
@@ -2220,7 +2220,7 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
   margin-top: 1rem;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
 <a href="${orderLink}"></a>.</p></p>
     
   <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
@@ -2299,7 +2299,7 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
       "From": process.env.EMAIL_FROM,
       "To": customer.email,
       "Subject": "Seu código de rastreamento",
-      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!`,
+      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: ${trackingCode}.\n\nObrigado por comprar conosco!`,
       HtmlBody: `<p>
       
       
@@ -2332,7 +2332,7 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
   margin-top: 1rem;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
 <a href="${orderLink}"></a>.</p></p>
     
   <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
