@@ -1,6 +1,11 @@
 // authRoutes.js
 const express = require("express");
 const router = express.Router();
+const postmark = require("postmark");
+require('dotenv').config(); // Carrega as variáveis de ambiente do arquivo .env
+
+const postmarkKey = process.env.POSTMARK_API_KEY;
+const client = new postmark.ServerClient(postmarkKey);
 
 const Cart = require("../models/cart");
 const Customer = require("../models/Customer"); // Importe o modelo do Customer
@@ -2063,13 +2068,70 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
+ // Encontra o cliente pelo ID
+ const customer = await Customer.findOne({ custumerId: order.custumerId });
 
+ // Verifica se o cliente existe
+ if (!customer) {
+   console.log("Cliente não encontrado.");
+   return res.status(404).json({ error: "Cliente não encontrado." });
+ }
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
     // Salva as alterações no banco de dados
     await order.save();
 
+    // Defina o link para a página de rastreamento
+    const orderLink = `https://www.kangu.com.br/rastreio/`;
+    // Log para depuração
+
+    // Envia um email com o código de rastreamento
+    await client.sendEmail({
+      "From": process.env.EMAIL_FROM,
+      "To": customer.email,
+      "Subject": "Seu código de rastreamento",
+      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!`,
+      HtmlBody: `<p>
+      
+      
+      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+      justify-content: center;
+      align-items: center;">
+            <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+     </div>
+      
+
+    
+    <div style="display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;">
+    <p style=" font-weight: 400;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-top: 5rem;
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }">      
+  <p style="display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;">
+  <p style=" font-weight: 400;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-top: 3rem;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!
+<a href="${orderLink}"></a>.</p></p>
+    
+  <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
+
+    </div>
+    `,
+    });
     // Retorna uma resposta de sucesso
     return res.status(200).json({
       message:
@@ -2101,6 +2163,14 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
+ // Encontra o cliente pelo ID
+ const customer = await Customer.findOne({ custumerId: order.custumerId });
+
+ // Verifica se o cliente existe
+ if (!customer) {
+   console.log("Cliente não encontrado.");
+   return res.status(404).json({ error: "Cliente não encontrado." });
+ }
 
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
@@ -2108,6 +2178,56 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
     // Salva as alterações no banco de dados
     await order.save();
 
+    // Defina o link para a página de rastreamento
+    const orderLink = `https://www.kangu.com.br/rastreio/`;
+    // Log para depuração
+
+    // Envia um email com o código de rastreamento
+    await client.sendEmail({
+      "From": process.env.EMAIL_FROM,
+      "To": customer.email,
+      "Subject": "Seu código de rastreamento",
+      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!`,
+      HtmlBody: `<p>
+      
+      
+      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+      justify-content: center;
+      align-items: center;">
+            <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+     </div>
+      
+
+    
+    <div style="display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;">
+    <p style=" font-weight: 400;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-top: 5rem;
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }">      
+  <p style="display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;">
+  <p style=" font-weight: 400;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-top: 3rem;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!
+<a href="${orderLink}"></a>.</p></p>
+    
+  <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
+
+    </div>
+    `,
+    });
     // Retorna uma resposta de sucesso
     return res.status(200).json({
       message:
@@ -2120,13 +2240,19 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
 });
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
+// Rota para adicionar código de rastreamento a um pedido específico do QR code
+
+// Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/creditCard/:orderId", async (req, res) => {
   try {
+    console.log("Iniciando o processo para adicionar código de rastreamento...");
+
     const orderId = req.params.orderId;
     const { trackingCode } = req.body;
 
     // Verifica se o código de rastreamento é fornecido
     if (!trackingCode) {
+      console.log("Código de rastreamento não fornecido.");
       return res
         .status(400)
         .json({ error: "Código de rastreamento é obrigatório." });
@@ -2134,10 +2260,27 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
 
     // Procura pelo pedido específico na base de dados
     const order = await CreditCard.findById(orderId);
+    console.log("Pedido encontrado:", order);
 
     // Verifica se o pedido existe
     if (!order) {
+      console.log("Pedido não encontrado.");
       return res.status(404).json({ error: "Pedido não encontrado." });
+    }
+
+    // Encontra o cliente pelo ID
+    const customer = await Customer.findOne({ custumerId: order.custumerId });
+
+    // Verifica se o cliente existe
+    if (!customer) {
+      console.log("Cliente não encontrado.");
+      return res.status(404).json({ error: "Cliente não encontrado." });
+    }
+
+    // Verifica se o email do cliente está presente
+    if (!customer.email) {
+      console.log("Email do cliente não encontrado.");
+      return res.status(400).json({ error: "Email do cliente não encontrado." });
     }
 
     // Atualiza o código de rastreamento do pedido
@@ -2145,17 +2288,70 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
 
     // Salva as alterações no banco de dados
     await order.save();
+    console.log("Pedido salvo com sucesso.");
+
+    // Defina o link para a página de rastreamento
+    const orderLink = `https://www.kangu.com.br/rastreio/`;
+    // Log para depuração
+
+    // Envia um email com o código de rastreamento
+    await client.sendEmail({
+      "From": process.env.EMAIL_FROM,
+      "To": customer.email,
+      "Subject": "Seu código de rastreamento",
+      "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!`,
+      HtmlBody: `<p>
+      
+      
+      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+      justify-content: center;
+      align-items: center;">
+            <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+     </div>
+      
+
+    
+    <div style="display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;">
+    <p style=" font-weight: 400;
+    font-size: 1.8rem;
+    text-align: center;
+    margin-top: 5rem;
+
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  }">      
+  <p style="display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;">
+  <p style=" font-weight: 400;
+  font-size: 1.6rem;
+  text-align: center;
+  margin-top: 3rem;
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreamento: ${trackingCode}.\n\nObrigado por comprar conosco!
+<a href="${orderLink}"></a>.</p></p>
+    
+  <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
+
+    </div>
+    `,
+    });
+    console.log("Email enviado com sucesso.");
 
     // Retorna uma resposta de sucesso
     return res.status(200).json({
-      message:
-        "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code.",
+      message: "Código de rastreamento adicionado com sucesso ao pedido do boleto QR code e email enviado.",
     });
   } catch (error) {
-    console.error(error);
+    console.error("Erro ao adicionar código de rastreamento ou enviar email:", error);
     return res.status(500).json({ error: "Erro interno do servidor." });
   }
 });
+
 
 router.get("/orders/:custumerId", async (req, res) => {
   const custumerId = req.params.custumerId;
