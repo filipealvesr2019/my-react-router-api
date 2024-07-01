@@ -423,39 +423,39 @@ router.put(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
-     // Encontra o produto no carrinho com base no ID do produto, na cor e no tamanho
-     const productIndex = cart.products.findIndex(
-      (product) =>
-        product.productId.toString() === productId &&
-        product.color === color &&
-        product.size === size
-    );
+      // Encontra o produto no carrinho com base no ID do produto, na cor e no tamanho
+      const productIndex = cart.products.findIndex(
+        (product) =>
+          product.productId.toString() === productId &&
+          product.color === color &&
+          product.size === size
+      );
 
-    if (productIndex === -1) {
-      return res
-        .status(404)
-        .json({ message: "Produto não encontrado no carrinho." });
-    }
+      if (productIndex === -1) {
+        return res
+          .status(404)
+          .json({ message: "Produto não encontrado no carrinho." });
+      }
 
-    // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
-    if (quantity > cart.products[productIndex].availableQuantity) {
-      return res.status(400).json({
-        message:
-          "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+      // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
+      if (quantity > cart.products[productIndex].availableQuantity) {
+        return res.status(400).json({
+          message:
+            "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+        });
+      }
+
+      // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
+      cart.products[productIndex].quantity += parseInt(quantity);
+      // Zera o shippingFee do carrinho
+      cart.shippingFee = 0;
+      await cart.save();
+
+      // Retorna informações sobre o produto atualizado
+      res.status(200).json({
+        cart: cart,
+        message: "Quantidade do produto atualizada no carrinho com sucesso.",
       });
-    }
-
-    // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-    cart.products[productIndex].quantity += parseInt(quantity);
-    // Zera o shippingFee do carrinho
-    cart.shippingFee = 0;
-    await cart.save();
-
-    // Retorna informações sobre o produto atualizado
-    res.status(200).json({
-      cart: cart,
-      message: "Quantidade do produto atualizada no carrinho com sucesso.",
-    });
     } catch (error) {
       console.error(error);
       res.status(500).json({
@@ -476,7 +476,7 @@ router.get(
       const productId = req.params.productId;
       const color = req.params.color;
       const size = req.params.size;
-      
+
       // Encontra o cliente associado ao atendente
       const customer = await Customer.findOne({ custumerId: custumerId });
 
@@ -486,12 +486,12 @@ router.get(
 
       // Encontra o carrinho do cliente
       const cart = await Cart.findOne({ customer: customer._id })
-      .populate({
-        path: "products",
-        match: { productId: productId, color: color, size: size }
-      });
+        .populate({
+          path: "products",
+          match: { productId: productId, color: color, size: size }
+        });
 
-     
+
 
       // Retorna os produtos no carrinho
       res.status(200).json({ cart, message: "Produtos no carrinho." });
@@ -524,86 +524,86 @@ router.post(
       }
 
       // Encontra o carrinho do cliente ou cria um novo se não existir
-     // Encontra o carrinho do cliente ou cria um novo se não existir
-     let cart = await Cart.findOne({ customer: customer._id }).populate({
-      path: "products",
-      match: { productId, color } // Não precisa verificar o tamanho neste momento
-    });
-
-    // Se o carrinho não existir, cria um novo
-    if (!cart) {
-      cart = new Cart({ customer: customer._id, products: [] });
-    }
-
-    const product = await Product.findById(productId);
-    if (!product) {
-      return res.status(404).json({ message: "Produto não encontrado." });
-    }
-
-    const variation = product.variations.find(
-      v => v.color === color && v.sizes.some(s => s.size === size)
-    );
-
-    if (!variation) {
-      return res
-        .status(404)
-        .json({ message: "Combinação de cor e tamanho do produto não encontrada." });
-    }
-
-    const selectedSize = variation.sizes.find(s => s.size === size);
-
-    if (!selectedSize) {
-      return res
-        .status(400)
-        .json({ message: "Tamanho do produto não encontrado." });
-    }
-
-    
-
-    // Verifica se o produto com a mesma cor e tamanho já está no carrinho
-    const existingProductIndex = cart.products.findIndex(product => {
-      return (
-        product.productId.toString() === productId &&
-        product.color === color &&
-        product.size === size
-      );
-    });
-
-    if (existingProductIndex !== -1) {
-      // Se o produto já estiver no carrinho, apenas atualize a quantidade
-     let cartQuantity = cart.products[existingProductIndex].quantity += quantity;
-      console.log("quanridade", cartQuantity)
-console.log("quanridade disponivel", selectedSize.quantityAvailable)
-if (cartQuantity > selectedSize.quantityAvailable) {
-  return res
-    .status(400)
-    .json({
-      message:
-        "A quantidade solicitada excede a disponibilidade do produto.",
-    });
-}
-    } else {
-      // Se o produto não estiver no carrinho, adicione-o
-      cart.products.push({
-        productId,
-        variationId: variation._id,
-        sizeId: selectedSize._id,
-        quantity,
-        size: selectedSize.size,
-        color: variation.color,
-        image: image || variation.urls[0],
-        price: price || selectedSize.price,
-        availableQuantity: selectedSize.quantityAvailable,
-        cartProductExist: false
+      // Encontra o carrinho do cliente ou cria um novo se não existir
+      let cart = await Cart.findOne({ customer: customer._id }).populate({
+        path: "products",
+        match: { productId, color } // Não precisa verificar o tamanho neste momento
       });
-    }
 
-    await cart.save();
+      // Se o carrinho não existir, cria um novo
+      if (!cart) {
+        cart = new Cart({ customer: customer._id, products: [] });
+      }
 
-    res.status(200).json({
-      cart,
-      message: "Produto adicionado ao carrinho com sucesso.",
-    });
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Produto não encontrado." });
+      }
+
+      const variation = product.variations.find(
+        v => v.color === color && v.sizes.some(s => s.size === size)
+      );
+
+      if (!variation) {
+        return res
+          .status(404)
+          .json({ message: "Combinação de cor e tamanho do produto não encontrada." });
+      }
+
+      const selectedSize = variation.sizes.find(s => s.size === size);
+
+      if (!selectedSize) {
+        return res
+          .status(400)
+          .json({ message: "Tamanho do produto não encontrado." });
+      }
+
+
+
+      // Verifica se o produto com a mesma cor e tamanho já está no carrinho
+      const existingProductIndex = cart.products.findIndex(product => {
+        return (
+          product.productId.toString() === productId &&
+          product.color === color &&
+          product.size === size
+        );
+      });
+
+      if (existingProductIndex !== -1) {
+        // Se o produto já estiver no carrinho, apenas atualize a quantidade
+        let cartQuantity = cart.products[existingProductIndex].quantity += quantity;
+        console.log("quanridade", cartQuantity)
+        console.log("quanridade disponivel", selectedSize.quantityAvailable)
+        if (cartQuantity > selectedSize.quantityAvailable) {
+          return res
+            .status(400)
+            .json({
+              message:
+                "A quantidade solicitada excede a disponibilidade do produto.",
+            });
+        }
+      } else {
+        // Se o produto não estiver no carrinho, adicione-o
+        cart.products.push({
+          productId,
+          variationId: variation._id,
+          sizeId: selectedSize._id,
+          quantity,
+          size: selectedSize.size,
+          color: variation.color,
+          image: image || variation.urls[0],
+          price: price || selectedSize.price,
+          availableQuantity: selectedSize.quantityAvailable,
+          cartProductExist: false
+        });
+      }
+
+      await cart.save();
+
+      res.status(200).json({
+        cart,
+        message: "Produto adicionado ao carrinho com sucesso.",
+      });
     } catch (error) {
       console.error("Erro ao adicionar produto ao carrinho:", error);
       res
@@ -668,7 +668,7 @@ router.put(
       const color = req.params.color;
       const size = req.params.size;
 
-      const {   quantity, } = req.body;
+      const { quantity, } = req.body;
 
       if (quantity <= 0) {
         return res
@@ -690,42 +690,42 @@ router.put(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
-      
-     
 
-     // Encontra o produto no carrinho com base no ID do produto, na cor e no tamanho
-     const productIndex = cart.products.findIndex(
-      (product) =>
-        product.productId.toString() === productId &&
-        product.color === color &&
-        product.size === size
-    );
 
-    if (productIndex === -1) {
-      return res
-        .status(404)
-        .json({ message: "Produto não encontrado no carrinho." });
-    }
 
-    // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
-    if (quantity > cart.products[productIndex].availableQuantity) {
-      return res.status(400).json({
-        message:
-          "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+      // Encontra o produto no carrinho com base no ID do produto, na cor e no tamanho
+      const productIndex = cart.products.findIndex(
+        (product) =>
+          product.productId.toString() === productId &&
+          product.color === color &&
+          product.size === size
+      );
+
+      if (productIndex === -1) {
+        return res
+          .status(404)
+          .json({ message: "Produto não encontrado no carrinho." });
+      }
+
+      // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
+      if (quantity > cart.products[productIndex].availableQuantity) {
+        return res.status(400).json({
+          message:
+            "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+        });
+      }
+
+      // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
+      cart.products[productIndex].quantity = req.body.quantity;
+      // Zera o shippingFee do carrinho
+      cart.shippingFee = 0;
+      await cart.save();
+
+      // Retorna informações sobre o produto atualizado
+      res.status(200).json({
+        cart: cart,
+        message: "Quantidade do produto atualizada no carrinho com sucesso.",
       });
-    }
-
-    // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-    cart.products[productIndex].quantity = req.body.quantity;
-    // Zera o shippingFee do carrinho
-    cart.shippingFee = 0;
-    await cart.save();
-
-    // Retorna informações sobre o produto atualizado
-    res.status(200).json({
-      cart: cart,
-      message: "Quantidade do produto atualizada no carrinho com sucesso.",
-    });
     } catch (error) {
       console.error(error);
       res.status(500).json({
@@ -818,18 +818,18 @@ router.delete(
         return res.status(404).json({ message: "Carrinho não encontrado." });
       }
 
-  
-
-    // Remove o produto do carrinho pelo uniqueId
-    const indexToRemove = cart.products.findIndex(
-      (product) => product._id.toString() === uniqueId
-    );
 
 
-    cart.products.splice(indexToRemove, 1);
-    await cart.save();
+      // Remove o produto do carrinho pelo uniqueId
+      const indexToRemove = cart.products.findIndex(
+        (product) => product._id.toString() === uniqueId
+      );
 
-    res.status(200).json({ message: "Produto removido do carrinho com sucesso." });
+
+      cart.products.splice(indexToRemove, 1);
+      await cart.save();
+
+      res.status(200).json({ message: "Produto removido do carrinho com sucesso." });
     } catch (error) {
       console.error(error);
       res.status(500).json({ message: "Erro ao remover produto do carrinho." });
@@ -1354,7 +1354,7 @@ router.post(
           name: customer.name,
           orderId: response.data.id,
           name: customer.name,
-          
+
         });
 
         await boleto.save();
@@ -1494,161 +1494,161 @@ router.post(
 
 router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async (req, res) => {
   try {
-      const token = process.env.ACCESS_TOKEN;
-      const custumerId = req.params.custumerId; // Agora é uma string
+    const token = process.env.ACCESS_TOKEN;
+    const custumerId = req.params.custumerId; // Agora é uma string
 
-      // Encontra o cliente associado ao atendente
-      const customer = await Customer.findOne({ custumerId: custumerId });
+    // Encontra o cliente associado ao atendente
+    const customer = await Customer.findOne({ custumerId: custumerId });
 
-      if (!customer) {
-          return res.status(404).json({ message: 'Cliente não encontrado.' });
-      }
+    if (!customer) {
+      return res.status(404).json({ message: 'Cliente não encontrado.' });
+    }
 
-      // Encontra o carrinho do cliente
-      const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
+    // Encontra o carrinho do cliente
+    const cart = await Cart.findOne({ customer: customer._id }).populate('products.productId');
 
-      if (!cart) {
-          return res.status(404).json({ message: 'Carrinho não encontrado.' });
-      }
+    if (!cart) {
+      return res.status(404).json({ message: 'Carrinho não encontrado.' });
+    }
 
-      // Valida se todos os campos necessários estão presentes no corpo da requisição
-      if (!req.body.number || !req.body.expiryMonth || !req.body.expiryYear || !req.body.ccv) {
-          return res.status(400).json({
-              message: 'Campos de cartão de crédito incompletos. Todos os campos são necessários.',
-          });
-      }
-
-      // Remove todos os produtos do carrinho
-      const result = await Cart.deleteMany({ customer: customer._id });
-
-      if (result.deletedCount === 0) {
-          return res.status(404).json({ message: 'Nenhum produto encontrado no carrinho.' });
-      }
-
-      // Encontra o asaasCustomerId do cliente
-      const asaasCustomerId = customer.asaasCustomerId;
-
-      // Cria uma string vazia para armazenar os IDs dos produtos
-      let externalReferences = '';
-
-      // Itera sobre os produtos no carrinho
-      for (const product of cart.products) {
-          // Adiciona o ID do produto à string externalReferences
-          externalReferences += product.productId._id + ',';
-      }
-
-      // Remove a vírgula extra no final da string externalReferences
-      externalReferences = externalReferences.slice(0, -1);
-      const requestBody = req.body;
-
-      // Pegue o valor do corpo da requisição
-      const installmentCount = requestBody.installmentCount ? parseInt(requestBody.installmentCount) : 1;
-      const totalAmount = cart.totalAmount;
-
-      // Verifique se installmentCount e totalAmount são válidos
-      if (isNaN(installmentCount) || installmentCount <= 0) {
-          return res.status(400).json({ message: 'Número de parcelas inválido.' });
-      }
-
-      if (isNaN(totalAmount) || totalAmount <= 0) {
-          return res.status(400).json({ message: 'Valor total do carrinho inválido.' });
-      }
-
-      // Calcule o valor de cada parcela
-      const installmentValue = parseFloat((totalAmount / installmentCount).toFixed(2));
-
-      if (isNaN(installmentValue)) {
-          return res.status(400).json({ message: 'Erro no cálculo do valor da parcela.' });
-      }
-
-      // Define a data de vencimento base
-      const dueDate = new Date();
-
-      // Itera sobre o número de parcelas e cria uma cobrança para cada uma
-      const payments = [];
-
-      const paymentData = {
-          billingType: 'CREDIT_CARD',
-          customer: asaasCustomerId,
-          dueDate: dueDate,
-          value: installmentValue,
-          postalService: false,
-          installmentCount: installmentCount,
-          installmentValue: installmentValue,
-          creditCard: {
-              holderName: customer.name,
-              number: req.body.number,
-              expiryMonth: req.body.expiryMonth,
-              expiryYear: req.body.expiryYear,
-              ccv: req.body.ccv,
-          },
-          creditCardHolderInfo: {
-              name: customer.name,
-              email: customer.email,
-              cpfCnpj: customer.cpfCnpj,
-              postalCode: customer.postalCode,
-              addressNumber: customer.addressNumber,
-              addressComplement: null,
-              phone: customer.mobilePhone,
-          },
-      };
-
-      const response = await axios.post(
-          'https://sandbox.asaas.com/api/v3/payments',
-          paymentData,
-          {
-              headers: {
-                  accept: 'application/json',
-                  'content-type': 'application/json',
-                  access_token: token,
-              },
-          }
-      );
-
-      const paymentResponse = response.data;
-      payments.push(paymentResponse);
-
-      console.log('Payment Response:', paymentResponse);
-
-      const creditCard = new CreditCard({
-          orderId: paymentResponse.id,
-          custumerId: custumerId,
-          customer: paymentResponse.customer,
-          billingType: paymentResponse.billingType,
-          value: paymentResponse.value,
-          externalReference: paymentResponse.externalReference,
-          invoiceUrl: paymentResponse.invoiceUrl,
-          bankSlipUrl: paymentResponse.bankSlipUrl,
-          dueDate: paymentResponse.dueDate,
-          installmentNumber: installmentCount, // Número da parcela
-          installmentValue: installmentValue,
-          installmentCount: installmentCount,
-          shippingFeeData: {
-              transportadora: cart.transportadora?.nome || '',
-              logo: cart.logo?.img || '',
-              shippingFeePrice: cart.shippingFee,
-          },
-          products: cart.products.map((product) => ({
-              productId: product.productId._id,
-              quantity: product.quantity,
-              size: product.size,
-              color: product.color,
-              image: product.image,
-              name: product.name,
-              price: product.price,
-
-          })),
-          name: customer.name,
+    // Valida se todos os campos necessários estão presentes no corpo da requisição
+    if (!req.body.number || !req.body.expiryMonth || !req.body.expiryYear || !req.body.ccv) {
+      return res.status(400).json({
+        message: 'Campos de cartão de crédito incompletos. Todos os campos são necessários.',
       });
+    }
 
-      console.log('CreditCard Data to Save:', creditCard);
+    // Remove todos os produtos do carrinho
+    const result = await Cart.deleteMany({ customer: customer._id });
 
-      await creditCard.save();
+    if (result.deletedCount === 0) {
+      return res.status(404).json({ message: 'Nenhum produto encontrado no carrinho.' });
+    }
 
-      res.json(payments);
+    // Encontra o asaasCustomerId do cliente
+    const asaasCustomerId = customer.asaasCustomerId;
+
+    // Cria uma string vazia para armazenar os IDs dos produtos
+    let externalReferences = '';
+
+    // Itera sobre os produtos no carrinho
+    for (const product of cart.products) {
+      // Adiciona o ID do produto à string externalReferences
+      externalReferences += product.productId._id + ',';
+    }
+
+    // Remove a vírgula extra no final da string externalReferences
+    externalReferences = externalReferences.slice(0, -1);
+    const requestBody = req.body;
+
+    // Pegue o valor do corpo da requisição
+    const installmentCount = requestBody.installmentCount ? parseInt(requestBody.installmentCount) : 1;
+    const totalAmount = cart.totalAmount;
+
+    // Verifique se installmentCount e totalAmount são válidos
+    if (isNaN(installmentCount) || installmentCount <= 0) {
+      return res.status(400).json({ message: 'Número de parcelas inválido.' });
+    }
+
+    if (isNaN(totalAmount) || totalAmount <= 0) {
+      return res.status(400).json({ message: 'Valor total do carrinho inválido.' });
+    }
+
+    // Calcule o valor de cada parcela
+    const installmentValue = parseFloat((totalAmount / installmentCount).toFixed(2));
+
+    if (isNaN(installmentValue)) {
+      return res.status(400).json({ message: 'Erro no cálculo do valor da parcela.' });
+    }
+
+    // Define a data de vencimento base
+    const dueDate = new Date();
+
+    // Itera sobre o número de parcelas e cria uma cobrança para cada uma
+    const payments = [];
+
+    const paymentData = {
+      billingType: 'CREDIT_CARD',
+      customer: asaasCustomerId,
+      dueDate: dueDate,
+      value: installmentValue,
+      postalService: false,
+      installmentCount: installmentCount,
+      installmentValue: installmentValue,
+      creditCard: {
+        holderName: customer.name,
+        number: req.body.number,
+        expiryMonth: req.body.expiryMonth,
+        expiryYear: req.body.expiryYear,
+        ccv: req.body.ccv,
+      },
+      creditCardHolderInfo: {
+        name: customer.name,
+        email: customer.email,
+        cpfCnpj: customer.cpfCnpj,
+        postalCode: customer.postalCode,
+        addressNumber: customer.addressNumber,
+        addressComplement: null,
+        phone: customer.mobilePhone,
+      },
+    };
+
+    const response = await axios.post(
+      'https://sandbox.asaas.com/api/v3/payments',
+      paymentData,
+      {
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+          access_token: token,
+        },
+      }
+    );
+
+    const paymentResponse = response.data;
+    payments.push(paymentResponse);
+
+    console.log('Payment Response:', paymentResponse);
+
+    const creditCard = new CreditCard({
+      orderId: paymentResponse.id,
+      custumerId: custumerId,
+      customer: paymentResponse.customer,
+      billingType: paymentResponse.billingType,
+      value: paymentResponse.value,
+      externalReference: paymentResponse.externalReference,
+      invoiceUrl: paymentResponse.invoiceUrl,
+      bankSlipUrl: paymentResponse.bankSlipUrl,
+      dueDate: paymentResponse.dueDate,
+      installmentNumber: installmentCount, // Número da parcela
+      installmentValue: installmentValue,
+      installmentCount: installmentCount,
+      shippingFeeData: {
+        transportadora: cart.transportadora?.nome || '',
+        logo: cart.logo?.img || '',
+        shippingFeePrice: cart.shippingFee,
+      },
+      products: cart.products.map((product) => ({
+        productId: product.productId._id,
+        quantity: product.quantity,
+        size: product.size,
+        color: product.color,
+        image: product.image,
+        name: product.name,
+        price: product.price,
+
+      })),
+      name: customer.name,
+    });
+
+    console.log('CreditCard Data to Save:', creditCard);
+
+    await creditCard.save();
+
+    res.json(payments);
   } catch (error) {
-      console.error('Error fetching data:', error);
-      res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error fetching data:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 });
 // pagar boleto com checkout transparente
@@ -1978,7 +1978,7 @@ router.post(
         }
       } else {
 
-        
+
         const pix = new PixQRcode({
           billingType: "PIX",
           custumerId: custumerId,
@@ -2068,14 +2068,14 @@ router.post("/add/traking/boleto/:orderId", async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
- // Encontra o cliente pelo ID
- const customer = await Customer.findOne({ custumerId: order.custumerId });
+    // Encontra o cliente pelo ID
+    const customer = await Customer.findOne({ custumerId: order.custumerId });
 
- // Verifica se o cliente existe
- if (!customer) {
-   console.log("Cliente não encontrado.");
-   return res.status(404).json({ error: "Cliente não encontrado." });
- }
+    // Verifica se o cliente existe
+    if (!customer) {
+      console.log("Cliente não encontrado.");
+      return res.status(404).json({ error: "Cliente não encontrado." });
+    }
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
 
@@ -2163,14 +2163,14 @@ router.post("/add/traking/pix/:orderId", async (req, res) => {
     if (!order) {
       return res.status(404).json({ error: "Pedido não encontrado." });
     }
- // Encontra o cliente pelo ID
- const customer = await Customer.findOne({ custumerId: order.custumerId });
+    // Encontra o cliente pelo ID
+    const customer = await Customer.findOne({ custumerId: order.custumerId });
 
- // Verifica se o cliente existe
- if (!customer) {
-   console.log("Cliente não encontrado.");
-   return res.status(404).json({ error: "Cliente não encontrado." });
- }
+    // Verifica se o cliente existe
+    if (!customer) {
+      console.log("Cliente não encontrado.");
+      return res.status(404).json({ error: "Cliente não encontrado." });
+    }
 
     // Atualiza o código de rastreamento do pedido
     order.trackingCode = trackingCode;
@@ -2332,7 +2332,7 @@ router.post("/add/traking/creditCard/:orderId", async (req, res) => {
   margin-top: 1rem;
 
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
+}">     Olá ${order.name},\n\nSeu pedido foi atualizado com o seguinte código de : <strong>${trackingCode}</strong> .\n\nObrigado por comprar conosco!
 <a href="${orderLink}"></a>.</p></p>
     
   <a href="${orderLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Rastrear Pedido</a>
@@ -2437,7 +2437,7 @@ router.get("/order/:customerId/:orderId", async (req, res) => {
   }
 });
 
-router.get("/allOrders/:custumerId",  async (req, res) => {
+router.get("/allOrders/:custumerId", async (req, res) => {
   const custumerId = req.params.custumerId;
   const page = req.query.page ? parseInt(req.query.page) : 1;
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
@@ -2449,7 +2449,7 @@ router.get("/allOrders/:custumerId",  async (req, res) => {
       Boleto.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
       PixQRcode.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
       CreditCard.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
-       Boleto.countDocuments({ custumerId }),
+      Boleto.countDocuments({ custumerId }),
       PixQRcode.countDocuments({ custumerId }),
       CreditCard.countDocuments({ custumerId })
     ]);
@@ -2500,8 +2500,8 @@ router.get("/allOrders/:custumerId",  async (req, res) => {
       }
     }
 
-     // Defina a ordem de prioridade dos status
-     const statusPriority = {
+    // Defina a ordem de prioridade dos status
+    const statusPriority = {
       RECEIVED: 1,
       CONFIRMED: 2,
       PENDING: 3,
@@ -2610,7 +2610,7 @@ router.get("/allOrders/pix/:custumerId", isAuthenticated, async (req, res) => {
 
 
 
-router.get("/allOrders/creditCard/:customerId",  async (req, res) => {
+router.get("/allOrders/creditCard/:customerId", async (req, res) => {
   const custumerId = req.params.custumerId;
   const page = req.query.page ? parseInt(req.query.page) : 1; // Obtendo o número da página
 
@@ -2759,8 +2759,8 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
 
     // Encontre todos os boletos que correspondem à query, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
     const allBoletos = await Boleto.find(query).skip(skip).limit(pageSize).sort({ createdAt: -1 }) // Ordenar pela data de criação em ordem decrescente
-    ;
-
+      ;
+    
     // Atualize os status para os pedidos de boleto
     for (const boleto of allBoletos) {
       const orderId = boleto.orderId;
@@ -2789,6 +2789,69 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
       // Compare os status com base na ordem de prioridade
       return statusPriority[statusA] - statusPriority[statusB];
     });
+
+    if (allBoletos.status === "RECEIVED" || "CONFIRMED") {
+      // Encontra o cliente pelo ID
+    const customer = await Customer.findOne({ custumerId: allBoletos.custumerId });
+
+    // Verifica se o cliente existe
+    if (!customer) {
+      console.log("Cliente não encontrado.");
+      return res.status(404).json({ error: "Cliente não encontrado." });
+    }
+
+    // Verifica se o email do cliente está presente
+    if (!customer.email) {
+      console.log("Email do cliente não encontrado.");
+      return res.status(400).json({ error: "Email do cliente não encontrado." });
+    }
+      // Envia um email com o código de rastreamento
+      await client.sendEmail({
+        "From": process.env.EMAIL_FROM,
+        "To": customer.email,
+        "Subject": "Seu código de rastreamento",
+        "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
+        HtmlBody: `<p>
+  
+  
+  <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+  justify-content: center;
+  align-items: center;">
+        <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+ </div>
+  
+
+
+<div style="display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<p style=" font-weight: 400;
+font-size: 1.8rem;
+text-align: center;
+margin-top: 5rem;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">      
+<p style="display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<p style=" font-weight: 400;
+font-size: 1.6rem;
+text-align: center;
+margin-top: 1rem;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">     Olá ${customer.name},\n\nSua compra foi aprovada com sucesso!.\n\nObrigado por comprar conosco!
+<a ></a>.</p></p>
+
+
+</div>
+`,
+      });
+      console.log("Email enviado com sucesso.");
+    }
 
     res.json(allBoletos);
   } catch (error) {
@@ -2889,6 +2952,69 @@ router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
       }
     }
 
+
+    if (allOrders.status === "CONFIRMED") {
+      // Encontra o cliente pelo ID
+    const customer = await Customer.findOne({ custumerId: allBoletos.custumerId });
+
+    // Verifica se o cliente existe
+    if (!customer) {
+      console.log("Cliente não encontrado.");
+      return res.status(404).json({ error: "Cliente não encontrado." });
+    }
+
+    // Verifica se o email do cliente está presente
+    if (!customer.email) {
+      console.log("Email do cliente não encontrado.");
+      return res.status(400).json({ error: "Email do cliente não encontrado." });
+    }
+      // Envia um email com o código de rastreamento
+      await client.sendEmail({
+        "From": process.env.EMAIL_FROM,
+        "To": customer.email,
+        "Subject": "Seu código de rastreamento",
+        "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
+        HtmlBody: `<p>
+  
+  
+  <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+  justify-content: center;
+  align-items: center;">
+        <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+ </div>
+  
+
+
+<div style="display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<p style=" font-weight: 400;
+font-size: 1.8rem;
+text-align: center;
+margin-top: 5rem;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">      
+<p style="display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;">
+<p style=" font-weight: 400;
+font-size: 1.6rem;
+text-align: center;
+margin-top: 1rem;
+
+font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}">     Olá ${customer.name},\n\nSua compra foi aprovada com sucesso!.\n\nObrigado por comprar conosco!
+<a ></a>.</p></p>
+
+
+</div>
+`,
+      });
+      console.log("Email enviado com sucesso.");
+    }
     res.json(allOrders);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
