@@ -2443,7 +2443,7 @@ router.get("/allOrders/:custumerId", async (req, res) => {
   const pageSize = req.query.pageSize ? parseInt(req.query.pageSize) : 10;
   try {
     const skip = (page - 1) * pageSize;
-
+    
 
     const [boletoData, pixData, creditCardData, totalBoletos, totalPix, totalCreditCards] = await Promise.all([
       Boleto.find({ custumerId }).skip(skip).limit(pageSize).sort({ createdAt: -1 }),
@@ -2465,41 +2465,31 @@ router.get("/allOrders/:custumerId", async (req, res) => {
     }
 
     // Update statuses for Boleto orders
-    for (const boletoOrder of boletoData) {
-      const orderId = boletoOrder.orderId;
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+    await Promise.all(boletoData.map(async (boletoOrder) => {
+      const paymentReport = await PaymentReports.findOne({ "payment.id": boletoOrder.orderId });
       if (paymentReport) {
         boletoOrder.status = paymentReport.payment.status;
         await boletoOrder.save();
       }
-    }
+    }));
 
     // Update statuses for Credit Card orders
-    for (const creditCardOrder of creditCardData) {
-      const orderId = creditCardOrder.orderId; // Assuming orderId exists for CreditCard model
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+    await Promise.all(creditCardData.map(async (creditCardOrder) => {
+      const paymentReport = await PaymentReports.findOne({ "payment.id": creditCardOrder.orderId });
       if (paymentReport) {
         creditCardOrder.status = paymentReport.payment.status;
         await creditCardOrder.save();
       }
-    }
+    }));
 
     // Update statuses for Pix orders
-    for (const pixOrder of pixData) {
-      const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
-      const paymentReport = await PaymentReports.findOne({
-        "payment.id": orderId,
-      });
+    await Promise.all(pixData.map(async (pixOrder) => {
+      const paymentReport = await PaymentReports.findOne({ "payment.id": pixOrder.orderId });
       if (paymentReport) {
         pixOrder.status = paymentReport.payment.status;
         await pixOrder.save();
       }
-    }
-
+    }));
     // Defina a ordem de prioridade dos status
     const statusPriority = {
       RECEIVED: 1,
