@@ -419,8 +419,17 @@ const resetPassword = async (req, res) => {
       return res.status(400).json({ message: "As senhas não coincidem." });
     }
 
-    // Verificar se o token de redefinição de senha é válido e obter o ID do usuário
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    // Tentar verificar e decodificar o token JWT
+    let decodedToken;
+    try {
+      decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      if (error instanceof jwt.TokenExpiredError) {
+        return res.status(400).json({ message: "O token expirou. Solicite um novo link de redefinição de senha." });
+      }
+      throw error; // Se não for um erro de expiração, lança o erro para o bloco catch global
+    }
+
     const userId = decodedToken.userId;
 
     // Hash da nova senha
@@ -437,6 +446,7 @@ const resetPassword = async (req, res) => {
       .json({ message: "Erro interno do servidor ao redefinir senha." });
   }
 };
+
 
 module.exports = {
   loginUser,
