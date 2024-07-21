@@ -876,7 +876,7 @@ router.post(
       const data = {
         cepOrigem: "60762-792",
         cepDestino: cep,
-        vlrMerc: 70,
+        vlrMerc: cart.totalAmount,
         pesoMerc: 0.33,
         volumes: [
           {
