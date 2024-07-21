@@ -909,7 +909,7 @@ router.post(
         {
           headers: {
             token: token,
-            Origin: "http://localhost:3001/",
+            'Content-Type': 'application/json', // Adicionando content-type
           },
         }
       );
