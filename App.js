@@ -21,7 +21,7 @@ app.use(cookieParser());
 app.use(cors({
   origin: [
     'https://mediewal.com.br',
-    'https://my-react-router-app.vercel.app'
+    'https://my-react-router-app.vercel.app/'
   ],
   credentials: true // Se você estiver usando cookies ou headers personalizados
 }));
