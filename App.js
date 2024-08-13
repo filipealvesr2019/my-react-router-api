@@ -15,9 +15,16 @@ const cookieParser = require('cookie-parser');
 app.use(bodyParser.json());
 app.use(cookieParser());
 // Configurações e middlewares
-app.use(cors({ origin: "*"}));
+// app.use(cors({ origin: "*"}));
 
 
+app.use(cors({
+  origin: [
+    'http://localhost:5002',
+    'my-react-router-app.vercel.app'
+  ],
+  credentials: true // Se você estiver usando cookies ou headers personalizados
+}));
 
 
 require('dotenv').config();
