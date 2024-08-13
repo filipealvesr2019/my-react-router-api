@@ -23,6 +23,7 @@ app.use(cors({
     'https://mediewal.com.br',
     'https://my-react-router-app.vercel.app/'
   ],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Se você estiver usando cookies ou headers personalizados
 }));
 
