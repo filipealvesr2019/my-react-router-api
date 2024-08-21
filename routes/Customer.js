@@ -72,7 +72,7 @@ router.post("/signup", async (req, res) => {
     const savedUser = await newUser.save();
 
     const token = process.env.ACCESS_TOKEN;
-    const url = "https://sandbox.asaas.com/api/v3/customers";
+    const url = "https://api.asaas.com/v3/customers";
     const options = {
       method: "POST",
       headers: {
@@ -169,7 +169,7 @@ router.put(
       // Atualiza o cliente no Asaas
       const asaasOptions = {
         method: "PUT",
-        url: `https://sandbox.asaas.com/api/v3/customers/${asaasCustomerId}`,
+        url: `https://api.asaas.com/v3/customers/${asaasCustomerId}`,
         headers: {
           accept: "application/json",
           "content-type": "application/json",
@@ -209,7 +209,7 @@ router.put(
 router.get("/customersByAsaas", async (req, res) => {
   try {
     const token = process.env.ACCESS_TOKEN;
-    const url = "https://sandbox.asaas.com/api/v3/customers";
+    const url = "https://api.asaas.com/v3/customers";
     const options = {
       method: "GET",
       headers: {
@@ -1169,7 +1169,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://sandbox.asaas.com/api/v3/payments",
+        "https://api.asaas.com/v3/payments",
         data,
         {
           headers: {
@@ -1279,7 +1279,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://sandbox.asaas.com/api/v3/payments",
+        "https://api.asaas.com/v3/payments",
         data,
         {
           headers: {
@@ -1438,7 +1438,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://sandbox.asaas.com/api/v3/payments",
+        "https://api.asaas.com/v3/payments",
         data,
         {
           headers: {
@@ -1594,7 +1594,7 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
     };
 
     const response = await axios.post(
-      'https://sandbox.asaas.com/api/v3/payments',
+      'https://api.asaas.com/v3/payments',
       paymentData,
       {
         headers: {
@@ -1659,7 +1659,7 @@ router.post(
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
-      const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
+      const url = "https://api.asaas.com/v3/creditCard/tokenize";
       const options = {
         method: "POST",
         headers: {
@@ -1708,7 +1708,7 @@ router.post(
   async (req, res) => {
     try {
       const token = process.env.ACCESS_TOKEN;
-      const url = "https://sandbox.asaas.com/api/v3/creditCard/tokenize";
+      const url = "https://api.asaas.com/v3/creditCard/tokenize";
 
       const custumerId = req.params.custumerId; // Agora é uma string
 
@@ -1826,7 +1826,7 @@ router.post(
       // Apaga os registros de frete anteriores
 
       // Cria a cobrança com o token do cartão de crédito
-      const paymentUrl = "https://sandbox.asaas.com/api/v3/payments";
+      const paymentUrl = "https://api.asaas.com/v3/payments";
       const paymentOptions = {
         method: "POST",
         headers: {
@@ -1931,7 +1931,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://sandbox.asaas.com/api/v3/pix/qrCodes/static",
+        "https://api.asaas.com/v3/pix/qrCodes/static",
         data,
         {
           headers: {
