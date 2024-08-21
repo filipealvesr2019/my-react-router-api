@@ -358,7 +358,7 @@ const sendPasswordResetEmail = async (req, res) => {
 
     const client = new postmark.ServerClient(postmarkApiKey);
 
-    const resetLink = `http://localhost:5173/reset-password/${resetToken}`;
+    const resetLink = `https://mediewal.com.br/reset-password/${resetToken}`;
 
     await client.sendEmail({
       From: "ceo@mediewal.com.br",
