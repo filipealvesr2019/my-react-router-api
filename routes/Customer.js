@@ -1276,6 +1276,8 @@ router.post(
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         value: cart.totalAmount,
         dueDate: new Date(), // Define a data atual como a data de vencimento
+        format: 'ALL',
+        allowsMultiplePayments: true
       };
 
       const response = await axios.post(
