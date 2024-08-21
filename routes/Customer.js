@@ -1279,7 +1279,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://api.asaas.com/v3/payments",
+        "https://api.asaas.com/v3/payments/",
         data,
         {
           headers: {
