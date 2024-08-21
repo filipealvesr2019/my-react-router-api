@@ -21,7 +21,8 @@ app.use(cookieParser());
 app.use(cors({
   origin: [
     'https://mediewal.com.br',
-    'https://admin.mediewal.com.br'
+    'https://admin.mediewal.com.br',
+    'http://localhost:5001'
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Se você estiver usando cookies ou headers personalizados
