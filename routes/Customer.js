@@ -1604,7 +1604,7 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
     };
 
     const response = await axios.post(
-      'https://api.asaas.com/v3/payments',
+      'https://api.asaas.com/v3/payments/',
       paymentData,
       {
         headers: {
