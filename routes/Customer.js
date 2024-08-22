@@ -1277,6 +1277,7 @@ router.post(
         value: cart.totalAmount,
         dueDate: new Date(), // Define a data atual como a data de vencimento
         
+        
       };
 
       const response = await axios.post(
