@@ -1573,6 +1573,9 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
 
     // Define a data de vencimento base
     const dueDate = new Date();
+        // Captura o IP do cliente
+        const clientIp = req.headers['x-forwarded-for'] || req.ip;
+
  // Itera sobre o número de parcelas e cria uma cobrança para cada uma
     const payments = [];
 
@@ -1600,6 +1603,7 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
         addressComplement: null,
         phone: customer.mobilePhone,
       },
+      remoteIp: clientIp, // Inclui o IP do cliente
 
     };
 
