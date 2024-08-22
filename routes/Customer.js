@@ -1574,8 +1574,8 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
     // Define a data de vencimento base
     const dueDate = new Date();
  // Obtenha o IP do cliente
- const remoteIp = req.ip || req.connection.remoteAddress;
-    // Itera sobre o número de parcelas e cria uma cobrança para cada uma
+ const remoteIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+ // Itera sobre o número de parcelas e cria uma cobrança para cada uma
     const payments = [];
 
     const paymentData = {
@@ -1664,6 +1664,12 @@ console.log(remoteIp)
     res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+
+
+
+
+
+
 // pagar boleto com checkout transparente
 router.post(
   "/tokenizeCreditCard",
