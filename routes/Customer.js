@@ -1609,7 +1609,7 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
 
     const response = await axios.post(
       'https://api.asaas.com/v3/payments/',
-   
+      paymentData,
       {
         headers: {
           accept: 'application/json',
@@ -1617,7 +1617,6 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
           access_token: token,
           'User-Agent': 'Mediewal'
         },
-        paymentData,
       }
     );
 
