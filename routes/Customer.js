@@ -25,7 +25,6 @@ const PaymentReports = require("../models/paymentReports");
 const CustomerController = require("../controllers/CustomerController");
 
 // Rota para criar um novo usuário
-
 router.post("/signup", async (req, res) => {
   try {
     const {
@@ -41,7 +40,6 @@ router.post("/signup", async (req, res) => {
       province,
       city,
       state,
-      asaasCustomerId,
       cart,
     } = req.body;
 
@@ -65,22 +63,16 @@ router.post("/signup", async (req, res) => {
       province,
       city,
       state,
-      asaasCustomerId,
       cart,
     });
 
+    // Salva o novo usuário no banco de dados
     const savedUser = await newUser.save();
 
     const token = process.env.ACCESS_TOKEN;
     const url = "https://api.asaas.com/v3/customers";
-    const options = {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-        access_token: token,
-      },
-      body: JSON.stringify({
+    
+    const response = await axios.post(url, {
         name,
         cpfCnpj,
         mobilePhone,
@@ -92,13 +84,19 @@ router.post("/signup", async (req, res) => {
         province,
         city,
         state,
-      }),
-    };
+      },
+      {
+        headers: {
+          accept: "application/json",
+          "content-type": "application/json",
+          access_token: token,
+        },
+      }
+    );
 
-    const response = await fetch(url, options);
-    const responseData = await response.json();
+    const responseData = response.data;
 
-    // Salva o ID do cliente retornado pelo Asaas no novo campo
+    // Atualiza o usuário com o ID do cliente Asaas retornado
     savedUser.asaasCustomerId = responseData.id;
     await savedUser.save();
 
