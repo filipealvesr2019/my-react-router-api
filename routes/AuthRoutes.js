@@ -82,7 +82,7 @@ const sendEmail = async (email, token) => {
       <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
       justify-content: center;
       align-items: center;">
-            <img src="https://i.imgur.com/uf3BdOa.png" alt=""  style="width: 20vw;"/>
+            <img src="https://i.imgur.com/uf3BdOa.png" alt=""  style="width: 25vw;"/>
      </div>
       
 
