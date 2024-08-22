@@ -13,7 +13,7 @@ const customerSchema = new mongoose.Schema({
   province: { type: String,  },
   city: { type: String },
   state: { type: String },
-  asaasCustomerId: { type: String },
+  asaasCustomerId: { type: String,   required: true },
   cart: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart'
