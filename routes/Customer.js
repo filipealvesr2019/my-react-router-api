@@ -1941,7 +1941,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://api.asaas.com/v3/pix/qrCodes/static",
+        "https://api.asaas.com/v3/payments/pix/qrCodes/static",
         data,
         {
           headers: {
