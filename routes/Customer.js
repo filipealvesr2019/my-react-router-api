@@ -43,6 +43,7 @@ router.post("/signup", async (req, res) => {
       cart,
     } = req.body;
 
+    // Verifica se o usuário já existe
     const existingUser = await Customer.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -50,6 +51,7 @@ router.post("/signup", async (req, res) => {
       });
     }
 
+    // Cria o novo usuário
     const newUser = new Customer({
       custumerId,
       name,
@@ -66,13 +68,20 @@ router.post("/signup", async (req, res) => {
       cart,
     });
 
-    // Salva o novo usuário no banco de dados
+    // Salva o usuário sem o asaasCustomerId
     const savedUser = await newUser.save();
 
+    // Faz a requisição para criar o cliente no Asaas
     const token = process.env.ACCESS_TOKEN;
     const url = "https://api.asaas.com/v3/customers";
-    
-    const response = await axios.post(url, {
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+        access_token: token,
+      },
+      body: JSON.stringify({
         name,
         cpfCnpj,
         mobilePhone,
@@ -84,34 +93,34 @@ router.post("/signup", async (req, res) => {
         province,
         city,
         state,
-      },
-      {
-        headers: {
-          accept: "application/json",
-          "content-type": "application/json",
-          access_token: token,
-        },
-      }
-    );
+      }),
+    };
 
-    const responseData = response.data;
+    const response = await fetch(url, options);
+    const responseData = await response.json();
 
-    // Atualiza o usuário com o ID do cliente Asaas retornado
-    savedUser.asaasCustomerId = responseData.id;
-    await savedUser.save();
+    console.log('Resposta da API Asaas:', responseData);
 
-    res.status(201).json({
-      user: savedUser,
-      message: "Usuário criado com sucesso.",
-      responseData,
-    });
+    // Verifica se a resposta contém o ID do cliente
+    if (responseData.id) {
+      // Atualiza o usuário com o ID retornado
+      savedUser.asaasCustomerId = responseData.id;
+      const updatedUser = await savedUser.save();  // Salva o usuário atualizado
+
+      res.status(201).json({
+        user: updatedUser,
+        message: "Usuário criado com sucesso.",
+        responseData,
+      });
+    } else {
+      throw new Error('ID do cliente Asaas não retornado.');
+    }
   } catch (error) {
     console.error("Erro ao criar usuário:", error);
-    res
-      .status(500)
-      .json({ message: "Erro interno do servidor ao criar usuário." });
+    res.status(500).json({ message: "Erro interno do servidor ao criar usuário." });
   }
 });
+
 
 router.put(
   "/update/:custumerId",
