@@ -1573,8 +1573,6 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
 
     // Define a data de vencimento base
     const dueDate = new Date();
- // Obtenha o IP do cliente
- const remoteIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
  // Itera sobre o número de parcelas e cria uma cobrança para cada uma
     const payments = [];
 
@@ -1602,10 +1600,9 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
         addressComplement: null,
         phone: customer.mobilePhone,
       },
-      remoteIp: remoteIp // Adiciona o IP remoto aqui
 
     };
-console.log(remoteIp)
+
     const response = await axios.post(
       'https://api.asaas.com/v3/payments/',
       paymentData,
