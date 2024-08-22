@@ -79,10 +79,10 @@ const sendEmail = async (email, token) => {
       HtmlBody: `<p>
       
       
-      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
+      <div style="width: 20vw; height: 10vh; background-color: black;    display: flex;
       justify-content: center;
       align-items: center;">
-            <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
+            <img src="https://i.imgur.com/uf3BdOa.png" alt="" />
      </div>
       
 
