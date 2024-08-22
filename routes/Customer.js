@@ -1611,6 +1611,7 @@ router.post('/creditCardWithoutTokenization/:custumerId', isAuthenticated, async
           accept: 'application/json',
           'content-type': 'application/json',
           access_token: token,
+          'User-Agent': 'Mediewal'
         },
       }
     );
