@@ -2822,43 +2822,37 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
         "To": customer.email,
         "Subject": "Seu código de rastreamento",
         "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
-        HtmlBody: `<p>
-  
-  
-  <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
-  justify-content: center;
-  align-items: center;">
-        <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
- </div>
-  
+        HtmlBody: `  
+        <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+      <tr>
+        <td align="center">
+          <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+        </td>
+      </tr>
+    </table>
+    <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
+      <tr>
+        <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
+          Olá ${customer.name},
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+          Sua compra foi aprovada com sucesso!
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+          Obrigado por comprar conosco!
+        </td>
+      </tr>
+    </table>
 
 
-<div style="display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;">
-<p style=" font-weight: 400;
-font-size: 1.8rem;
-text-align: center;
-margin-top: 5rem;
-
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">      
-<p style="display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;">
-<p style=" font-weight: 400;
-font-size: 1.6rem;
-text-align: center;
-margin-top: 1rem;
-
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${customer.name},\n\nSua compra foi aprovada com sucesso!.\n\nObrigado por comprar conosco!
-<a ></a>.</p></p>
 
 
-</div>
+
+
 `,
       });
       console.log("Email enviado com sucesso.");
@@ -2943,43 +2937,30 @@ router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
         "To": customer.email,
         "Subject": "Seu código de rastreamento",
         "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
-        HtmlBody: `<p>
-  
-  
-  <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
-  justify-content: center;
-  align-items: center;">
-        <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
- </div>
-  
-
-
-<div style="display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;">
-<p style=" font-weight: 400;
-font-size: 1.8rem;
-text-align: center;
-margin-top: 5rem;
-
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">      
-<p style="display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;">
-<p style=" font-weight: 400;
-font-size: 1.6rem;
-text-align: center;
-margin-top: 1rem;
-
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${customer.name},\n\nSua compra foi aprovada com sucesso!.\n\nObrigado por comprar conosco!
-<a ></a>.</p></p>
-
-
-</div>
+        HtmlBody: `  <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+      <tr>
+        <td align="center">
+          <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+        </td>
+      </tr>
+    </table>
+    <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
+      <tr>
+        <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
+          Olá ${customer.name},
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+          Sua compra foi aprovada com sucesso!
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+          Obrigado por comprar conosco!
+        </td>
+      </tr>
+    </table>
 `,
       });
       console.log("Email enviado com sucesso.");
@@ -3048,43 +3029,30 @@ router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
         "To": customer.email,
         "Subject": "Seu código de rastreamento",
         "TextBody": `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
-        HtmlBody: `<p>
-  
-  
-  <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
-  justify-content: center;
-  align-items: center;">
-        <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
- </div>
-  
-
-
-<div style="display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;">
-<p style=" font-weight: 400;
-font-size: 1.8rem;
-text-align: center;
-margin-top: 5rem;
-
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">      
-<p style="display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;">
-<p style=" font-weight: 400;
-font-size: 1.6rem;
-text-align: center;
-margin-top: 1rem;
-
-font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">     Olá ${customer.name},\n\nSua compra foi aprovada com sucesso!.\n\nObrigado por comprar conosco!
-<a ></a>.</p></p>
-
-
-</div>
+        HtmlBody: `  <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+      <tr>
+        <td align="center">
+          <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+        </td>
+      </tr>
+    </table>
+    <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
+      <tr>
+        <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
+          Olá ${customer.name},
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+          Sua compra foi aprovada com sucesso!
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+          Obrigado por comprar conosco!
+        </td>
+      </tr>
+    </table>
 `,
       });
       console.log("Email enviado com sucesso.");
