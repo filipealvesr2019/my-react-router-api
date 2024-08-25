@@ -76,45 +76,29 @@ const sendEmail = async (email, token) => {
       To: email,
       Subject: "Link de registro",
       TextBody: `Clique no seguinte link para se registrar: ${registrationLink}`,
-      HtmlBody: `<p>
-      
-      
-      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
-      justify-content: center;
-      align-items: center;">
-            <img src="https://i.imgur.com/uf3BdOa.png" alt=""  style="width: 25vw;"/>
-     </div>
-      
-
-    
-    
-    <div style="display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;">
-    <p style=" font-weight: 400;
-    font-size: 1.8rem;
-    text-align: center;
-    margin-top: 5rem;
-
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  }">      
-  <p style="display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;">
-  <p style=" font-weight: 400;
-  font-size: 1.6rem;
-  text-align: center;
-  margin-top: 3rem;
-
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-}">Clique no butão  para se <a href="${registrationLink}">cadastrar</a>.</p></p>
-    
-  <a href="${registrationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Cadastrar-se</a>
-
-    </div>
-    `,
+      HtmlBody: `
+        <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+          <tr>
+            <td align="center">
+              <img src="https://i.imgur.com/uf3BdOa.png" alt="" style="width: 200px; max-width: 100%;"/>
+            </td>
+          </tr>
+        </table>
+        <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
+          <tr>
+            <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
+              Clique no botão abaixo para se cadastrar.
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-top: 20px;">
+              <a href="${registrationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                Cadastrar-se
+              </a>
+            </td>
+          </tr>
+        </table>
+      `,
     });
 
     console.log("E-mail enviado com sucesso");
