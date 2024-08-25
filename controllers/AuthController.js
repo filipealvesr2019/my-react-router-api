@@ -344,8 +344,9 @@ const sendPasswordResetEmail = async (req, res) => {
 
     // Gerar um token de redefinição de senha
     const resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "10m", // Token expira em 1 hora
+      expiresIn: "10m", // Token expira em 10 minutos
     });
+
     // Enviar o email de recuperação de senha usando o Postmark
     const postmarkApiKey = process.env.POSTMARK_API_KEY;
 
@@ -364,32 +365,32 @@ const sendPasswordResetEmail = async (req, res) => {
       From: "ceo@mediewal.com.br",
       To: email,
       Subject: "Redefinição de senha",
-      TextBody: `Clique no seguinte link para se registrar: ${resetLink}`,
-
+      TextBody: `Clique no seguinte link para redefinir sua senha: ${resetLink}`,
       HtmlBody: `
-      <div style="width: 100vw; height: 10vh; background-color: black;    display: flex;
-      justify-content: center;
-      align-items: center;">
-            <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="" />
-     </div>
-     <div style="display: flex;
-     flex-direction: column;
-     justify-content: center;
-     align-items: center;">
-     <p style=" font-weight: 400;
-     font-size: 1.8rem;
-     text-align: center;
-     margin-top: 5rem;
-
-     font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-   }">Você solicitou uma redefinição de senha, clique no botão abaixo para redefinir sua senha:</p>
-     
-   <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-weight: 400; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; font-size: 1.2rem;">Redefinir Senha</a>
-
-     </div>
-   
-  `,
+        <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+          <tr>
+            <td align="center">
+              <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+            </td>
+          </tr>
+        </table>
+        <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
+          <tr>
+            <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
+              Você solicitou uma redefinição de senha, clique no botão abaixo para redefinir sua senha:
+            </td>
+          </tr>
+          <tr>
+            <td align="center" style="padding-top: 20px;">
+              <a href="${resetLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
+                Redefinir Senha
+              </a>
+            </td>
+          </tr>
+        </table>
+      `,
     });
+
     res.status(200).json({
       message: "Email de recuperação de senha enviado com sucesso.",
     });
@@ -401,6 +402,7 @@ const sendPasswordResetEmail = async (req, res) => {
     });
   }
 };
+
 
 // Função para redefinir a senha
 const resetPassword = async (req, res) => {
