@@ -1406,26 +1406,24 @@ router.post(
       // Apaga os registros de frete anteriores
       const data = {
         billingType: "CREDIT_CARD",
-        discount: { value: 0, dueDateLimitDays: 0 },
-        interest: { value: 0 },
+        
         fine: { value: 0 },
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         dueDate: new Date(), // Define a data atual como a data de vencimento
         value: totalAmount,
-        description: "",
-        daysAfterDueDateToCancellationRegistration: 1,
-        externalReference: externalReferences,
+     
         postalService: false,
       };
 
       const response = await axios.post(
-        "https://api.asaas.com/v3/payments",
+        "https://sandbox.asaas.com/api/v3/payments",
         data,
         {
           headers: {
-            accept: " 'application/json'",
-            "content-type": "application/json",
+            accept: 'application/json',
+            'content-type': 'application/json',
             access_token: token,
+            'User-Agent': 'Mediewal'
           },
         }
       );
