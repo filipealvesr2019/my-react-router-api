@@ -2826,7 +2826,7 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
         <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
       <tr>
         <td align="center">
-          <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+          <img src="https://i.imgur.com/uf3BdOa.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
         </td>
       </tr>
     </table>
@@ -2940,7 +2940,7 @@ router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
         HtmlBody: `  <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
       <tr>
         <td align="center">
-          <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+          <img src="https://i.imgur.com/uf3BdOa.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
         </td>
       </tr>
     </table>
@@ -3032,7 +3032,7 @@ router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
         HtmlBody: `  <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
       <tr>
         <td align="center">
-          <img src="https://i.ibb.co/B3xYDzG/Logo-mediewal-1.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+          <img src="https://i.imgur.com/uf3BdOa.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
         </td>
       </tr>
     </table>
