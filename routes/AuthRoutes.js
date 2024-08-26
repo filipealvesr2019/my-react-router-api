@@ -72,7 +72,7 @@ const sendEmail = async (email, token) => {
     const registrationLink = `https://mediewal.com.br/register/${token}`;
 
     await client.sendEmail({
-      From: "ceo@mediewal.com.br",
+      From: process.env.EMAIL_FROM,
       To: email,
       Subject: "Link de registro",
       TextBody: `Clique no seguinte link para se registrar: ${registrationLink}`,

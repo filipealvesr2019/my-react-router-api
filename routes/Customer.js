@@ -1349,10 +1349,10 @@ router.post(
   }
 );
 
-// pagar creditCard com checkout transparente
+// pagar creditCard sem checkout transparente
 router.post(
   "/creditCard/:custumerId",
-  isAuthenticated,
+
 
   async (req, res) => {
     try {
@@ -1572,7 +1572,7 @@ router.post(
 
       // Itera sobre o número de parcelas e cria uma cobrança para cada uma
       const payments = [];
-
+      console.log("customer", asaasCustomerId)
       const paymentData = {
         billingType: "CREDIT_CARD",
         customer: asaasCustomerId,
@@ -1601,7 +1601,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://api.asaas.com/v3/payments/",
+        "https://sandbox.asaas.com/api/v3/payments/",
         paymentData,
         {
           headers: {
