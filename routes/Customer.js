@@ -401,16 +401,15 @@ router.delete(
 );
 
 // Rota para atualizar a quantidade de um produto no carrinho de um cliente
+// Rota para atualizar a quantidade de um produto no carrinho de um cliente
 router.put(
-  "/update-quantity-from-cart/:custumerId/:productId/:color/:size",
-
+  "/update-quantity/:custumerId/:productId/:color/:size",
   async (req, res) => {
     try {
       const custumerId = req.params.custumerId;
       const productId = req.params.productId;
       const color = req.params.color;
       const size = req.params.size;
-
       const { quantity } = req.body;
 
       if (quantity <= 0) {
@@ -420,7 +419,7 @@ router.put(
       }
 
       // Encontra o cliente associado ao atendente
-      const customer = await Customer.findOne({ custumerId: custumerId });
+      const customer = await Customer.findOne({ custumerId });
 
       if (!customer) {
         return res.status(404).json({ message: "Cliente não encontrado." });
@@ -447,18 +446,67 @@ router.put(
           .json({ message: "Produto não encontrado no carrinho." });
       }
 
-      // Verifica se a quantidade desejada excede a quantidade disponível do produto no carrinho
-      if (quantity > cart.products[productIndex].availableQuantity) {
+      // Encontra o produto no banco de dados
+      const product = await Product.findById(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Produto não encontrado." });
+      }
+
+      // Encontra a variação específica com base na cor e no tamanho
+      const variation = product.variations.find(
+        (v) => v.color === color && v.sizes.some((s) => s.size === size)
+      );
+
+      if (!variation) {
+        return res.status(404).json({
+          message: "Combinação de cor e tamanho do produto não encontrada.",
+        });
+      }
+
+      const selectedSize = variation.sizes.find((s) => s.size === size);
+
+      if (!selectedSize) {
+        return res
+          .status(400)
+          .json({ message: "Tamanho do produto não encontrado." });
+      }
+
+      // Calcula a quantidade total reservada desse produto em todos os carrinhos
+      const reservedQuantity = await Cart.aggregate([
+        { $unwind: "$products" },
+        {
+          $match: {
+            "products.productId": productId,
+            "products.color": color,
+            "products.size": size,
+          },
+        },
+        {
+          $group: {
+            _id: null,
+            totalReserved: { $sum: "$products.quantity" },
+          },
+        },
+      ]);
+
+      const totalReserved = reservedQuantity[0]?.totalReserved || 0;
+      const availableQuantity =
+        selectedSize.quantityAvailable - totalReserved;
+
+      // Verifica se a quantidade desejada excede a quantidade disponível do produto no estoque
+      if (quantity > availableQuantity) {
         return res.status(400).json({
           message:
-            "A quantidade desejada excede a quantidade disponível do produto no carrinho.",
+            "A quantidade desejada excede a quantidade disponível no estoque.",
         });
       }
 
       // Se a quantidade estiver dentro da disponibilidade, atualiza a quantidade do produto no carrinho
-      cart.products[productIndex].quantity += parseInt(quantity);
+      cart.products[productIndex].quantity = quantity;
+
       // Zera o shippingFee do carrinho
       cart.shippingFee = 0;
+
       await cart.save();
 
       // Retorna informações sobre o produto atualizado
@@ -474,6 +522,7 @@ router.put(
     }
   }
 );
+
 
 router.get(
   "/cart-product/:custumerId/:productId/:color/:size",
