@@ -3183,6 +3183,100 @@ router.get("/pix", isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+// router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
+//   try {
+//     const page = parseInt(req.query.page) || 1; // Página atual
+//     const pageSize = 10; // Tamanho da página
+//     const skip = (page - 1) * pageSize; // Quantidade de documentos a pular
+//     const searchQuery = req.query.name; // Query de pesquisa pelo campo "name"
+
+//     let query = {}; // Inicialize uma query vazia
+
+//     if (searchQuery) {
+//       // Se houver uma query de pesquisa pelo campo "name", configure a query para filtrar por esse campo
+//       query = { name: { $regex: searchQuery, $options: "i" } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
+//     }
+
+//     // Encontre todos os pedidos ordenados pelo status de forma descendente
+//     const allOrders = await CreditCard.find(query)
+//       .sort({ status: -1 })
+//       .skip(skip)
+//       .limit(pageSize)
+//       .sort({ createdAt: -1 }); // Ordenar pela data de criação em ordem decrescente
+//     // Update statuses for Pix orders
+//     for (const pixOrder of allOrders) {
+//       const orderId = pixOrder.orderId; // Assuming orderId exists for PixQRcode model
+//       const paymentReport = await PaymentReports.findOne({
+//         "payment.id": orderId,
+//       });
+//       if (paymentReport) {
+//         pixOrder.status = paymentReport.payment.status;
+//         await pixOrder.save();
+//       }
+//     }
+
+//     if (allOrders.status === "CONFIRMED") {
+//       // Encontra o cliente pelo ID
+//       const customer = await Customer.findOne({
+//         custumerId: allBoletos.custumerId,
+//       });
+
+//       // Verifica se o cliente existe
+//       if (!customer) {
+//         console.log("Cliente não encontrado.");
+//         return res.status(404).json({ error: "Cliente não encontrado." });
+//       }
+
+//       // Verifica se o email do cliente está presente
+//       if (!customer.email) {
+//         console.log("Email do cliente não encontrado.");
+//         return res
+//           .status(400)
+//           .json({ error: "Email do cliente não encontrado." });
+//       }
+//       // Envia um email com o código de rastreamento
+//       await client.sendEmail({
+//         From: process.env.EMAIL_FROM,
+//         To: customer.email,
+//         Subject: "Seu código de rastreamento",
+//         TextBody: `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
+//         HtmlBody: `  <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+//       <tr>
+//         <td align="center">
+//           <img src="https://i.imgur.com/uf3BdOa.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
+//         </td>
+//       </tr>
+//     </table>
+//     <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
+//       <tr>
+//         <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
+//           Olá ${customer.name},
+//         </td>
+//       </tr>
+//       <tr>
+//         <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+//           Sua compra foi aprovada com sucesso!
+//         </td>
+//       </tr>
+//       <tr>
+//         <td align="center" style="font-size: 16px; color: #333333; padding-top: 10px;">
+//           Obrigado por comprar conosco!
+//         </td>
+//       </tr>
+//     </table>
+// `,
+//       });
+//       console.log("Email enviado com sucesso.");
+//     }
+//     res.json(allOrders);
+//   } catch (error) {
+//     console.error("Erro ao buscar dados:", error);
+//     res.status(500).json({ error: "Erro ao buscar dados" });
+//   }
+// });
+
+
+
 router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
@@ -3198,7 +3292,7 @@ router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
     }
 
     // Encontre todos os pedidos ordenados pelo status de forma descendente
-    const allOrders = await CreditCard.find(query)
+    const allOrders = await CreditCardWithPaymentLink.find(query)
       .sort({ status: -1 })
       .skip(skip)
       .limit(pageSize)
@@ -3274,6 +3368,15 @@ router.get("/creditCard", isAuthenticated, isAdmin, async (req, res) => {
     res.status(500).json({ error: "Erro ao buscar dados" });
   }
 });
+
+
+
+
+
+
+
+
+
 
 router.get("/boleto/:id", isAuthenticated, isAdmin, async (req, res) => {
   try {
