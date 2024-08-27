@@ -1349,10 +1349,10 @@ router.post(
   }
 );
 
-// pagar creditCard sem checkout transparente
-router.post(
-  "/creditCard/:custumerId",
 
+// pagar carta sem checkout transparente
+router.post(
+  "/crediCardWithPaymentLink/:custumerId",
 
   async (req, res) => {
     try {
@@ -1385,11 +1385,7 @@ router.post(
       }
       // Encontra o asaasCustomerId do cliente
       const asaasCustomerId = customer.asaasCustomerId;
-      const totalPrice = cart.products.reduce(
-        (total, product) => total + product.productId.price * product.quantity,
-        0
-      );
-      const totalAmount = totalPrice + cart.shippingFee;
+      console.log("Produtos no carrinho:", cart.products);
 
       // Cria uma string vazia para armazenar os IDs dos produtos
       let externalReferences = "";
@@ -1406,13 +1402,9 @@ router.post(
       // Apaga os registros de frete anteriores
       const data = {
         billingType: "CREDIT_CARD",
-        
-      
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
+        value: cart.totalAmount,
         dueDate: new Date(), // Define a data atual como a data de vencimento
-        value: totalAmount,
-     
-        postalService: false,
       };
 
       const response = await axios.post(
@@ -1420,10 +1412,10 @@ router.post(
         data,
         {
           headers: {
-            accept: 'application/json',
-            'content-type': 'application/json',
+            accept: " 'application/json'",
+            "content-type": "application/json",
             access_token: token,
-            'User-Agent': 'Mediewal'
+            "User-Agent": "Mediewal",
           },
         }
       );
@@ -1432,7 +1424,9 @@ router.post(
       if (Array.isArray(response.data)) {
         // Se for um array, faz um loop sobre os itens e salva cada um
         for (const item of response.data) {
-          const creditCard = new CreditCard({
+          const boleto = new CreditCardWithPaymentLink({
+            orderId: item.id,
+            billingType: "CREDIT_CARD",
             custumerId: custumerId, // Agora é uma string
             customer: item.customer,
             billingType: item.billingType,
@@ -1441,13 +1435,29 @@ router.post(
             invoiceUrl: item.invoiceUrl,
             bankSlipUrl: item.bankSlipUrl,
             dueDate: item.dueDate,
+            shippingFeeData: {
+              transportadora: cart.transportadora.nome || "",
+              logo: cart.logo.img || "",
+              shippingFeePrice: cart.shippingFee,
+            },
+            products: cart.products.map((product) => ({
+              productId: product.productId._id,
+              quantity: product.quantity,
+              size: product.size,
+              color: product.color,
+              image: product.image,
+              name: product.name,
+              price: product.price,
+            })),
+            name: customer.name,
           });
 
-          await creditCard.save();
+          await boleto.save();
         }
       } else {
         // Se não for um array, salva apenas um item
-        const creditCard = new CreditCard({
+        const boleto = new Boleto({
+          billingType: "CREDIT_CARD",
           custumerId: custumerId, // Agora é uma string
           customer: response.data.customer,
           billingType: response.data.billingType,
@@ -1456,9 +1466,26 @@ router.post(
           invoiceUrl: response.data.invoiceUrl,
           bankSlipUrl: response.data.bankSlipUrl,
           dueDate: response.data.dueDate,
+          shippingFeeData: {
+            transportadora: cart.transportadora.nome || "",
+            logo: cart.logo.img || "",
+            shippingFeePrice: cart.shippingFee,
+          },
+          products: cart.products.map((product) => ({
+            productId: product.productId._id,
+            quantity: product.quantity,
+            size: product.size,
+            color: product.color,
+            image: product.image,
+            name: product.name,
+            price: product.price,
+          })),
+          name: customer.name,
+          orderId: response.data.id,
+          name: customer.name,
         });
 
-        await creditCard.save();
+        await boleto.save();
       }
 
       res.json(response.data);
@@ -1468,6 +1495,15 @@ router.post(
     }
   }
 );
+
+
+
+
+
+
+
+
+
 
 // pagar creditCard com checkout transparente
 
