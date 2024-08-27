@@ -2964,6 +2964,7 @@ router.get(
   }
 );
 
+
 router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1; // Página atual
@@ -2978,20 +2979,21 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
       query = { name: { $regex: searchQuery, $options: "i" } }; // O uso de $regex permite busca por parte do nome, e $options: 'i' torna a busca case insensitive
     }
 
-    // Encontre todos os boletos que correspondem à query, limitando pelo tamanho da página e pulando os documentos necessários para a paginação
-    const allBoletos = await Boleto.find(query)
+    // Encontre todos os boletos que correspondem à query, ordene pela data de criação e aplique paginação
+    const allPixQRcode = await Boleto.find(query)
+      .sort({ createdAt: -1 }) // Ordenar pela data de criação em ordem decrescente
       .skip(skip)
-      .limit(pageSize)
-      .sort({ createdAt: -1 }); // Ordenar pela data de criação em ordem decrescente
+      .limit(pageSize);
+
     // Atualize os status para os pedidos de boleto
-    for (const boleto of allBoletos) {
-      const orderId = boleto.orderId;
+    for (const pix of allPixQRcode) {
+      const orderId = pix.orderId;
       const paymentReport = await PaymentReports.findOne({
         "payment.id": orderId,
       });
       if (paymentReport) {
-        boleto.status = paymentReport.payment.status;
-        await boleto.save();
+        pix.status = paymentReport.payment.status;
+        await pix.save();
       }
     }
 
@@ -3004,7 +3006,7 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
     };
 
     // Ordenar os resultados com base no status
-    allBoletos.sort((a, b) => {
+    allPixQRcode.sort((a, b) => {
       const statusA = a.status;
       const statusB = b.status;
 
@@ -3012,7 +3014,7 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
       return statusPriority[statusA] - statusPriority[statusB];
     });
 
-    if (allBoletos.status === "RECEIVED" || "CONFIRMED") {
+    if (allPixQRcode.status === "RECEIVED") {
       // Encontra o cliente pelo ID
       const customer = await Customer.findOne({
         custumerId: allBoletos.custumerId,
@@ -3037,8 +3039,7 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
         To: customer.email,
         Subject: "Seu código de rastreamento",
         TextBody: `Olá ${customer.name},\n\nSeu pedido foi atualizado com o seguinte código de rastreio: \n\nObrigado por comprar conosco!`,
-        HtmlBody: `  
-        <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+        HtmlBody: `  <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
       <tr>
         <td align="center">
           <img src="https://i.imgur.com/uf3BdOa.png" alt="Logo Mediewal" style="width: 200px; max-width: 100%;"/>
@@ -3062,18 +3063,11 @@ router.get("/boletos", isAuthenticated, isAdmin, async (req, res) => {
         </td>
       </tr>
     </table>
-
-
-
-
-
-
 `,
       });
       console.log("Email enviado com sucesso.");
     }
-
-    res.json(allBoletos);
+    res.json(allPixQRcode);
   } catch (error) {
     console.error("Erro ao buscar dados:", error);
     res.status(500).json({ error: "Erro ao buscar dados" });
