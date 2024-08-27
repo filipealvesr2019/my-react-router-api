@@ -1407,7 +1407,7 @@ router.post(
       const data = {
         billingType: "CREDIT_CARD",
         
-        fine: { value: 0 },
+      
         customer: asaasCustomerId, // Substitui 'cus_000005895208' pelo asaasCustomerId
         dueDate: new Date(), // Define a data atual como a data de vencimento
         value: totalAmount,
@@ -1416,7 +1416,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://api.asaas.com/v3/payments/",
+        "https://sandbox.asaas.com/api/v3/payments",
         data,
         {
           headers: {
@@ -1599,7 +1599,7 @@ router.post(
       };
 
       const response = await axios.post(
-        "https://sandbox.asaas.com/api/v3/payments/",
+        "https://api.asaas.com/v3/payments/",
         paymentData,
         {
           headers: {
@@ -1702,7 +1702,7 @@ router.post(
 
       res.json(json);
     } catch (error) {
-      console.error("Error fetching data:", error);
+      console.error("Error processing payment:", error.response ? error.response.data : error.message);
       res.status(500).json({ error: "Internal Server Error" });
     }
   }
