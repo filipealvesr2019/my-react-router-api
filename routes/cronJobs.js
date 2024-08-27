@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const cron = require("node-cron");
 const express = require("express");
-const Cart = require("./models/cart");
+const Cart = require("../models/cart");
 const router = express.Router();
 // Configurar o cron job para rodar a cada 3 minutos
 cron.schedule("*/3 * * * *", async () => {
