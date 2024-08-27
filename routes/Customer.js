@@ -16,6 +16,9 @@ const Pix = require("../models/Pix");
 const Boleto = require("../models/Boleto");
 const CreditCard = require("../models/CreditCard");
 const creditCardData = require("../models/creditCardData");
+const CreditCardWithPaymentLink = require("../models/CreditCardWithPaymentLink");
+
+
 const {
   isAuthenticated,
   isAdmin,
@@ -1456,7 +1459,7 @@ router.post(
         }
       } else {
         // Se não for um array, salva apenas um item
-        const boleto = new Boleto({
+        const boleto = new CreditCardWithPaymentLink({
           billingType: "CREDIT_CARD",
           custumerId: custumerId, // Agora é uma string
           customer: response.data.customer,
