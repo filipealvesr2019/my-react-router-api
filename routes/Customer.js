@@ -1427,7 +1427,7 @@ router.post(
       if (Array.isArray(response.data)) {
         // Se for um array, faz um loop sobre os itens e salva cada um
         for (const item of response.data) {
-          const boleto = new CreditCardWithPaymentLink({
+          const creditCard = new CreditCardWithPaymentLink({
             orderId: item.id,
             billingType: "CREDIT_CARD",
             custumerId: custumerId, // Agora é uma string
@@ -1455,11 +1455,11 @@ router.post(
             name: customer.name,
           });
 
-          await boleto.save();
+          await creditCard.save();
         }
       } else {
         // Se não for um array, salva apenas um item
-        const boleto = new CreditCardWithPaymentLink({
+        const creditCard = new CreditCardWithPaymentLink({
           billingType: "CREDIT_CARD",
           custumerId: custumerId, // Agora é uma string
           customer: response.data.customer,
@@ -1488,7 +1488,7 @@ router.post(
           name: customer.name,
         });
 
-        await boleto.save();
+        await creditCard.save();
       }
 
       res.json(response.data);
