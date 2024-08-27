@@ -4,17 +4,15 @@ const express = require("express");
 const Cart = require("../models/cart");
 const router = express.Router();
 // Configurar o cron job para rodar a cada 3 minutos
-cron.schedule("*/3 * * * *", async () => {
+// Configurando o cron job para rodar a cada 3 minutos
+cron.schedule('*/3 * * * *', async () => {
   try {
-    console.log("Executando tarefa de limpeza de carrinhos...");
-
-    // Excluir todos os produtos dos carrinhos
-    await Cart.updateMany({}, { $set: { products: [] } });
-
-    console.log("Todos os produtos dos carrinhos foram excluídos.");
+    console.log('Executando a tarefa de exclusão de carrinhos...');
+    // Exclui todos os carrinhos
+    await Cart.deleteMany({});
+    console.log('Todos os carrinhos foram excluídos com sucesso.');
   } catch (error) {
-    console.error("Erro ao limpar os carrinhos:", error);
+    console.error('Erro ao excluir os carrinhos:', error);
   }
 });
-
 module.exports = router;
