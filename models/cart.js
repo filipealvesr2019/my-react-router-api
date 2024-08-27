@@ -39,7 +39,7 @@ const cartSchema = new Schema({
       availableQuantity: {
         type: Number,
         default: 0,
-        unique: true
+
       },
       cartProductExist:{
         type: Boolean,
