@@ -5,7 +5,7 @@ const Cart = require("../models/cart");
 const router = express.Router();
 // Configurar o cron job para rodar a cada 3 minutos
 // Configurando o cron job para rodar a cada 3 minutos
-cron.schedule('*/3 * * * *', async () => {
+cron.schedule('0 0 * * *', async () => {
   try {
     console.log('Executando a tarefa de exclusão de carrinhos...');
     // Exclui todos os carrinhos
