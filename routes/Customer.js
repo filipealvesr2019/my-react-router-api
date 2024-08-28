@@ -3404,7 +3404,7 @@ router.get("/creditCard/:id", isAuthenticated, isAdmin, async (req, res) => {
     const id = req.params.id;
 
     // Encontre o pedido com o ID fornecido
-    const order = await CreditCard.findById(id);
+    const order = await CreditCardWithPaymentLink.findById(id);
 
     // Verifique se o pedido existe
     if (!order) {
