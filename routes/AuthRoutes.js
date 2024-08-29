@@ -108,10 +108,18 @@ const sendEmail = async (email, token) => {
 };
 
 // Rota para solicitar registro
+// Rota para solicitar registro
 router.post("/register/request", async (req, res) => {
   const { email } = req.body;
 
   try {
+    // Verifica se o email já está cadastrado
+    const existingUser = await User.findOne({ email });
+
+    if (existingUser) {
+      return res.status(400).json({ success: false, message: "Email já cadastrado. Por favor, use outro email." });
+    }
+
     // Gerar token JWT com duração de 10 minutos
     const token = jwt.sign({ email }, process.env.JWT_SECRET, { expiresIn: "10m" });
 
