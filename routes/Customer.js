@@ -2667,13 +2667,13 @@ router.get("/allOrders/:custumerId", async (req, res) => {
         .skip(skip)
         .limit(pageSize)
         .sort({ createdAt: -1 }),
-      CreditCard.find({ custumerId })
+      CreditCardWithPaymentLink.find({ custumerId })
         .skip(skip)
         .limit(pageSize)
         .sort({ createdAt: -1 }),
       Boleto.countDocuments({ custumerId }),
       PixQRcode.countDocuments({ custumerId }),
-      CreditCard.countDocuments({ custumerId }),
+      CreditCardWithPaymentLink.countDocuments({ custumerId }),
     ]);
     // Find the customer's data in other schemas
     const totalOrders = totalBoletos + totalPix + totalCreditCards;
@@ -2882,7 +2882,7 @@ router.get("/allOrders/:custumerId/:id", isAuthenticated, async (req, res) => {
   try {
     // Find the customer's data in other schemas
     const boletoData = await Boleto.find({ custumerId: custumerId, _id: id });
-    const creditCardData = await CreditCard.find({
+    const creditCardData = await CreditCardWithPaymentLink.find({
       custumerId: custumerId,
       _id: id,
     });
