@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const cron = require("node-cron");
 const express = require("express");
 const Cart = require("../models/cart");
+const Product = require("../models/product");
+const PixQRcode = require('../models/PixQRcode')
 const router = express.Router();
 // Configurar o cron job para rodar a cada 3 minutos
 // Configurando o cron job para rodar a cada 3 minutos
