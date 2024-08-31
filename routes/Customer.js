@@ -2219,6 +2219,14 @@ router.post(
   }
 );
 
+
+
+
+
+
+
+
+
 // relatorio com status dos pedidos dos consumidores
 router.post("/reports", async (req, res) => {
   try {

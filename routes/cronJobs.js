@@ -23,56 +23,56 @@ cron.schedule('*/30 * * * *', async () => {
 });
 
 
-// Função para atualizar o estoque
-// Função para atualizar o estoque
-// Função genérica para atualizar o estoque
-const updateStockForOrders = async (OrderModel) => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
+// // Função para atualizar o estoque
+// // Função para atualizar o estoque
+// // Função genérica para atualizar o estoque
+// const updateStockForOrders = async (OrderModel) => {
+//   const session = await mongoose.startSession();
+//   session.startTransaction();
 
-  try {
-    const receivedOrders = await OrderModel.find({ status: "RECEIVED", stockUpdated: false }).session(session);
+//   try {
+//     const receivedOrders = await OrderModel.find({ status: "RECEIVED", stockUpdated: false }).session(session);
 
-    for (const order of receivedOrders) {
-      for (const product of order.products) {
-        const { productId, quantity, size, color } = product;
+//     for (const order of receivedOrders) {
+//       for (const product of order.products) {
+//         const { productId, quantity, size, color } = product;
 
-        const foundProduct = await Product.findById(productId).session(session);
-        if (foundProduct) {
-          const variation = foundProduct.variations.find(v => v.color === color);
-          if (variation) {
-            const sizeObj = variation.sizes.find(s => s.size === size);
-            if (sizeObj) {
-              sizeObj.quantityAvailable -= parseInt(quantity, 10);
-              sizeObj.inStockSize = sizeObj.quantityAvailable <= 0;
-            }
-          }
+//         const foundProduct = await Product.findById(productId).session(session);
+//         if (foundProduct) {
+//           const variation = foundProduct.variations.find(v => v.color === color);
+//           if (variation) {
+//             const sizeObj = variation.sizes.find(s => s.size === size);
+//             if (sizeObj) {
+//               sizeObj.quantityAvailable -= parseInt(quantity, 10);
+//               sizeObj.inStockSize = sizeObj.quantityAvailable <= 0;
+//             }
+//           }
 
-          foundProduct.inStock = foundProduct.variations.some(v => v.sizes.some(s => s.inStockSize));
-          await foundProduct.save({ session });
-        }
-      }
+//           foundProduct.inStock = foundProduct.variations.some(v => v.sizes.some(s => s.inStockSize));
+//           await foundProduct.save({ session });
+//         }
+//       }
 
-      order.stockUpdated = true;
-      await order.save({ session });
-    }
+//       order.stockUpdated = true;
+//       await order.save({ session });
+//     }
 
-    await session.commitTransaction();
-  } catch (error) {
-    await session.abortTransaction();
-    console.error("Erro ao atualizar o estoque:", error);
-  } finally {
-    session.endSession();
-  }
-};
+//     await session.commitTransaction();
+//   } catch (error) {
+//     await session.abortTransaction();
+//     console.error("Erro ao atualizar o estoque:", error);
+//   } finally {
+//     session.endSession();
+//   }
+// };
 
-// Função que chama as funções de atualização de estoque
-const updateAllStocks = async () => {
-  await updateStockForOrders(PixQRcode);
-  await updateStockForOrders(Boleto);
-  await updateStockForOrders(CreditCardWithPaymentLink);
-};
+// // Função que chama as funções de atualização de estoque
+// const updateAllStocks = async () => {
+//   await updateStockForOrders(PixQRcode);
+//   await updateStockForOrders(Boleto);
+//   await updateStockForOrders(CreditCardWithPaymentLink);
+// };
 
-// Executar a função `updateAllStocks` a cada minuto
-cron.schedule("* * * * *", updateAllStocks);
+// // Executar a função `updateAllStocks` a cada minuto
+// cron.schedule("* * * * *", updateAllStocks);
 module.exports = router;
