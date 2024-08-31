@@ -130,7 +130,11 @@ PixQRcodeSchema.pre("save", async function (next) {
 async function updateStock(PixQRcode) {
   try {
     if (PixQRcode.status === "RECEIVED") {
+      console.log("Atualizando estoque para:", PixQRcode._id); // Log para verificar se a função está sendo chamada
+
       for (const item of PixQRcode.products) {
+        console.log("Produto ID:", item.productId, "Quantidade:", item.quantity);
+
         const product = await Product.findById(item.productId);
         if (product) {
           const variation = product.variations.find(
@@ -138,24 +142,34 @@ async function updateStock(PixQRcode) {
           );
           const size = variation?.sizes.find((size) => size.size === item.size);
 
-          if (size && size.quantityAvailable >= parseInt(item.quantity)) {
-            size.quantityAvailable -= parseInt(item.quantity);
-            if (size.quantityAvailable <= 0) {
-              size.inStockSize = false;
+          if (variation && size) {
+            if (size.quantityAvailable >= parseInt(item.quantity)) {
+              size.quantityAvailable -= parseInt(item.quantity);
+              if (size.quantityAvailable <= 0) {
+                size.inStockSize = false;
+              }
+              console.log(`Novo estoque para ${product.name}, Tamanho: ${item.size}: ${size.quantityAvailable}`);
+            } else {
+              console.log(
+                `Estoque insuficiente para ${product.name}, Cor: ${item.color}, Tamanho: ${item.size}`
+              );
             }
-          } else {
-            console.log(
-              `Estoque insuficiente para o produto: ${product.name}, cor: ${item.color}, tamanho: ${item.size}`
+
+            product.inStock = product.variations.some((variation) =>
+              variation.sizes.some((size) => size.quantityAvailable > 0)
             );
+
+            await product.save();
+            console.log(`Estoque atualizado para o produto: ${product.name}`);
+          } else {
+            console.log(`Variação ou tamanho não encontrados para o produto: ${product.name}`);
           }
-
-          product.inStock = product.variations.some((variation) =>
-            variation.sizes.some((size) => size.quantityAvailable > 0)
-          );
-
-          await product.save();
+        } else {
+          console.log(`Produto não encontrado para o ID: ${item.productId}`);
         }
       }
+    } else {
+      console.log("Status não é RECEIVED, não atualizando estoque.");
     }
   } catch (error) {
     console.error("Erro ao atualizar o estoque:", error);
@@ -167,6 +181,7 @@ PixQRcodeSchema.post('save', function(doc, next) {
     .then(() => next())
     .catch(next);
 });
+
 
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);
 
