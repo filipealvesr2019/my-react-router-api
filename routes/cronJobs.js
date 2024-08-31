@@ -15,4 +15,51 @@ cron.schedule('*/30 * * * *', async () => {
     console.error('Erro ao excluir os carrinhos:', error);
   }
 });
+
+
+// Função para atualizar o estoque
+const updateStock = async () => {
+  try {
+    // Buscar todos os pedidos com status "RECEIVED"
+    const receivedOrders = await PixQRcode.find({ status: "RECEIVED" });
+
+    for (const order of receivedOrders) {
+      for (const product of order.products) {
+        const { productId, quantity, size, color } = product;
+
+        // Encontrar o produto correspondente
+        const foundProduct = await Product.findById(productId);
+        if (foundProduct) {
+          // Encontrar a variação de cor e tamanho correspondentes
+          const variation = foundProduct.variations.find(
+            (v) => v.color === color
+          );
+          if (variation) {
+            const sizeObj = variation.sizes.find((s) => s.size === size);
+            if (sizeObj) {
+              // Subtrair a quantidade do estoque
+              sizeObj.quantityAvailable -= parseInt(quantity, 10);
+
+              // Verificar se ainda há estoque
+              sizeObj.inStockSize = sizeObj.quantityAvailable > 0;
+            }
+          }
+
+          // Verificar se o produto ainda está em estoque
+          foundProduct.inStock = foundProduct.variations.some((v) =>
+            v.sizes.some((s) => s.inStockSize)
+          );
+
+          // Salvar as alterações do produto
+          await foundProduct.save();
+        }
+      }
+    }
+  } catch (error) {
+    console.error("Erro ao atualizar o estoque:", error);
+  }
+};
+
+// Executar a função `updateStock` a cada minuto
+cron.schedule("* * * * *", updateStock);
 module.exports = router;
