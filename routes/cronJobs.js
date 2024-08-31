@@ -43,10 +43,11 @@ const updateStock = async () => {
             if (sizeObj) {
               // Subtrair a quantidade do estoque
               sizeObj.quantityAvailable -= parseInt(quantity, 10);
-
-              // Verificar se ainda há estoque
-              sizeObj.inStockSize = sizeObj.quantityAvailable > 0;
+            
+              // Verificar se o tamanho está fora de estoque
+              sizeObj.inStockSize = sizeObj.quantityAvailable <= 0;
             }
+            
           }
 
           // Verificar se o produto ainda está em estoque
