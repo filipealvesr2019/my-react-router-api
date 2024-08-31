@@ -126,57 +126,32 @@ PixQRcodeSchema.pre("save", async function (next) {
     next(error);
   }
 });
-
-async function updateStock(PixQRcode) {
+async function updateStatusAndSave(PixQRcodeId) {
   try {
-    if (PixQRcode.status === "RECEIVED") {
-      console.log("Atualizando estoque para:", PixQRcode._id); // Log para verificar se a função está sendo chamada
-
-      for (const item of PixQRcode.products) {
-        console.log("Produto ID:", item.productId, "Quantidade:", item.quantity);
-
-        const product = await Product.findById(item.productId);
-        if (product) {
-          const variation = product.variations.find(
-            (variation) => variation.color === item.color
-          );
-          const size = variation?.sizes.find((size) => size.size === item.size);
-
-          if (variation && size) {
-            if (size.quantityAvailable >= parseInt(item.quantity)) {
-              size.quantityAvailable -= parseInt(item.quantity);
-              if (size.quantityAvailable <= 0) {
-                size.inStockSize = false;
-              }
-              console.log(`Novo estoque para ${product.name}, Tamanho: ${item.size}: ${size.quantityAvailable}`);
-            } else {
-              console.log(
-                `Estoque insuficiente para ${product.name}, Cor: ${item.color}, Tamanho: ${item.size}`
-              );
-            }
-
-            product.inStock = product.variations.some((variation) =>
-              variation.sizes.some((size) => size.quantityAvailable > 0)
-            );
-
-            await product.save();
-            console.log(`Estoque atualizado para o produto: ${product.name}`);
-          } else {
-            console.log(`Variação ou tamanho não encontrados para o produto: ${product.name}`);
-          }
-        } else {
-          console.log(`Produto não encontrado para o ID: ${item.productId}`);
-        }
-      }
-    } else {
-      console.log("Status não é RECEIVED, não atualizando estoque.");
+    const pixQRcode = await PixQRcode.findById(PixQRcodeId);
+    if (!pixQRcode) {
+      console.log("PixQRcode não encontrado");
+      return;
     }
+
+    pixQRcode.status = "RECEIVED"; // Atualiza o status
+    await pixQRcode.save(); // Salva e dispara o middleware
+
+    console.log("Status atualizado e PixQRcode salvo com sucesso");
   } catch (error) {
-    console.error("Erro ao atualizar o estoque:", error);
+    console.error("Erro ao atualizar o status:", error);
   }
 }
 
+// Exemplo de uso
+updateStatusAndSave("66bb7a3fef4c649276a4dc38");
+
+
+// Exemplo de uso
+updateStatusAndSave("66d329952c7779c39d8c6d00");
+
 PixQRcodeSchema.post('save', function(doc, next) {
+  console.log("Middleware post('save') acionado para o PixQRcode:", doc._id);
   updateStock(doc)
     .then(() => next())
     .catch(next);
