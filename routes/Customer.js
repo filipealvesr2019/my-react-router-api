@@ -2297,7 +2297,34 @@ router.post("/reports", async (req, res) => {
   }
 });
 
+// // relatorio com status dos pedidos dos consumidores
+// router.post("/reports", async (req, res) => {
+//   try {
+//     const newPaymentData = req.body;
+//     const paymentId = newPaymentData.payment.id;
 
+//     // Verificar se já existe um pagamento com esse ID
+//     const existingPayment = await PaymentReports.findOne({
+//       "payment.id": paymentId,
+//     });
+
+//     if (existingPayment) {
+//       // Se já existe, atualize as informações existentes
+//       await PaymentReports.findOneAndUpdate(
+//         { "payment.id": paymentId },
+//         newPaymentData
+//       );
+//       res.status(200).json({ message: "Informações atualizadas com sucesso" });
+//     } else {
+//       // Se não existe, crie um novo documento
+//       const newPayment = await PaymentReports.create(newPaymentData);
+//       res.status(200).json(newPayment);
+//     }
+//   } catch (error) {
+//     console.error("Erro ao criar/atualizar pagamento:", error);
+//     res.status(500).json({ error: "Erro ao criar/atualizar pagamento" });
+//   }
+// });
 // // relatorio com status dos pedidos dos consumidores
 // router.post("/reports", async (req, res) => {
 //   try {
