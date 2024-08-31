@@ -178,6 +178,8 @@ PixQRcodeSchema.post('save', function(doc, next){
   .then(() => next())
   .catch(next)
 })
+
+
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);
 
 module.exports = PixQRcode;
