@@ -96,7 +96,9 @@ const boletoSchema = new mongoose.Schema({
   status: {
     type: String,
     default: "PENDING" // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
-  }
+  },
+  stockUpdated: { type: Boolean, default: false } // Novo campo
+
 });
 
 
