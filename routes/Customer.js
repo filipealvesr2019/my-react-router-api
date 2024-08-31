@@ -2225,36 +2225,107 @@ router.post(
 
 
 
+// Função para atualizar o estoque
+const updateStockForOrders = async (OrderModel, billingType) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
 
+  try {
+    const receivedOrders = await OrderModel.find({ status: "RECEIVED", billingType, stockUpdated: false }).session(session);
 
-// relatorio com status dos pedidos dos consumidores
+    for (const order of receivedOrders) {
+      for (const product of order.products) {
+        const { productId, quantity, size, color } = product;
+
+        const foundProduct = await Product.findById(productId).session(session);
+        if (foundProduct) {
+          const variation = foundProduct.variations.find(v => v.color === color);
+          if (variation) {
+            const sizeObj = variation.sizes.find(s => s.size === size);
+            if (sizeObj) {
+              sizeObj.quantityAvailable -= parseInt(quantity, 10);
+              sizeObj.inStockSize = sizeObj.quantityAvailable <= 0;
+            }
+          }
+
+          foundProduct.inStock = foundProduct.variations.some(v => v.sizes.some(s => s.inStockSize));
+          await foundProduct.save({ session });
+        }
+      }
+
+      order.stockUpdated = true;
+      await order.save({ session });
+    }
+
+    await session.commitTransaction();
+  } catch (error) {
+    await session.abortTransaction();
+    console.error("Erro ao atualizar o estoque:", error);
+  } finally {
+    session.endSession();
+  }
+};
+
+// Webhook para relatórios de status dos pedidos
 router.post("/reports", async (req, res) => {
   try {
     const newPaymentData = req.body;
     const paymentId = newPaymentData.payment.id;
 
     // Verificar se já existe um pagamento com esse ID
-    const existingPayment = await PaymentReports.findOne({
-      "payment.id": paymentId,
-    });
+    const existingPayment = await PaymentReports.findOne({ "payment.id": paymentId });
 
     if (existingPayment) {
       // Se já existe, atualize as informações existentes
-      await PaymentReports.findOneAndUpdate(
-        { "payment.id": paymentId },
-        newPaymentData
-      );
+      await PaymentReports.findOneAndUpdate({ "payment.id": paymentId }, newPaymentData);
       res.status(200).json({ message: "Informações atualizadas com sucesso" });
     } else {
       // Se não existe, crie um novo documento
       const newPayment = await PaymentReports.create(newPaymentData);
       res.status(200).json(newPayment);
     }
+
+    // Verificar se o status do pagamento é "RECEIVED" e acionar a atualização de estoque
+    if (newPaymentData.payment.status === "RECEIVED") {
+      await updateStockForOrders(PixQRcode, newPaymentData.payment.billingType);
+      await updateStockForOrders(Boleto, newPaymentData.payment.billingType);
+      await updateStockForOrders(CreditCardWithPaymentLink, newPaymentData.payment.billingType);
+    }
   } catch (error) {
     console.error("Erro ao criar/atualizar pagamento:", error);
     res.status(500).json({ error: "Erro ao criar/atualizar pagamento" });
   }
 });
+
+
+// // relatorio com status dos pedidos dos consumidores
+// router.post("/reports", async (req, res) => {
+//   try {
+//     const newPaymentData = req.body;
+//     const paymentId = newPaymentData.payment.id;
+
+//     // Verificar se já existe um pagamento com esse ID
+//     const existingPayment = await PaymentReports.findOne({
+//       "payment.id": paymentId,
+//     });
+
+//     if (existingPayment) {
+//       // Se já existe, atualize as informações existentes
+//       await PaymentReports.findOneAndUpdate(
+//         { "payment.id": paymentId },
+//         newPaymentData
+//       );
+//       res.status(200).json({ message: "Informações atualizadas com sucesso" });
+//     } else {
+//       // Se não existe, crie um novo documento
+//       const newPayment = await PaymentReports.create(newPaymentData);
+//       res.status(200).json(newPayment);
+//     }
+//   } catch (error) {
+//     console.error("Erro ao criar/atualizar pagamento:", error);
+//     res.status(500).json({ error: "Erro ao criar/atualizar pagamento" });
+//   }
+// });
 
 // Rota para adicionar código de rastreamento a um pedido específico do QR code
 router.post("/add/traking/boleto/:orderId", async (req, res) => {
