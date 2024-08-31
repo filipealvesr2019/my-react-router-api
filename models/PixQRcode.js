@@ -18,23 +18,21 @@ const PixQRcodeSchema = new mongoose.Schema({
   description: {
     type: String,
   },
-
   value: { type: Number, required: true },
   format: {
     type: String,
     enum: ["ALL", "IMAGE", "PAYLOAD"],
   },
-  createdAt: { type: Date, default: Date.now }, // Campo para armazenar a data de criação
-
+  createdAt: { type: Date, default: Date.now }, 
   expirationDate: {
     type: Date,
     required: true,
     default: Date.now,
   },
   allowsMultiplePayments: {
-    type: Boolean, // Alterado para Boolean
+    type: Boolean,
     required: true,
-    default: true, // Padrão definido como true
+    default: true,
   },
   externalReference: {
     type: String,
@@ -84,48 +82,40 @@ const PixQRcodeSchema = new mongoose.Schema({
         default: "",
       },
       image: {
-        // Adicionando o campo de imagem
         type: String,
         default: " ",
       },
       name: {
-        // Adicionando o campo de imagem
         type: String,
         default: " ",
       },
       price: {
-        // Adicionando o campo de imagem
         type: Number,
       },
     },
   ],
-  createdAt: { type: Date, default: Date.now }, // Campo para armazenar a data de criação
-
   trackingCode: { type: String },
   totalQuantity: {
     type: Number,
-    default: 1, // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+    default: 1,
   },
   status: {
     type: String,
-    default: "PENDING", // Defina o valor padrão como "PENDENTE" ou outro valor apropriado
+    default: "PENDING",
   },
 });
 
 // Middleware para atualizar o totalQuantity antes de salvar
 PixQRcodeSchema.pre("save", async function (next) {
   try {
-    // Calcula a quantidade total com base nos produtos do pedido
     const totalQuantity = this.products.reduce(
       (acc, product) => acc + parseInt(product.quantity || 0),
       0
     );
-    // Atualiza o totalQuantity no documento antes de salvar
     this.totalQuantity = totalQuantity;
 
-    // Atualiza o nome dos produtos com base nos IDs antes de salvar
     for (const product of this.products) {
-      const foundProduct = await Product.findById(product.productId); // Supondo que o modelo do produto seja "Product"
+      const foundProduct = await Product.findById(product.productId);
       if (foundProduct) {
         product.name = foundProduct.name;
       }
@@ -141,7 +131,6 @@ async function updateStock(PixQRcode) {
   try {
     if (PixQRcode.status === "RECEIVED") {
       for (const item of PixQRcode.products) {
-        // encontra os produto em estoque
         const product = await Product.findById(item.productId);
         if (product) {
           const variation = product.variations.find(
@@ -150,35 +139,34 @@ async function updateStock(PixQRcode) {
           const size = variation?.sizes.find((size) => size.size === item.size);
 
           if (size && size.quantityAvailable >= parseInt(item.quantity)) {
-            // Subtrai a quantidade comprada do estoque
             size.quantityAvailable -= parseInt(item.quantity);
+            if (size.quantityAvailable <= 0) {
+              size.inStockSize = false;
+            }
+          } else {
+            console.log(
+              `Estoque insuficiente para o produto: ${product.name}, cor: ${item.color}, tamanho: ${item.size}`
+            );
           }
-          if (size.quantityAvailable <= 0) {
-            size.inStockSize = false;
-          }
-          // Verifica se o produto ainda está em estoque
+
           product.inStock = product.variations.some((variation) =>
             variation.sizes.some((size) => size.quantityAvailable > 0)
           );
-          // Salva as alterações no produto
+
           await product.save();
-        } else {
-          console.log(
-            `Estoque insuficiente para o produto: ${product.name}, cor: ${item.color}, tamanho: ${item.size}`
-          );
         }
       }
     }
-  } catch {
+  } catch (error) {
     console.error("Erro ao atualizar o estoque:", error);
   }
 }
-PixQRcodeSchema.post('save', function(doc, next){
-  updateStock(doc)
-  .then(() => next())
-  .catch(next)
-})
 
+PixQRcodeSchema.post('save', function(doc, next) {
+  updateStock(doc)
+    .then(() => next())
+    .catch(next);
+});
 
 const PixQRcode = mongoose.model("PixQRcode", PixQRcodeSchema);
 
