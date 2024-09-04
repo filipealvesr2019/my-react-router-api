@@ -1135,9 +1135,8 @@ router.put(
         0
       );
 
-      let cepViaCep = await axios.get(`https://viacep.com.br/ws/${frete.CEP}/json/`)
       // Atualiza a taxa de envio do carrinho com base na condição
-      if (totalPrice >= 300 || cepViaCep.data.localidade === 'Fortaleza') {
+      if (totalPrice >= 300 ) {
         cart.shippingFee = 0;
       } else {
         cart.shippingFee = frete.valorFrete;
