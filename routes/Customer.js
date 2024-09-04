@@ -1056,7 +1056,7 @@ router.post(
           },
         }
       );
-
+   
       // Verifica se a resposta é um array
       if (Array.isArray(response.data)) {
         // Se for um array, faz um loop sobre os itens e salva cada um
@@ -1068,6 +1068,7 @@ router.post(
             prazoEntrega: item.prazoEnt,
             valorFrete: item.vlrFrete,
             logo: item.url_logo,
+            CEP: cep
           });
 
           await frete.save();
@@ -1081,9 +1082,11 @@ router.post(
           prazoEntrega: response.data.prazoEnt,
           valorFrete: response.data.vlrFrete,
           logo: response.data.url_logo,
+          CEP: cep
         });
 
         await frete.save();
+    
       }
 
       res.json(response.data);
@@ -1132,8 +1135,9 @@ router.put(
         0
       );
 
+      let cepViaCep = await axios.get(`https://viacep.com.br/ws/${frete.CEP}/json/`)
       // Atualiza a taxa de envio do carrinho com base na condição
-      if (totalPrice >= 300) {
+      if (totalPrice >= 300 || cepViaCep.data.localidade === 'Fortaleza') {
         cart.shippingFee = 0;
       } else {
         cart.shippingFee = frete.valorFrete;
@@ -1141,7 +1145,7 @@ router.put(
 
       cart.transportadora.nome = frete.nomeTransportadora;
       cart.logo.img = frete.logo;
-
+      console.log( cart.shippingFee)
       await cart.save();
 
       res

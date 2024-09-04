@@ -23,6 +23,8 @@ const freteSchema = new mongoose.Schema({
   logo: {
     type: String,
   },
+  CEP: { type: String, required: true }
+
 });
 
 const Frete = mongoose.model("Frete", freteSchema);

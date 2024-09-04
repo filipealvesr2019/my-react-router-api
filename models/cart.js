@@ -63,6 +63,7 @@ const cartSchema = new Schema({
       type: String,
     },
   },
+
   taxPrice: {
     type: Number,
   },
