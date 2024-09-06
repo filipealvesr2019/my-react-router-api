@@ -49,13 +49,13 @@ router.get('/categories/:category/filterSizeProducts', categoriesController.getP
 router.get('/category/:categoryId/images', categoriesController.getImageSlider);
 
 // upload imagem from slider
-router.post('/slider/categories/:categoryId/images', categoriesController.addImageToSlider);
+router.post('/slider/categories/:categoryId/images', isAuthenticated, isAdmin, categoriesController.addImageToSlider);
 
 
-router.put('/slider/category/:category/imageId/:imageId',  categoriesController.updateImageURLSlider);
+router.put('/slider/category/:category/imageId/:imageId', isAuthenticated, isAdmin,   categoriesController.updateImageURLSlider);
 
 // Rota para excluir uma imagem de uma categoria
-router.delete('/slider/categories/:categoryId/images/:imageIndex', categoriesController.deleteImageSlider);
+router.delete('/slider/categories/:categoryId/images/:imageIndex', isAuthenticated, isAdmin,  categoriesController.deleteImageSlider);
  
 // isAuthenticated, isAdmin,
 

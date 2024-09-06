@@ -1767,7 +1767,14 @@ router.post(
       // Define a data de vencimento base
       const dueDate = new Date();
       // Captura o IP do cliente
-      const clientIp = req.headers["x-forwarded-for"] || req.ip;
+      const clientIp =
+      req.headers["x-forwarded-for"] ||
+      req.connection.remoteAddress ||
+      req.socket.remoteAddress ||
+      req.connection.socket?.remoteAddress;
+
+    console.log("Client IP:", clientIp); // Log para verificar qual IP está sendo capturado
+    console.log("mobilePhone:", customer.mobilePhone); // Log para verificar qual IP está sendo capturado
 
       // Itera sobre o número de parcelas e cria uma cobrança para cada uma
       const payments = [];
