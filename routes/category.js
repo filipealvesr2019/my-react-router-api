@@ -20,13 +20,13 @@ router.get('/category/:categoryId/images', categoriesController.getImagesByCateg
 // Rota para atualizar uma imagem em uma categoria
 // isAuthenticated, isAdmin,slider
 
-router.put('/category/:category/imageId/:imageId',  categoriesController.updateImageURL);
+router.put('/category/:category/imageId/:imageId',isAuthenticated, isAdmin,    categoriesController.updateImageURL);
 
 // Rota para excluir uma imagem de uma categoria
 router.delete('/categories/:categoryId/images/:imageIndex', isAuthenticated, isAdmin, categoriesController.deleteImage);
  
 // isAuthenticated, isAdmin,
-router.post('/categories/:categoryId/images', categoriesController.addImageToCategory);
+router.post('/categories/:categoryId/images',isAuthenticated, isAdmin,  categoriesController.addImageToCategory);
 
 // Rota para excluir uma categoria
 router.delete('/admin/categories/:categoryId',isAuthenticated, isAdmin, categoriesController.deleteCategory);
@@ -49,7 +49,7 @@ router.get('/categories/:category/filterSizeProducts', categoriesController.getP
 router.get('/category/:categoryId/images', categoriesController.getImageSlider);
 
 // upload imagem from slider
-router.post('/slider/categories/:categoryId/images', isAuthenticated, isAdmin, categoriesController.addImageToSlider);
+router.post('/slider/categories/:categoryId/images',  categoriesController.addImageToSlider);
 
 
 router.put('/slider/category/:category/imageId/:imageId', isAuthenticated, isAdmin,   categoriesController.updateImageURLSlider);
