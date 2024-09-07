@@ -3555,4 +3555,7 @@ router.get("/pix/:id", isAuthenticated, isAdmin, async (req, res) => {
   }
 });
 
+
+
+
 module.exports = router;

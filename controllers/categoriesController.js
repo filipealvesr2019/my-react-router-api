@@ -463,65 +463,89 @@ const getAllCategoriesWithProducts = async (req, res) => {
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };
-
 const getMixedProductsByCategory = async (req, res) => {
   try {
-    const { category } = req.params;
+    // Mockup de produtos
+    const mockProducts = [
+      {
+        _id: '1',
+        name: 'Camisa Polo',
+        description: 'Camisa Polo Masculina',
+        variations: [
+          {
+            color: 'Azul',
+            urls: ['url1', 'url2'],
+            sizes: [
+              { size: 'M', price: 49.99, quantityAvailable: 10, inStockSize: true },
+              { size: 'L', price: 54.99, quantityAvailable: 5, inStockSize: true },
+            ],
+          },
+          {
+            color: 'Preto',
+            urls: ['url3', 'url4'],
+            sizes: [
+              { size: 'M', price: 49.99, quantityAvailable: 8, inStockSize: true },
+              { size: 'L', price: 54.99, quantityAvailable: 2, inStockSize: true },
+            ],
+          },
+        ],
+        category: 'Moda Masculina',
+        subcategory: 'Camisas',
+        inStock: true,
+        createdAt: new Date(),
+        lastModifiedAt: new Date(),
+        previousPrice: null,
+        discountPercentage: null,
+      },
+      {
+        _id: '2',
+        name: 'Calça Jeans',
+        description: 'Calça Jeans Masculina',
+        variations: [
+          {
+            color: 'Azul Escuro',
+            urls: ['url5', 'url6'],
+            sizes: [
+              { size: '38', price: 79.99, quantityAvailable: 12, inStockSize: true },
+              { size: '40', price: 84.99, quantityAvailable: 7, inStockSize: true },
+            ],
+          },
+        ],
+        category: 'Moda Masculina',
+        subcategory: 'Calças',
+        inStock: true,
+        createdAt: new Date(),
+        lastModifiedAt: new Date(),
+        previousPrice: null,
+        discountPercentage: null,
+      },
+    ];
+
+    // Mockup da lógica de paginação
     const page = parseInt(req.query.page) || 1; // Página atual, padrão é 1
     const pageSize = 5; // Número de produtos por página
 
-    // Opções de filtro
-    const { color, size, priceRange } = req.query;
-    const filter = { category, inStock: true }; // Adicione a condição para quantidade maior que zero
-
-    // Adicionar opções de filtro se fornecidas
-    if (color) {
-      filter['variations.color'] = new RegExp(`\\b${color}\\b`, 'i');
-    }
-
-    if (size) {
-      filter.size = new RegExp(`\\b${size}\\b`);
-    }
-
-  
-    if (priceRange) {
-      const [minPriceStr, maxPriceStr] = priceRange.split(" - ");
-      
-      // Remover o "R$" e converter para números
-      const minPrice = parseFloat(minPriceStr.replace('R$', '').replace(',', '.'));
-      const maxPrice = parseFloat(maxPriceStr.replace('R$', '').replace(',', '.'));
-    
-      if (!isNaN(minPrice) && !isNaN(maxPrice)) {
-        filter.price = { $gte: minPrice, $lte: maxPrice };
-      } else {
-        // Lógica para lidar com valores inválidos
-        console.error('Invalid priceRange values:', minPrice, maxPrice, 'Original:', priceRange);
-        res.status(400).json({ success: false, message: 'Invalid priceRange values' });
-        return; // Encerrar a execução da função
-      }
-    }
-    
-    
-    // Calcular o número total de produtos com base nas opções de filtro
-    const totalProducts = await Product.countDocuments(filter);
-
-    // Calcular o número total de páginas
-    const totalPages = Math.ceil(totalProducts / pageSize);
-
     // Calcular o índice de início dos documentos (página atual - 1 * produtos por página)
     const startIndex = (page - 1) * pageSize;
+    
+    // Simular a filtragem e paginação
+    const filteredProducts = mockProducts
+      .filter(product => product.category === req.params.category && product.inStock === true)
+      .slice(startIndex, startIndex + pageSize);
+    
+    const totalProducts = filteredProducts.length;
+    const totalPages = Math.ceil(totalProducts / pageSize);
 
-    // Consultar produtos com a categoria específica e opções de filtro, aplicar a paginação
-    const products = await Product.find(filter)
-      .skip(startIndex)
-      .limit(pageSize);
+    // Retornar resposta mockada
+    res.json({ success: true, mixedProducts: filteredProducts, totalPages });
+    console.log('Response:', { success: true, mixedProducts: filteredProducts, totalPages });
 
-    res.json({ success: true, mixedProducts: products, totalPages });
   } catch (error) {
     console.error('Error in getMixedProductsByCategory:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
+
 
 const getMixedProductsBySubCategory = async (req, res) => {
   try {
