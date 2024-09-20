@@ -21,7 +21,7 @@ const { isAuthenticated, isAdmin } = require("../middleware/middlewares.authMidd
 router.route("/products").get( isAuthenticated, isAdmin, getProducts);
 router.route("/product/:name/:id").get(getSingleProduct);
 // Rota para criar um novo produto com upload de imagem
-router.route("/product/:id").get(getSingleProductForCustomer);
+router.route("/product/:name/:id").get(getSingleProductForCustomer);
 
 
 router.post("/admin/product/new",   productController.newProduct);
