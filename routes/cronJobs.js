@@ -2,10 +2,10 @@ const mongoose = require("mongoose");
 const cron = require("node-cron");
 const express = require("express");
 const Cart = require("../models/cart");
+const { SitemapStream } = require('sitemap');
+const fs = require('fs');
 const Product = require("../models/product");
-const PixQRcode = require('../models/PixQRcode');
-const Boleto = require('../models/Boleto')
-const CreditCardWithPaymentLink = require('../models/CreditCardWithPaymentLink')
+
 
 
 const router = express.Router();
@@ -23,56 +23,58 @@ cron.schedule('*/30 * * * *', async () => {
 });
 
 
-// // Função para atualizar o estoque
-// // Função para atualizar o estoque
-// // Função genérica para atualizar o estoque
-// const updateStockForOrders = async (OrderModel) => {
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
 
-//   try {
-//     const receivedOrders = await OrderModel.find({ status: "RECEIVED", stockUpdated: false }).session(session);
 
-//     for (const order of receivedOrders) {
-//       for (const product of order.products) {
-//         const { productId, quantity, size, color } = product;
 
-//         const foundProduct = await Product.findById(productId).session(session);
-//         if (foundProduct) {
-//           const variation = foundProduct.variations.find(v => v.color === color);
-//           if (variation) {
-//             const sizeObj = variation.sizes.find(s => s.size === size);
-//             if (sizeObj) {
-//               sizeObj.quantityAvailable -= parseInt(quantity, 10);
-//               sizeObj.inStockSize = sizeObj.quantityAvailable <= 0;
-//             }
-//           }
 
-//           foundProduct.inStock = foundProduct.variations.some(v => v.sizes.some(s => s.inStockSize));
-//           await foundProduct.save({ session });
-//         }
-//       }
 
-//       order.stockUpdated = true;
-//       await order.save({ session });
-//     }
+// Função para gerar o sitemap
+const generateSitemap = async () => {
+  try {
+    const products = await Product.find({});
+    
+    const links = [
+      { url: '/', changefreq: 'daily', priority: 1.0 },
+      { url: '/categorias', changefreq: 'monthly', priority: 0.8 },
+      { url: '/perfil', changefreq: 'monthly', priority: 0.8 },
+      { url: '/conta', changefreq: 'monthly', priority: 0.8 },
 
-//     await session.commitTransaction();
-//   } catch (error) {
-//     await session.abortTransaction();
-//     console.error("Erro ao atualizar o estoque:", error);
-//   } finally {
-//     session.endSession();
-//   }
-// };
+      ...products.map(product => ({
+        url: `/products/${encodeURIComponent(product.name.replace(/\s+/g, '-'))}/${product.id}`,
+        changefreq: 'weekly',
+        priority: 0.7,
+      })),
+    ];
 
-// // Função que chama as funções de atualização de estoque
-// const updateAllStocks = async () => {
-//   await updateStockForOrders(PixQRcode);
-//   await updateStockForOrders(Boleto);
-//   await updateStockForOrders(CreditCardWithPaymentLink);
-// };
+    const stream = new SitemapStream({ hostname: 'https://mediewal.com.br/' });
 
-// // Executar a função `updateAllStocks` a cada minuto
-// cron.schedule("* * * * *", updateAllStocks);
+    const writeStream = fs.createWriteStream('./public/sitemap.xml');
+    stream.pipe(writeStream);
+
+    links.forEach(link => stream.write(link));
+    stream.end();
+
+    console.log('Sitemap gerado com sucesso!');
+  } catch (error) {
+    console.error('Erro ao gerar o sitemap:', error);
+  }
+};
+
+// Rota para acessar o sitemap
+router.get('/sitemap.xml', (req, res) => {
+  res.sendFile(__dirname + '/public/sitemap.xml');
+});
+
+// Agendar a execução da função todos os dias à meia-noite
+cron.schedule('0 0 * * *', () => {
+  console.log('Atualizando o sitemap...');
+  generateSitemap();
+});
+
+// // Agendar a execução da função a cada segundo
+// cron.schedule('* * * * * *', () => {
+//   console.log('Atualizando o sitemap...');
+//   generateSitemap();
+// });
+
 module.exports = router;
