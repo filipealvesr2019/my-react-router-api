@@ -37,11 +37,7 @@ const generateSitemap = async () => {
       { url: '/', changefreq: 'daily', priority: 1.0 },
       { url: '/perfil', changefreq: 'monthly', priority: 0.8 },
       { url: '/conta', changefreq: 'monthly', priority: 0.8 },
-      ...products.map(category => ({
-        url: `/products/${encodeURIComponent(category.name.replace(/\s+/g, '-'))}/mixedProducts`,
-        changefreq: 'weekly',
-        priority: 0.6,
-      })),
+
       ...products.map(product => ({
         url: `/products/${encodeURIComponent(product.name.replace(/\s+/g, '-'))}/${product.id}`,
         changefreq: 'weekly',
@@ -74,7 +70,7 @@ cron.schedule('0 0 * * *', () => {
   generateSitemap();
 });
 
-// Agendar a execução da função a cada segundo
+// // Agendar a execução da função a cada segundo
 // cron.schedule('* * * * * *', () => {
 //   console.log('Atualizando o sitemap...');
 //   generateSitemap();
