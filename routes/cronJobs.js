@@ -5,6 +5,8 @@ const Cart = require("../models/cart");
 const { SitemapStream } = require('sitemap');
 const fs = require('fs');
 const Product = require("../models/product");
+const Subcategory = require("../models/Subcategory");
+const Category = require("../models/category");
 
 
 
@@ -24,6 +26,14 @@ cron.schedule('*/30 * * * *', async () => {
 
 
 
+const formatProductNameForURL = (name) => {
+  return name
+    .normalize("NFD") // Normaliza a string para decompor caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos (acentos)
+    .toLowerCase() // Converte para letras minúsculas
+    .replace(/\s+/g, "-") // Substitui espaços por hífens
+    .replace(/[^\w\-]+/g, ""); // Remove caracteres não alfanuméricos (exceto hífens)
+};
 
 
 
@@ -32,17 +42,30 @@ cron.schedule('*/30 * * * *', async () => {
 const generateSitemap = async () => {
   try {
     const products = await Product.find({});
-    
+    const categories = await Category.find({});
+    const subcategories = await Subcategory.find({});
+
     const links = [
       { url: '/', changefreq: 'daily', priority: 1.0 },
       { url: '/perfil', changefreq: 'monthly', priority: 0.8 },
       { url: '/conta', changefreq: 'monthly', priority: 0.8 },
-
-      ...products.map(product => ({
-        url: `/products/${encodeURIComponent(product.name.replace(/\s+/g, '-'))}/${product.id}`,
+      ...categories.map(category => ({
+        url: `/categories/${encodeURIComponent(category.name)}`,
         changefreq: 'weekly',
         priority: 0.7,
       })),
+      ...categories.map(category => ({
+        url: `/categories/${encodeURIComponent(category.name)}/subcategories`,
+        changefreq: 'weekly',
+        priority: 0.7,
+      })),
+      ...products.map(product => ({
+        url: `/products/${formatProductNameForURL(product.name)}/${product.id}`,
+        changefreq: 'weekly',
+        priority: 0.7,
+      })),
+
+
     ];
 
     const stream = new SitemapStream({ hostname: 'https://mediewal.com.br/' });
@@ -70,7 +93,7 @@ cron.schedule('0 0 * * *', () => {
   generateSitemap();
 });
 
-// // Agendar a execução da função a cada segundo
+// // // Agendar a execução da função a cada segundo
 // cron.schedule('* * * * * *', () => {
 //   console.log('Atualizando o sitemap...');
 //   generateSitemap();
