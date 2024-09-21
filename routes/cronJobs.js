@@ -38,7 +38,7 @@ const generateSitemap = async () => {
       { url: '/perfil', changefreq: 'monthly', priority: 0.8 },
       { url: '/conta', changefreq: 'monthly', priority: 0.8 },
       ...products.map(category => ({
-        url: `/categories/${encodeURIComponent(category.name.replace(/\s+/g, '-'))}/mixedProducts`,
+        url: `/products/${encodeURIComponent(category.name.replace(/\s+/g, '-'))}/mixedProducts`,
         changefreq: 'weekly',
         priority: 0.6,
       })),
