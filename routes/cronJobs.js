@@ -49,6 +49,7 @@ const generateSitemap = async () => {
       { url: '/', changefreq: 'daily', priority: 1.0 },
       { url: '/perfil', changefreq: 'monthly', priority: 0.8 },
       { url: '/conta', changefreq: 'monthly', priority: 0.8 },
+      
       ...categories.map(category => ({
         url: `/categories/${encodeURIComponent(category.name)}`,
         changefreq: 'weekly',
