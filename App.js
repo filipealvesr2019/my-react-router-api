@@ -7,6 +7,7 @@ const { sessions, ClerkExpressWithAuth } = require('@clerk/clerk-sdk-node');
 const Cookies = require('cookies');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+const path = require("path");
 
 
 const mongoose = require('mongoose');
@@ -17,6 +18,7 @@ app.use(cookieParser());
 // Configurações e middlewares
 // app.use(cors({ origin: "*"}));
 
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({
   origin: [

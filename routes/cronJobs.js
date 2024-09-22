@@ -92,6 +92,9 @@ cron.schedule('0 0 * * *', () => {
   console.log('Atualizando o sitemap...');
   generateSitemap();
 });
+router.get('/sitemap.xml', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public/sitemap.xml'));
+});
 
 // // Agendar a execução da função a cada segundo
 // cron.schedule('* * * * * *', () => {
