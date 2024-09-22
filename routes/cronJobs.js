@@ -7,6 +7,7 @@ const fs = require('fs');
 const Product = require("../models/product");
 const Subcategory = require("../models/Subcategory");
 const Category = require("../models/category");
+const axios = require('axios');
 
 
 
@@ -96,6 +97,9 @@ cron.schedule('0 0 * * *', () => {
 router.get('/sitemap.xml', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/sitemap.xml'));
 });
+
+
+
 
 // // Agendar a execução da função a cada segundo
 // cron.schedule('* * * * * *', () => {
