@@ -93,7 +93,7 @@ cron.schedule('0 0 * * *', () => {
   generateSitemap();
 });
 
-// // // Agendar a execução da função a cada segundo
+// // Agendar a execução da função a cada segundo
 // cron.schedule('* * * * * *', () => {
 //   console.log('Atualizando o sitemap...');
 //   generateSitemap();
