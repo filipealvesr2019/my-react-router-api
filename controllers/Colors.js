@@ -39,12 +39,30 @@ const newColor = async (req, res) => {
   };
   
 
-// Rota no arquivo de roteamento
+
+// Função para excluir uma cor
+const deleteColor = async (req, res) => {
+    const { id } = req.params; // Obtém o ID da cor a ser excluída
+  
+    try {
+      const deletedColor = await Color.findByIdAndDelete(id);
+      
+      if (!deletedColor) {
+        return res.status(404).json({ success: false, message: 'Cor não encontrada' });
+      }
+  
+      res.json({ success: true, message: 'Cor excluída com sucesso', deletedColor });
+    } catch (error) {
+      console.error("Erro ao excluir a cor:", error);
+      res.status(500).json({ success: false, message: 'Erro ao excluir a cor' });
+    }
+  };
 
   module.exports = {
     newColor,
     getAllColors,
-    userGetAllColors
+    userGetAllColors,
+    deleteColor
  
 
 

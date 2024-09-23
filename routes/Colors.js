@@ -6,9 +6,11 @@ const { isAuthenticated, isAdmin } = require('../middleware/middlewares.authMidd
 
 
 // Rota para adicionar nova color isAuthenticated, isAdmin, 
-router.post('/admin/new/color', colorsController.newColor);
-router.get('/admin/colors', colorsController.getAllColors);
-router.get('/user/colors', colorsController.userGetAllColors);
+router.post('/admin/new/color', isAuthenticated, isAdmin,  colorsController.newColor);
+router.get('/admin/colors',  isAuthenticated, isAdmin, colorsController.getAllColors);
+router.get('/user/colors',  colorsController.userGetAllColors);
+// Rota para excluir uma cor específica
+router.delete('/admin/colors/:id', isAuthenticated, isAdmin, colorsController.deleteColor);
 
 
 module.exports = router;
