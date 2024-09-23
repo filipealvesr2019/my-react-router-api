@@ -25,6 +25,18 @@ const newColor = async (req, res) => {
       res.status(500).json({ success: false, message: 'Error getting all colors' });
     }
   };
+
+  
+  const userGetAllColors = async (req, res) => {
+    try {
+      // Lógica para obter todas as categorias
+      const colors = await Color.find();
+      res.json({ success: true, colors });
+    } catch (error) {
+      console.error('Error getting all colors:', error);
+      res.status(500).json({ success: false, message: 'Error getting all colors' });
+    }
+  };
   
 
 // Rota no arquivo de roteamento
@@ -32,6 +44,7 @@ const newColor = async (req, res) => {
   module.exports = {
     newColor,
     getAllColors,
+    userGetAllColors
  
 
 
