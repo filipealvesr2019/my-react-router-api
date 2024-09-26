@@ -79,7 +79,6 @@ app.use('/api', cronJobs)
 
 app.use('/api', products)
 app.use('/api',  authCustomer)
-app.use(require('prerender-node').set('prerenderToken', process.env.PRERENDER_TOKEN));
 
 app.use('/api', order)
 app.use('/api', category)
