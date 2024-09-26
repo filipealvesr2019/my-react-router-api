@@ -29,6 +29,7 @@
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
     "postmark": "^4.0.2",
+    "prerender-node": "^3.8.0",
     "sax": "^1.4.1",
     "sharp": "^0.33.2",
     "sitemap": "^8.0.0",
