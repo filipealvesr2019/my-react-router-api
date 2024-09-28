@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
     validate: {
       validator: function(value) {
         // Verifica se a senha contém pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial
-        return /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\\;?-^.!'{:@#$%^&"_(¨¨||/+,.=)_£0}*|<>`])/.test(value);
+        return /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\\;?-^.!'{:@#$%^&"_(¨¨||/L+,.=)_£0}*|<>`])/.test(value);
       },
       message: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
     },
