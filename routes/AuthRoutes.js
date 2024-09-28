@@ -134,7 +134,7 @@ router.post("/register/request", async (req, res) => {
 });
 
 // Rota para registrar usuário com o token
-router.post("/register/:token", async (req, res) => {
+router.post("/register-user/:token", async (req, res) => {
   const { token } = req.params;
   const { email, password, role } = req.body;
 
