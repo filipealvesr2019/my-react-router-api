@@ -261,8 +261,21 @@ router.get('/categories/:category/sizes', productController.getSizesByCategory);
 router.get('/category/:category/priceRange', productController.getPriceRangesByCategory);
 
 
-
-
-// ... (outras rotas)
+router.get("/all-products", async (req, res) => {
+  try {
+    const products = await Product.find(); // Busca todos os produtos
+    res.status(200).json({
+      success: true,
+      count: products.length,
+      products,
+    });
+  } catch (error) {
+    console.error("Erro ao obter produtos:", error);
+    res.status(500).json({
+      success: false,
+      message: "Erro ao obter produtos",
+    });
+  }
+});
 
 module.exports = router;
