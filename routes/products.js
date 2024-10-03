@@ -278,15 +278,5 @@ router.get("/all-products", async (req, res) => {
   }
 });
 
-const formatProductNameForURL = (name) => {
-  return name
-    .normalize("NFD") // Normaliza a string para decompor caracteres acentuados
-    .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos (acentos)
-    .toLowerCase() // Converte para letras minúsculas
-    .replace(/\s+/g, "-") // Substitui espaços por hífens
-    .replace(/[^\w\-]+/g, ""); // Remove caracteres não alfanuméricos (exceto hífens)
-};
-
-
 
 module.exports = router;
