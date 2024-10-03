@@ -148,9 +148,9 @@ router.post("/register-user/:token", async (req, res) => {
       return res.status(400).json({ success: false, error: "Token inválido para este e-mail." });
     }
 
-    // Aqui você pode adicionar mais validações, se necessário
+    // Aqui você pode adicionar mais validações, se necessário 
 // Verificação da composição da senha
-const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])/;
+const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\\;?-^.!'{:@#$%^&"_(¨¨||/L+,.=)_£0}*|<>`])/;
 if (!passwordRegex.test(password)) {
   return res.status(400).json({
     success: false,
