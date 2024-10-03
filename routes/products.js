@@ -278,4 +278,63 @@ router.get("/all-products", async (req, res) => {
   }
 });
 
+const formatProductNameForURL = (name) => {
+  return name
+    .normalize("NFD") // Normaliza a string para decompor caracteres acentuados
+    .replace(/[\u0300-\u036f]/g, "") // Remove os diacríticos (acentos)
+    .toLowerCase() // Converte para letras minúsculas
+    .replace(/\s+/g, "-") // Substitui espaços por hífens
+    .replace(/[^\w\-]+/g, ""); // Remove caracteres não alfanuméricos (exceto hífens)
+};
+
+
+
+// Rota para gerar o feed de produtos
+router.get('/feed', async (req, res) => {
+  try {
+    // Buscar os produtos no MongoDB
+    const products = await Product.find();
+
+    // Criar o XML do feed
+    let xmlFeed = `
+      <rss version="2.0" xmlns:g="http://base.google.com/ns/1.0">
+        <channel>
+          <title>Seu Site</title>
+          <link>https://mediewal.com.br</link>
+          <description>Feed de Produtos</description>
+    `;
+
+    // Iterar sobre os produtos e adicionar ao feed
+    products.forEach(product => {
+      // Iterar sobre as variações para cada produto
+      product.variations.forEach(variation => {
+        // Iterar sobre os tamanhos de cada variação
+        variation.sizes.forEach(size => {
+          xmlFeed += `
+            <item>
+              <g:id>${product._id}-${size.size}</g:id> <!-- ID único para cada variação de tamanho -->
+              <g:title><![CDATA[${product.name} - ${size.size}]]></g:title>
+              <g:description><![CDATA[${product.description}]]></g:description>
+              <g:link>https://mediewal.com.br/products/${formatProductNameForURL(product.name)}/${product._id}</g:link>
+              <g:image_link>${variation.urls[0]}</g:image_link> <!-- Usar a primeira imagem da variação -->
+              <g:price>${size.price} BRL</g:price>
+              <g:availability>${size.quantityAvailable > 0 ? 'in stock' : 'out of stock'}</g:availability>
+            </item>
+          `;
+        });
+      });
+    });
+
+    xmlFeed += `</channel></rss>`;
+
+    // Enviar o XML gerado como resposta
+    res.set('Content-Type', 'application/xml');
+    res.send(xmlFeed);
+  } catch (error) {
+    console.error('Erro ao gerar o feed:', error);
+    res.status(500).send('Erro no servidor.');
+  }
+});
+
+
 module.exports = router;
