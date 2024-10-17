@@ -45,7 +45,9 @@ const userSchema = new mongoose.Schema({
     type: String,
     unique: true, // Garante que apenas um usuário tenha esse ID do Google
     sparse: true // Permite que outros usuários tenham null ou undefined para este campo
-  }
+  },
+  status: { type: String, default: "pending" }, // 'pending', 'completed'
+  registrationTime: { type: Date, default: Date.now }
 });
 
 function validateRole(value) {

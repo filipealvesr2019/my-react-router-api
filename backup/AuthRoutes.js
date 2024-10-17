@@ -106,22 +106,6 @@ const sendEmail = async (email, token) => {
     console.error("Erro ao enviar e-mail", error);
   }
 };
-const sendTimeoutEmail = async (email) => {
-  const client = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
-  
-  try {
-    await client.sendEmail({
-      From: process.env.EMAIL_FROM,
-      To: email,
-      Subject: "Tempo de cadastro expirado",
-      TextBody: "O tempo para completar o seu cadastro expirou. Por favor, solicite um novo link de registro."
-    });
-
-    console.log("E-mail de tempo expirado enviado com sucesso");
-  } catch (error) {
-    console.error("Erro ao enviar e-mail de tempo expirado", error);
-  }
-};
 
 // Rota para solicitar registro
 // Rota para solicitar registro
@@ -129,6 +113,7 @@ router.post("/register/request", async (req, res) => {
   const { email } = req.body;
 
   try {
+    // Verifica se o email já está cadastrado
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
@@ -141,19 +126,6 @@ router.post("/register/request", async (req, res) => {
     // Enviar e-mail com o link de registro contendo o token
     await sendEmail(email, token);
 
-    // Criar um novo usuário com status "pending"
-    await User.create({ email, status: "pending", registrationTime: new Date() });
-
-    // Agendar verificação após 10 minutos
-    setTimeout(async () => {
-      const user = await User.findOne({ email });
-      if (user && user.status === "pending") {
-        // Enviar e-mail avisando que o tempo expirou
-        await sendTimeoutEmail(email);
-        console.log(`O tempo para o cadastro de ${email} expirou.`);
-      }
-    }, 10 * 60 * 1000); // 10 minutos
-
     res.status(200).json({ success: true, message: "Link de registro enviado com sucesso." });
   } catch (error) {
     console.error("Erro ao solicitar registro", error);
@@ -161,35 +133,42 @@ router.post("/register/request", async (req, res) => {
   }
 });
 
-
+// Rota para registrar usuário com o token
 router.post("/register-user/:token", async (req, res) => {
   const { token } = req.params;
   const { email, password, role } = req.body;
 
   try {
+
+    // Verificar se o token é válido
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
 
+    // Verificar se o e-mail no token corresponde ao fornecido no corpo da solicitação
     if (decodedToken.email !== email) {
       return res.status(400).json({ success: false, error: "Token inválido para este e-mail." });
     }
 
-    const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\\;?-^.!'{:@#$%^&"_([¨¨||/L+,.=)_£0}*|<>])/;
-    if (!passwordRegex.test(password)) {
-      return res.status(400).json({
-        success: false,
-        error: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
-      });
-    }
+    // Aqui você pode adicionar mais validações, se necessário 
+// Verificação da composição da senha
+const passwordRegex = /(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[\\;?-^.!'{:@#$%^&"_([¨¨||/L+,.=)_£0}*|<>`])/;
+if (!passwordRegex.test(password)) {
+  return res.status(400).json({
+    success: false,
+    error: "A senha deve conter pelo menos uma letra maiúscula, uma letra minúscula, um número e um caractere especial.",
+  });
+}
+    // Criar usuário com e-mail e senha fornecidos
+    const user = await User.create({
+      email,
+      password,
+      role,
+    });
 
-    // Atualizar o status para "completed" ao registrar o usuário
-    await User.updateOne({ email }, { password, role, status: "completed" });
-
-    res.status(201).json({ success: true, message: "Usuário registrado com sucesso." });
+    res.status(201).json({ user, success: true, message: "Usuário registrado com sucesso." });
   } catch (error) {
     console.error("Erro ao registrar usuário", error);
     res.status(500).json({ success: false, error: "Erro interno do servidor." });
   }
 });
-
 
 module.exports = router;
