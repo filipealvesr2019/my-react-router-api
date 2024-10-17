@@ -161,10 +161,14 @@ router.post("/register/request", async (req, res) => {
   }
 });
 
-
 router.post("/register-user/:token", async (req, res) => {
   const { token } = req.params;
   const { email, password, role } = req.body;
+
+  // Verifica se email, password e role estão presentes
+  if (!email || !password || !role) {
+    return res.status(400).json({ success: false, error: "Todos os campos são obrigatórios." });
+  }
 
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET);
@@ -190,6 +194,7 @@ router.post("/register-user/:token", async (req, res) => {
     res.status(500).json({ success: false, error: "Erro interno do servidor." });
   }
 });
+
 
 
 module.exports = router;
