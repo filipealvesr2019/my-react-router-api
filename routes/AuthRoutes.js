@@ -152,7 +152,7 @@ router.post("/register/request", async (req, res) => {
         await sendTimeoutEmail(email);
         console.log(`O tempo para o cadastro de ${email} expirou.`);
       }
-    }, 10 * 60 * 1000); // 10 minutos
+    }, 1 * 60 * 1000); // 10 minutos
 
     res.status(200).json({ success: true, message: "Link de registro enviado com sucesso." });
   } catch (error) {
