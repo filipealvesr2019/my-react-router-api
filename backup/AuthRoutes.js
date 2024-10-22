@@ -68,7 +68,7 @@ router.post('/reset-password/:token',  AuthController.resetPassword);
 const sendEmail = async (email, token) => {
   const client = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
    
-  try {r
+  try {
     const registrationLink = `https://mediewal.com.br/register-user/${token}`;
 
     await client.sendEmail({
@@ -93,7 +93,7 @@ const sendEmail = async (email, token) => {
           </tr>
           <tr>
             <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
-              Olá, <br> Clique no botão abaixo para completar seu cadastro na Mediewal.
+              Olá, <br> Clique no botão abaixo para completar seu cadastro na Mediewal ou  <a href="${registrationLink}" style="color: #007bff;">clique aqui</a>.
             </td>
           </tr>
           <tr>
