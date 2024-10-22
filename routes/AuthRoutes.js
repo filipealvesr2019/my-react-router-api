@@ -88,11 +88,12 @@ const sendEmail = async (email, token) => {
       </head>
       <body style="background-color: #f4f4f4; font-family: Arial, sans-serif; padding: 20px;">
         <table width="100%" cellspacing="0" cellpadding="0" style="background-color: #ffffff; padding: 20px;">
-          <tr>
-            <td align="center">
-              <img src="https://i.imgur.com/uf3BdOa.png" alt="Icone da Mediewal" style="width: 200px; max-width: 100%;"/>
-            </td>
-          </tr>
+         <tr>
+      <td align="center" style="background-color: black; padding: 20px;">
+        <img src="https://i.imgur.com/uf3BdOa.png" alt="Icone da Mediewal" style="width: 200px; max-width: 100%;"/>
+      </td>
+    </tr>
+
           <tr>
             <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
               Olá, <br> Clique no botão abaixo para completar seu cadastro na Mediewal ou  <a href="${registrationLink}" style="color: #007bff;">clique aqui</a>.
