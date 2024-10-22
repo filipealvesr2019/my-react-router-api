@@ -119,7 +119,8 @@ if (responseData.id) {
   console.error("Erro na resposta da API Asaas:", responseData);
   throw new Error("ID do cliente Asaas não retornado.");
 }
-    
+console.log("CPF", cpfCnpj);
+
   } catch (error) {
     console.error("Erro ao criar usuário:", error.message, error.stack);
     res.status(500).json({
