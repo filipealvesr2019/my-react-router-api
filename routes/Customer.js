@@ -53,12 +53,18 @@ router.post("/signup", async (req, res) => {
         message: "Email já cadastrado. Faça login ou utilize outro email.",
       });
     }
-
+    function normalizeCpfCnpj(input) {
+      // Remove todos os caracteres que não são números
+      return input.replace(/\D/g, '');
+    }
+    
+  // Normaliza o CPF/CNPJ
+  const normalizedCpfCnpj = normalizeCpfCnpj(cpfCnpj);
     // Cria o novo usuário
     const newUser = new Customer({
       custumerId,
       name,
-      cpfCnpj,
+      cpfCnpj: normalizedCpfCnpj,
       mobilePhone,
       email,
       postalCode,
@@ -87,7 +93,7 @@ router.post("/signup", async (req, res) => {
       },
       body: JSON.stringify({
         name,
-        cpfCnpj,
+        cpfCnpj: normalizedCpfCnpj,
         mobilePhone,
         email,
         postalCode,
