@@ -76,31 +76,44 @@ const sendEmail = async (email, token) => {
     await client.sendEmail({
       From: process.env.EMAIL_FROM,
       To: email,
-      Subject: "Link de registro",
-      TextBody: `Clique no seguinte link para se registrar: ${registrationLink}`,
-      HtmlBody: `
-        <table width="100%" cellspacing="0" cellpadding="0" style="background-color: black; padding: 20px;">
+      Subject: "Complete seu cadastro na Mediewal",
+      TextBody: `Olá,\n\nPor favor, clique no link a seguir para completar seu cadastro na Mediewal: ${registrationLink}`,
+      HtmlBody:  `
+      <!DOCTYPE html>
+      <html lang="pt-BR">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Cadastro na Mediewal</title>
+      </head>
+      <body style="background-color: #f4f4f4; font-family: Arial, sans-serif; padding: 20px;">
+        <table width="100%" cellspacing="0" cellpadding="0" style="background-color: #ffffff; padding: 20px;">
           <tr>
             <td align="center">
               <img src="https://i.imgur.com/uf3BdOa.png" alt="Icone da Mediewal" style="width: 200px; max-width: 100%;"/>
             </td>
           </tr>
-        </table>
-        <table width="100%" cellspacing="0" cellpadding="0" style="padding: 20px; font-family: Arial, sans-serif;">
           <tr>
             <td align="center" style="font-size: 18px; color: #333333; padding-top: 20px;">
-              Clique no botão abaixo para se cadastrar.
+              Olá, <br> Clique no botão abaixo para completar seu cadastro na Mediewal ou  <a href="${registrationLink}" style="color: #007bff;">clique aqui</a>.
             </td>
           </tr>
           <tr>
             <td align="center" style="padding-top: 20px;">
               <a href="${registrationLink}" style="display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                Cadastrar-se
+                Completar Cadastro
               </a>
             </td>
           </tr>
+          <tr>
+            <td align="center" style="font-size: 14px; color: #999999; padding-top: 20px;">
+              Se você não solicitou este email, ignore esta mensagem.
+            </td>
+          </tr>
         </table>
-      `,
+      </body>
+      </html>
+    `,
     });
 
     console.log("E-mail enviado com sucesso");
