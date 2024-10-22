@@ -118,11 +118,16 @@ router.post("/signup", async (req, res) => {
     } else {
       throw new Error("ID do cliente Asaas não retornado.");
     }
+    if (!response.ok) {
+      throw new Error(`Erro na API Asaas: ${response.statusText}`);
+    }
+    
   } catch (error) {
-    console.error("Erro ao criar usuário:", error);
-    res
-      .status(500)
-      .json({ message: "Erro interno do servidor ao criar usuário." });
+    console.error("Erro ao criar usuário:", error.message, error.stack);
+    res.status(500).json({
+      message: "Erro interno do servidor ao criar usuário.",
+      error: error.message, // Inclui a mensagem de erro na resposta (opcional)
+    });
   }
 });
 
