@@ -73,6 +73,7 @@ router.post("/signup", async (req, res) => {
 
     // Salva o usuário sem o asaasCustomerId
     const savedUser = await newUser.save();
+    console.log("CPF", cpfCnpj);
 
     // Faz a requisição para criar o cliente no Asaas
     const token = process.env.ACCESS_TOKEN;
@@ -119,7 +120,6 @@ if (responseData.id) {
   console.error("Erro na resposta da API Asaas:", responseData);
   throw new Error("ID do cliente Asaas não retornado.");
 }
-console.log("CPF", cpfCnpj);
 
   } catch (error) {
     console.error("Erro ao criar usuário:", error.message, error.stack);
