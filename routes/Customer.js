@@ -83,12 +83,12 @@ router.post("/signup", async (req, res) => {
     const normalizedCpfCnpj = normalizeCpfCnpj(cpfCnpj);
     console.log("CPF/CNPJ normalizado:", normalizedCpfCnpj);
 
-    // Verifica o comprimento do CPF/CNPJ
-    if (normalizedCpfCnpj.length !== 11 && normalizedCpfCnpj.length !== 14) {
-      return res.status(400).json({
-        message: "CPF/CNPJ deve ter 11 ou 14 dígitos.",
-      });
-    }
+    // // Verifica o comprimento do CPF/CNPJ
+    // if (normalizedCpfCnpj.length !== 11 && normalizedCpfCnpj.length !== 14) {
+    //   return res.status(400).json({
+    //     message: "CPF/CNPJ deve ter 11 ou 14 dígitos.",
+    //   });
+    // }
     // Faz a requisição para criar o cliente no Asaas
     const token = process.env.ACCESS_TOKEN;
     const url = "https://api.asaas.com/v3/customers";
