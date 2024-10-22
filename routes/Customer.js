@@ -102,25 +102,23 @@ router.post("/signup", async (req, res) => {
     const response = await fetch(url, options);
     const responseData = await response.json();
 
-    console.log("Resposta da API Asaas:", responseData);
+   // Log completo da resposta
+console.log("Resposta completa da API Asaas:", responseData);
 
-    // Verifica se a resposta contém o ID do cliente
-    if (responseData.id) {
-      // Atualiza o usuário com o ID retornado
-      savedUser.asaasCustomerId = responseData.id;
-      const updatedUser = await savedUser.save(); // Salva o usuário atualizado
-
-      res.status(201).json({
-        user: updatedUser,
-        message: "Usuário criado com sucesso.",
-        responseData,
-      });
-    } else {
-      throw new Error("ID do cliente Asaas não retornado.");
-    }
-    if (!response.ok) {
-      throw new Error(`Erro na API Asaas: ${response.statusText}`);
-    }
+if (responseData.id) {
+  // Atualiza o usuário com o ID retornado
+  savedUser.asaasCustomerId = responseData.id;
+  const updatedUser = await savedUser.save();
+  res.status(201).json({
+    user: updatedUser,
+    message: "Usuário criado com sucesso.",
+    responseData,
+  });
+} else {
+  // Log adicional para entender o erro
+  console.error("Erro na resposta da API Asaas:", responseData);
+  throw new Error("ID do cliente Asaas não retornado.");
+}
     
   } catch (error) {
     console.error("Erro ao criar usuário:", error.message, error.stack);
