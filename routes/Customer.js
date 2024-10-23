@@ -1612,7 +1612,7 @@ router.post(
         const creditCard = new CreditCardWithPaymentLink({
           billingType: "CREDIT_CARD",
           custumerId: custumerId, // Agora é uma string
-          customer: response.data.customer,
+          customer:'',
           billingType: response.data.billingType,
           value: response.data.value,
           externalReference: response.data.externalReference,
