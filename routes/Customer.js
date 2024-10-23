@@ -2182,6 +2182,8 @@ router.post(
 
       if (Array.isArray(response.data)) {
         for (const item of response.data) {
+          console.log('customer antes', data.customer)
+
           const pix = new PixQRcode({
             billingType: "PIX",
             custumerId: custumerId,
@@ -2210,7 +2212,7 @@ router.post(
             })),
             name: customer.name,
           });
-
+console.log('customer depois', data.customer)
           await pix.save();
         }
       } else {
