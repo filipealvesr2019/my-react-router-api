@@ -27,7 +27,8 @@ app.use(cors({
     'http://localhost:5001',
     'http://localhost:5007',
     'https://loja.mediewal.com.br',
-    'http://localhost:5012'
+    'http://localhost:5012',
+    'https://viacep.com.br'
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Se você estiver usando cookies ou headers personalizados
