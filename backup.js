@@ -785,6 +785,7 @@ router.put(
 
       cart.transportadora.nome = frete.nomeTransportadora;
       cart.logo.img = frete.logo;
+      console.log('shippingFee:', cart.shippingFee);
 
       await cart.save();
 
