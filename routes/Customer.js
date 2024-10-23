@@ -1468,7 +1468,7 @@ router.post(
             orderId: item.id,
             billingType: "BOLETO",
             custumerId: custumerId, // Agora é uma string
-            customer: item?.customer,
+            customer: item.customer,
             billingType: item.billingType,
             value: item.value,
             externalReference: item.externalReference,
