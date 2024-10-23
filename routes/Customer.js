@@ -2219,7 +2219,7 @@ console.log('customer depois', data.customer)
         const pix = new PixQRcode({
           billingType: "PIX",
           custumerId: custumerId,
-          customer: customer._id, // MongoDB ObjectId reference to the customer document
+          customer: customer, // MongoDB ObjectId reference to the customer document
           value: data.value, // Ajuste para usar o valor correto
           description: response.data.description,
           format: response.data.format,
