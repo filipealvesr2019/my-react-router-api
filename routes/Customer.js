@@ -2166,6 +2166,7 @@ router.post(
         expirationDate: new Date(), // Define a data atual como a data de vencimento
         allowsMultiplePayments: true,
       };
+      console.log('Data enviada ao Asaas:', data);
 
       const response = await axios.post(
         "https://api.asaas.com/v3/pix/qrCodes/static",
@@ -2241,6 +2242,7 @@ router.post(
           })),
           name: customer.name,
         });
+        console.log('Resposta da API Asaas:', response.data);
 
         await pix.save();
       }
