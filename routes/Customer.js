@@ -2248,8 +2248,11 @@ router.post(
       }
       res.json(response.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+      console.error("Erro ao criar usuário:", error.message, error.stack);
+      res.status(500).json({
+        message: "Erro interno do servidor ao criar usuário.",
+        error: error.message, // Inclui a mensagem de erro na resposta (opcional)
+      });
     }
   }
 );
