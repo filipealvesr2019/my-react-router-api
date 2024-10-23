@@ -1677,8 +1677,13 @@ router.post(
 
       res.json(response.data);
     } catch (error) {
-      console.error("Error fetching data:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+
+      console.error("Erro ao criar cobrança com cartão de credito:", error.message, error.stack);
+      res.status(500).json({
+        message: "Erro interno do servidor ao criar cobrança com cartão de credito.",
+        error: error.message, // Inclui a mensagem de erro na resposta (opcional)
+      });
+     
     }
   }
 );
@@ -2250,9 +2255,9 @@ console.log('customer depois', data.customer)
       }
       res.json(response.data);
     } catch (error) {
-      console.error("Erro ao criar usuário:", error.message, error.stack);
+      console.error("Erro ao criar qr code:", error.message, error.stack);
       res.status(500).json({
-        message: "Erro interno do servidor ao criar usuário.",
+        message: "Erro interno do servidor ao criar qr code.",
         error: error.message, // Inclui a mensagem de erro na resposta (opcional)
       });
     }
