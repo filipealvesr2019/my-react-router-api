@@ -1607,12 +1607,46 @@ router.post(
         }
       );
 
+      // Verifica se a resposta é um array
+      if (Array.isArray(response.data)) {
+        // Se for um array, faz um loop sobre os itens e salva cada um
+        for (const item of response.data) {
+          const creditCard = new CreditCardWithPaymentLink({
+            orderId: item.id,
+            billingType: "CREDIT_CARD",
+            custumerId: custumerId, // Agora é uma string
+            customer: item.customer,
+            billingType: item.billingType,
+            value: item.value,
+            externalReference: item.externalReference,
+            invoiceUrl: item.invoiceUrl,
+            bankSlipUrl: item.bankSlipUrl,
+            dueDate: item.dueDate,
+            shippingFeeData: {
+              transportadora: cart.transportadora.nome || "",
+              logo: cart.logo.img || "",
+              shippingFeePrice: cart.shippingFee,
+            },
+            products: cart.products.map((product) => ({
+              productId: product.productId._id,
+              quantity: product.quantity,
+              size: product.size,
+              color: product.color,
+              image: product.image,
+              name: product.name,
+              price: product.price,
+            })),
+            name: customer.name,
+          });
 
+          await creditCard.save();
+        }
+      } else {
         // Se não for um array, salva apenas um item
         const creditCard = new CreditCardWithPaymentLink({
           billingType: "CREDIT_CARD",
           custumerId: custumerId, // Agora é uma string
-          customer:'',
+          customer: response?.data?.customer,
           billingType: response.data.billingType,
           value: response.data.value,
           externalReference: response.data.externalReference,
@@ -1639,7 +1673,7 @@ router.post(
         });
 
         await creditCard.save();
-  
+      }
 
       res.json(response.data);
     } catch (error) {
