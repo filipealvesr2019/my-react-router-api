@@ -1468,7 +1468,7 @@ router.post(
             orderId: item.id,
             billingType: "BOLETO",
             custumerId: custumerId, // Agora é uma string
-            customer: item.customer,
+            customer: item?.customer,
             billingType: item.billingType,
             value: item.value,
             externalReference: item.externalReference,
@@ -1615,7 +1615,7 @@ router.post(
             orderId: item.id,
             billingType: "CREDIT_CARD",
             custumerId: custumerId, // Agora é uma string
-            customer: item.customer,
+            customer: item?.customer,
             billingType: item.billingType,
             value: item.value,
             externalReference: item.externalReference,
@@ -2187,7 +2187,7 @@ router.post(
           const pix = new PixQRcode({
             billingType: "PIX",
             custumerId: custumerId,
-            customer: data.customer, // Ajuste para usar o cliente correto
+            customer: data?.customer, // Ajuste para usar o cliente correto
             value: data.value, // Ajuste para usar o valor correto
             description: item.description,
             format: item.format,
