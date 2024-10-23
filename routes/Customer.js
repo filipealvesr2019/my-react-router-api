@@ -1499,7 +1499,7 @@ router.post(
         const boleto = new Boleto({
           billingType: "BOLETO",
           custumerId: custumerId, // Agora é uma string
-          customer: response.data.customer,
+          customer: response?.data?.customer,
           billingType: response.data.billingType,
           value: response.data.value,
           externalReference: response.data.externalReference,
