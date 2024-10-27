@@ -22,13 +22,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(cors({
   origin: [
-    'https://mediewal.com.br',
-    'https://admin.mediewal.com.br',
+    'https://next-ecommerce-phi-ebon.vercel.app',
     'http://localhost:5001',
     'http://localhost:5007',
-    'https://loja.mediewal.com.br',
     'http://localhost:5012',
-    'https://viacep.com.br'
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true // Se você estiver usando cookies ou headers personalizados
